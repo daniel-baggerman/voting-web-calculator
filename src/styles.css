@@ -1,0 +1,207 @@
+/* You can add global styles to this file, and also import other style files */
+body {
+    background: #1E2228;
+    color: #F0F0F0;
+    counter-reset: ballot-items;
+    font-family: sans-serif;
+    padding: 8px;
+}
+input[type="text"],
+input[type="datetime-local"] {
+    color: #1E2228;
+}
+app-beatpath-ballot-cast {
+    display: flex;
+    margin: 0 auto;
+    max-width: 640px;
+}
+.ballot,
+.sidebar {
+    margin: 8px;
+}
+.ballot,
+.ballot-options {
+    background: #2E343D;
+    border-radius: 4px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+    padding: 16px;
+}
+.ballot {
+    flex: 1 1 auto;
+}
+.ballot-item {
+    align-items: center;
+    background: #3E4652;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+    padding: 8px 8px 8px 32px;
+    position: relative;
+}
+.ballot-item:hover {
+    background: #4B5462;
+}
+.ballot-item::before {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    content: counter(ballot-items);
+    counter-increment: ballot-items;
+    display: flex;
+    font-size: 10px;
+    height: 18px;
+    justify-content: center;
+    left: 8px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+}
+.ballot-item-buttons {
+    display: flex;
+}
+.ballot-item-buttons button {
+    align-items: center;
+    background: #96A1B4;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    display: flex;
+    font-family: inherit;
+    font-size: 16px;
+    height: 22px;
+    justify-content: center;
+    margin: 0 0 0 8px;
+    padding: 0;
+    width: 22px;
+}
+.ballot-item-buttons button:hover {
+    background: #AEB9CC;
+}
+.ballot-item-buttons svg {
+    height: 16px;
+    width: 16px;
+}
+.sidebar {
+    flex: 0 0 220px;
+}
+.option-button {
+    align-items: center;
+    background: #3E4652;
+    border: none;
+    border-radius: 4px;
+    color: inherit;
+    cursor: pointer;
+    display: flex;
+    font-family: inherit;
+    font-size: 12px;
+    justify-content: space-between;
+    margin: 8px 0;
+    padding: 8px;
+    width: 100%;
+}
+.option-button:last-child {
+    margin: 0;
+}
+.option-button:hover {
+    background: #4B5462;
+    color: #40D552;
+}
+.option-button.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+.add-to-ballot {
+    align-items: center;
+    background: #96A1B4;
+    border-radius: 3px;
+    color: #1E2228;
+    display: flex;
+    font-size: 16px;
+    height: 20px;
+    justify-content: center;
+    width: 20px;
+}
+.option-button:hover .add-to-ballot {
+    background: #40D552;
+    color: #2E343D;
+}
+.submit,
+.clear,
+.option-button,
+.add-to-ballot,
+.ballot-item-buttons button,
+.ballot-item {
+    transition: all 120ms ease;
+}
+h1 {
+    font-size: 1.125em;
+    font-weight: normal;
+    margin: 0 0 16px;
+}
+/* Button styles */
+.bootans {
+    margin-top: 16px;
+}
+.submit,
+.clear {
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+    color: #FFF;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 8px;
+    width: 100%;
+}
+.submit {
+    background: #1C75D9;
+}
+.submit:hover,
+.submit:focus {
+    background: #2C86EC;
+}
+.clear {
+    background: #D1142F;
+    margin-top: 16px;
+}
+.clear:hover,
+.clear:focus {
+    background: #E7233F;
+}
+.empty-message {
+    font-size: 12px;
+    opacity: 0.4;
+}
+#election_selector {
+    width: 100%;
+    color: #222222;
+}
+.create-poll-container label {
+    cursor: pointer;
+}
+.create-poll-container label,
+.create-poll-container p {
+    font-family: sans-serif;
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+.create-poll-container input[type="text"],
+.create-poll-container input[type="datetime-local"] {
+    border: none;
+    border-radius: 0.25rem;
+    display: block;
+    max-width: 100%;
+    padding: 0.5rem 0.875rem;
+    width: 32rem;
+}
+.create-poll-container > div {
+    margin: 1.5rem 0;
+}
+.create-poll-container input[type="radio"] {
+    margin-right: 0.75rem;
+}
+.create-poll-container input[type="radio"]:not(:first-of-type) {
+    margin-left: 2rem;
+}

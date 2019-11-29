@@ -1,0 +1,29 @@
+<div class="sidebar">
+    <div class="election_selector">
+        Select an Election:
+        <select 
+            name="election_selector" 
+            id="election_selector"
+            (change)="election_selected($event.target.value)">
+            <option value="0">&lt;Select an election&gt;</option>
+            <option 
+                *ngFor="let election of elections" 
+                [value]="election.election_id">
+                {{ election.description }}
+            </option>
+        </select>
+    </div>
+    <hr>
+    <app-bp-election-options></app-bp-election-options>
+    <div class="bootans">
+        <!-- <form> -->
+            <button class="submit" (click)="submit_ballot()">
+                Submit Ballot
+            </button>
+        <!-- </form> -->
+        <button class="clear" (click)="clear_ballot()">
+            Clear Ballot
+        </button>
+    </div>
+</div>
+<app-bp-ballot class="ballot"></app-bp-ballot>

@@ -9,13 +9,7 @@ import { DBTransactions } from '../../db_transactions.service';
   providedIn: 'root'
 })
 export class BpBallotService {
-  private election_options: bpOption[] = [
-    // {description:"Aachis Indian",option_id:1,enabled:1},
-    // {description:"Bowl Lab",option_id:2,enabled:1},
-    // {description:"Chipotle",option_id:3,enabled:1},
-    // {description:"Doc Green's",option_id:4,enabled:1},
-    // {description:"Einstein's Bagels",option_id:5,enabled:1}
-  ];
+  private election_options: bpOption[] = [];
   private selected_options: bpOption[] = [];
 
   election_id: number;

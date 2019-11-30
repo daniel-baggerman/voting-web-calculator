@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { bpOption } from './beatpath/bp_models/bp_option.model';
+import { NgForm } from '@angular/forms';
+import { election } from './shared/election.model';
 
 @Injectable({providedIn: 'root'})
 export class DBTransactions {
@@ -15,11 +17,12 @@ export class DBTransactions {
     }
 
     submit_ballot(election_id: number, voter_id: number, selected_options: bpOption[]){
-        console.log("selected options");
-        console.log(selected_options);
         let options = JSON.stringify(Object.assign({},selected_options));
-        console.log("stringify options\r\n"+options);
         // options is an array of the bpOption objects taken from the selected_options in the bp-ballot service
         return this.http.post("../backend/submit_ballot.php?election_id="+election_id+"&voter_id="+voter_id,options);
+    }
+
+    create_election(election: election){
+
     }
 }

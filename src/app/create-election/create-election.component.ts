@@ -30,7 +30,7 @@ export class CreateElectionComponent implements OnInit {
     //  ​​ ​start_date: "2019-12-02"
     // }
 
-    console.log(form);
+    console.log(form.value);
 
     // let value = form.value;
 

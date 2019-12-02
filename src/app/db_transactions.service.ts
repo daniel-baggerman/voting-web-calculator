@@ -23,6 +23,7 @@ export class DBTransactions {
 
     create_election(election: object){
         let ls_election = JSON.stringify(election);
+        console.log(ls_election);
         return this.http.post("../backend/create_election.php",ls_election);
     }
 }

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { bpOption } from './beatpath/bp_models/bp_option.model';
-import { NgForm } from '@angular/forms';
 import { election } from './shared/election.model';
 
 @Injectable({providedIn: 'root'})
@@ -22,7 +21,8 @@ export class DBTransactions {
         return this.http.post("../backend/submit_ballot.php?election_id="+election_id+"&voter_id="+voter_id,options);
     }
 
-    create_election(election: election){
-
+    create_election(election: object){
+        let ls_election = JSON.stringify(election);
+        return this.http.post("../backend/create_election.php",ls_election);
     }
 }

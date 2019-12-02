@@ -28,10 +28,17 @@ export class BpBallotService {
   }
 
   set_election_options(election_id: number){
-    this.trans.get_election_options(election_id).subscribe((data: any) => {
-      this.election_options = data;
-      this.election_options_changed.next();
-    });
+    this.trans.get_election_options(election_id)
+      .subscribe(
+        (data: any) => {
+          this.election_options = data;
+          this.election_options_changed.next();
+        },
+        (error) => {
+          alert(error.message);
+          console.error(error);
+        }
+      );
   }
 
   add_to_ballot(option: bpOption){
@@ -58,7 +65,16 @@ export class BpBallotService {
   }
 
   submit_ballot(){
-    this.trans.submit_ballot(this.election_id, 1, this.selected_options).subscribe();
+    this.trans.submit_ballot(this.election_id, 1, this.selected_options)
+      .subscribe(
+        ()=> {
+          alert("Ballot successfully submitted!");
+        },
+        (error) => {
+          alert(error.message);
+          console.error(error);
+        }
+      );
   }
 
   move_option_up(index: number){

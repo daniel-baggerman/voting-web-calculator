@@ -37,8 +37,8 @@ export class CreateElectionComponent implements OnInit {
     // let new_election = new election(
     //     0
     //   , value.desc
-    //   , value.start_time
-    //   , value.halt_time
+    //   , value.start_date
+    //   , value.end_date
     //   , value.options.split(';').filter(function(el: string) {return el != "" && el != null;}) // parse options into array split by ";" then filter out any empty or null elements
     //   , value.public == "public" ? 1 : 0
     //   , value.password
@@ -49,7 +49,7 @@ export class CreateElectionComponent implements OnInit {
     this.trans.create_election(form.value).subscribe(
       () => {},
       (error) => {
-        alert(error.message);
+        alert( error.error.text );
         console.error(error);
       }
     );

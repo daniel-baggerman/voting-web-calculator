@@ -16,6 +16,7 @@ export class BpBallotService {
 
   election_options_changed = new Subject<void>();
   selected_options_changed = new Subject<void>();
+  ballot_successfully_submitted = new Subject<string>();
 
   constructor(private trans: DBTransactions) { }
 
@@ -44,7 +45,8 @@ export class BpBallotService {
   add_to_ballot(option: bpOption){
     if (option.enabled) {
       // add the option to the selected_options array and disable it from the ballot options
-      this.election_options[option.option_id - 1].enabled = 0;
+      let i = this.election_options.indexOf(option);
+      this.election_options[i].enabled = 0;
       this.selected_options.push(option);
       // emit the changed event, so that ballot can react
       this.selected_options_changed.next();
@@ -67,8 +69,9 @@ export class BpBallotService {
   submit_ballot(){
     this.trans.submit_ballot(this.election_id, 1, this.selected_options)
       .subscribe(
-        ()=> {
-          alert("Ballot successfully submitted!");
+        (post_response)=> {
+          // trigger event for beatpath_ballot_cast component to catch the post response message. 
+          this.ballot_successfully_submitted.next(post_response.post_message);
         },
         (error) => {
           alert(error.message);

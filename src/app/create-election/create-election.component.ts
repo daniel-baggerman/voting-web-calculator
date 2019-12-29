@@ -12,6 +12,8 @@ import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
 export class CreateElectionComponent implements OnInit {
   @ViewChild('f',{static: false}) election_form: NgForm;
 
+  create_election_response_msg: string = "";
+
   constructor(private trans: DBTransactions) { }
 
   ngOnInit() {
@@ -32,22 +34,10 @@ export class CreateElectionComponent implements OnInit {
 
     console.log(form.value);
 
-    // let value = form.value;
-
-    // let new_election = new election(
-    //     0
-    //   , value.desc
-    //   , value.start_date
-    //   , value.end_date
-    //   , value.options.split(';').filter(function(el: string) {return el != "" && el != null;}) // parse options into array split by ";" then filter out any empty or null elements
-    //   , value.public == "public" ? 1 : 0
-    //   , value.password
-    //   , value.anon ? 1 : 0);
-
-    // this.trans.create_election(new_election);
-
     this.trans.create_election(form.value).subscribe(
-      () => {},
+      (post_response) => {
+        this.create_election_response_msg = post_response.post_message;
+      },
       (error) => {
         alert( error.error.text );
         console.error(error);

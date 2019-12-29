@@ -27,3 +27,8 @@
     </div>
 </div>
 <app-bp-ballot class="ballot"></app-bp-ballot>
+<div *ngIf="submission_message.length>0">
+    <p>
+        {{ submission_message }}
+    </p>
+</div>

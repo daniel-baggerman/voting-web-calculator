@@ -34,15 +34,13 @@ export class CreateElectionComponent implements OnInit {
     //  ​​ ​start_date: "2019-12-02"
     // }
 
-    console.log(form.value);
-
     this.trans.create_election(form.value).subscribe(
       (post_response) => {
         this.create_election_response_msg = post_response.post_message;
       },
       (error) => {
         alert( error.error.text );
-        console.error(error);
+        // console.error(error);
       }
     );
   }

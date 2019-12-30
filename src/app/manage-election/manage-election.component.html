@@ -1,0 +1,18 @@
+<div>
+    <form (ngSubmit)="search_elections(f)" #f="ngForm">
+        <div>
+            <label>Election Name</label>
+            <input type="text" name="name" id="name" ngModel required>
+        </div>
+        <div>
+            <button type="submit" [disabled]="!f.valid" class="submit">Search Elections</button>
+        </div>
+    </form>
+</div>
+<ul *ngIf="searched">
+    <li *ngFor="let election of elections">
+        <a routerLink="['/manage_poll',election.election_id]">
+            {{ election.description }}
+        </a>
+    </li>
+</ul>

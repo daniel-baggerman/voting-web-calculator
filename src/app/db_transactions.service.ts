@@ -26,4 +26,8 @@ export class DBTransactions {
         // console.log(ls_election);
         return this.http.post<post_response>("../backend/create_election.php",ls_election);
     }
+
+    get_elections_like(election_name: string){
+        return this.http.get("../backend/get_elections_like.php?string="+election_name);
+    }
 }

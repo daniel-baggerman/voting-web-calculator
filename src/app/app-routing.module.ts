@@ -4,10 +4,17 @@ import { BeatpathBallotCastComponent } from './beatpath/beatpath-ballot-cast/bea
 import { HomePageComponent } from './home-page/home-page.component';
 import { CreateElectionComponent } from './create-election/create-election.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { ManageElectionComponent } from './manage-election/manage-election.component';
+import { AuthenticationService } from './authentication.service';
 
 const appRoutes: Routes = [
     { path: '', component: HomePageComponent},
     { path: 'create_poll', component: CreateElectionComponent},
+    { path: 'manage_poll', canActivateChild: [AuthenticationService], component: ManageElectionComponent, 
+        children: [
+            { path: ':election_id', component: ManageElectionComponent}
+        ]
+    },
     { path: 'beatpath/cast_ballot', component: BeatpathBallotCastComponent},
     { path: '**', component: PageNotFoundComponent}
 ]

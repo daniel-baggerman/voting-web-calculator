@@ -188,6 +188,7 @@ h1 {
     font-weight: bold;
 }
 .create-poll-container input[type="text"],
+.create-poll-container input[type="email"],
 .create-poll-container input[type="date"] {
     border: none;
     border-radius: 0.25rem;

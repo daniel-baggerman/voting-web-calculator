@@ -14,6 +14,8 @@ export class CreateElectionComponent implements OnInit {
 
   create_election_response_msg: string = "";
 
+  public_private: string;
+
   constructor(private trans: DBTransactions) { }
 
   ngOnInit() {

@@ -12,7 +12,7 @@ import { BpBallotComponent } from './beatpath/beatpath-ballot-cast/bp-ballot/bp-
 import { HomePageComponent } from './home-page/home-page.component';
 import { CreateElectionComponent } from './create-election/create-election.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-import { ManageElectionComponent } from './manage-election/manage-election.component';
+import { SearchElectionsComponent } from './search-elections/search-elections.component';
 import { AuthenticationService } from './authentication.service';
 
 @NgModule({
@@ -25,7 +25,7 @@ import { AuthenticationService } from './authentication.service';
     HomePageComponent,
     CreateElectionComponent,
     PageNotFoundComponent,
-    ManageElectionComponent
+    SearchElectionsComponent
   ],
   imports: [
     BrowserModule,

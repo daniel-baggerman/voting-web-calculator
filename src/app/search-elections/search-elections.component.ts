@@ -9,7 +9,7 @@ import { ActivatedRoute, Params } from '@angular/router';
   templateUrl: './manage-election.component.html',
   styleUrls: ['./manage-election.component.css']
 })
-export class ManageElectionComponent implements OnInit {
+export class SearchElectionsComponent implements OnInit {
   searched: boolean = false;
   elections: election[];
   election_id: number;

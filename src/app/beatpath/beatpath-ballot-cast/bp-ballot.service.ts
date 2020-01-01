@@ -3,8 +3,6 @@ import { bpOption } from '../bp_models/bp_option.model';
 import { Subject } from 'rxjs';
 import { DBTransactions } from '../../db_transactions.service';
 
-
-
 @Injectable({
   providedIn: 'root'
 })

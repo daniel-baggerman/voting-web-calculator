@@ -1,33 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { DBTransactions } from '../db_transactions.service';
 import { election } from '../shared/election.model';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-manage-election',
-  templateUrl: './manage-election.component.html',
-  styleUrls: ['./manage-election.component.css']
+  selector: 'app-search-elections',
+  templateUrl: './search-elections.component.html',
+  styleUrls: ['./search-elections.component.css']
 })
 export class SearchElectionsComponent implements OnInit {
   searched: boolean = false;
   elections: election[];
-  election_id: number;
+  @Output('election_selected') election_selected_from_search = new EventEmitter<{election_id: number}>();
 
   constructor(private trans: DBTransactions,
               private route: ActivatedRoute) { }
 
-  ngOnInit() {
-    this.election_id = this.route.snapshot.queryParams['election_id'];
+  ngOnInit() { }
 
-    this.route.queryParams.subscribe(
-      (queryParams) => {
-        this.election_id = queryParams['election_id'];
-      }
-    );
-  }
-
-  search_elections(form: NgForm){
+  get_elections_like(form: NgForm){
     this.searched = true;
 
     this.trans.get_elections_like(form.value.name)
@@ -40,5 +32,9 @@ export class SearchElectionsComponent implements OnInit {
         console.error(error);
       }
     );
+  }
+
+  election_selected(election_id: number){
+    this.election_selected_from_search.emit({election_id: election_id});
   }
 }

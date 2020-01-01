@@ -14,6 +14,7 @@ import { CreateElectionComponent } from './create-election/create-election.compo
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { SearchElectionsComponent } from './search-elections/search-elections.component';
 import { AuthenticationService } from './authentication.service';
+import { ManageElectionComponent } from './manage-election/manage-election.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { AuthenticationService } from './authentication.service';
     HomePageComponent,
     CreateElectionComponent,
     PageNotFoundComponent,
-    SearchElectionsComponent
+    SearchElectionsComponent,
+    ManageElectionComponent
   ],
   imports: [
     BrowserModule,

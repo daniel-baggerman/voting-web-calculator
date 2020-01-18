@@ -7,23 +7,29 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { SearchElectionsComponent } from './search-elections/search-elections.component';
 import { AuthenticationService } from './authentication.service';
 import { ManageElectionComponent } from './manage-election/manage-election.component';
+import { ReportingComponent } from './reporting/reporting.component';
 
 const appRoutes: Routes = [
     { path: '', component: HomePageComponent},
     { path: 'create_poll', component: CreateElectionComponent},
     { path: 'manage_poll', 
-        canActivateChild: [AuthenticationService], 
-        component: SearchElectionsComponent, 
+        canActivateChild: [AuthenticationService], // TODO: authenticate password for public elections that have passwords
+        component: ManageElectionComponent, 
         children: [
             { path: ':election_id', component: ManageElectionComponent}
         ]
     },
-    // { path: 'manage_poll_signin', component: },
     { path: 'cast_vote', 
         canActivateChild: [AuthenticationService], // TODO: authenticate password for public elections that have passwords
         component: BeatpathBallotCastComponent,
         children: [
             { path: ':election_id', component: BeatpathBallotCastComponent}
+        ]
+    },
+    { path: 'reporting', 
+        component: ReportingComponent,
+        children: [
+            { path: ':election_id', component: ReportingComponent}
         ]
     },
     { path: '**', component: PageNotFoundComponent}

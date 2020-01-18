@@ -1,24 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Params, ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-manage-election',
-  templateUrl: './manage-election.component.html',
-  styleUrls: ['./manage-election.component.css']
+  selector: 'app-reporting',
+  templateUrl: './reporting.component.html',
+  styleUrls: ['./reporting.component.css']
 })
-export class ManageElectionComponent implements OnInit {
-  show_election_details = false;
+export class ReportingComponent implements OnInit {
+
+  show_reporting = false;
 
   constructor(private route: ActivatedRoute) { }
 
   ngOnInit() {
+    // subscribe to the route params 
     this.route.params.subscribe(
       (params: Params) => {
         if (params['election_id']){
           this.election_selected(params['election_id']);
         } else {
-          console.log('test');
-          this.show_election_details = false;
+          this.show_reporting = false;
         }
       }
     );
@@ -26,7 +27,6 @@ export class ManageElectionComponent implements OnInit {
 
   election_selected(election_id: number){
     // show election details
-    this.show_election_details = true;
+    this.show_reporting = true;
   }
-
 }

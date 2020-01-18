@@ -15,6 +15,8 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { SearchElectionsComponent } from './search-elections/search-elections.component';
 import { AuthenticationService } from './authentication.service';
 import { ManageElectionComponent } from './manage-election/manage-election.component';
+import { ReportingComponent } from './reporting/reporting.component';
+import { BeatpathGraphComponent } from './reporting/beatpath-graph/beatpath-graph.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +29,9 @@ import { ManageElectionComponent } from './manage-election/manage-election.compo
     CreateElectionComponent,
     PageNotFoundComponent,
     SearchElectionsComponent,
-    ManageElectionComponent
+    ManageElectionComponent,
+    ReportingComponent,
+    BeatpathGraphComponent
   ],
   imports: [
     BrowserModule,

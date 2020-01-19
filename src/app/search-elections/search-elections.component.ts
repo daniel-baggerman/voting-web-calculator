@@ -31,7 +31,7 @@ export class SearchElectionsComponent implements OnInit {
     );
   }
 
-  election_selected(election_id: number){
-    this.election_selected_from_search.emit({election_id: election_id});
-  }
+  // election_selected(election_id: number){
+  //   this.election_selected_from_search.emit({election_id: election_id});
+  // }
 }

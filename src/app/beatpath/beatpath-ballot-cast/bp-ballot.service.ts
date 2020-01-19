@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { bpOption } from '../bp_models/bp_option.model';
 import { Subject } from 'rxjs';
 import { DBTransactions } from '../../db_transactions.service';
+import { http_response } from 'src/app/shared/http_response.model';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +31,19 @@ export class BpBallotService {
     this.trans.get_election_options(election_id)
       .subscribe(
         (data: any) => {
-          this.election_options = data;
+          this.election_options = data
+            .sort(
+              (a: bpOption, b:bpOption) => {
+                if(a.description > b.description){
+                  return 1;
+                } 
+                else if (a.description > b.description) {
+                  return -1;
+                } else {
+                  return 0;
+                }
+              });
+          console.log(this.election_options);
           this.election_options_changed.next();
         },
         (error) => {
@@ -67,9 +80,9 @@ export class BpBallotService {
   submit_ballot(){
     this.trans.submit_ballot(this.election_id, 1, this.selected_options)
       .subscribe(
-        (post_response)=> {
+        (http_response: http_response)=> {
           // trigger event for beatpath_ballot_cast component to catch the post response message. 
-          this.ballot_successfully_submitted.next(post_response.post_message);
+          this.ballot_successfully_submitted.next(http_response.message);
         },
         (error) => {
           alert(error.message);

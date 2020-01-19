@@ -1,8 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { DBTransactions } from '../db_transactions.service';
-import { election } from '../shared/election.model';
-import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
+import { http_response } from '../shared/http_response.model';
 
 @Component({
   selector: 'app-create-election',
@@ -35,8 +34,8 @@ export class CreateElectionComponent implements OnInit {
     // }
 
     this.trans.create_election(form.value).subscribe(
-      (post_response) => {
-        this.create_election_response_msg = post_response.post_message;
+      (http_response: http_response) => {
+        this.create_election_response_msg = http_response.message;
       },
       (error) => {
         alert( error.error.text );

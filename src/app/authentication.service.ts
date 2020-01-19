@@ -4,6 +4,8 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class AuthenticationService implements CanActivate, CanActivateChild {
+    temp: boolean;
+
     constructor(private router: Router){ }
 
     canActivate(route: ActivatedRouteSnapshot,
@@ -13,7 +15,7 @@ export class AuthenticationService implements CanActivate, CanActivateChild {
                 if(authenticated) {
                     return true;
                 } else {
-                    this.router.navigate(['/']); // TODO: navigate to some warning page or something
+                    this.router.navigate(['/election_search']);
                 }
             }
         )
@@ -21,7 +23,10 @@ export class AuthenticationService implements CanActivate, CanActivateChild {
     
     canActivateChild(   route: ActivatedRouteSnapshot,
                         state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-        return this.canActivate(route, state);
+        let temp2 = this.temp;
+        this.temp = true;
+        return temp2;
+        // return this.canActivate(route, state);
     }
 
     is_authenticated(){

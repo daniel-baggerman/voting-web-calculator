@@ -1,3 +1,10 @@
-<h2>Alter Election Details</h2>
-<h2>Cast Vote</h2>
-<h2>View Reporting</h2>
+<div *ngIf="!valid_election_url">
+    <p>Not a valid election. Try <a routerLink="/election_search">searching for a different one</a>.</p>
+</div>
+<div *ngIf="valid_election_url" class="the-good-stuff">
+    <a >Alter Election Details</a> <br>
+    <a routerLink="cast_vote">Cast Vote</a> <br>
+    <a routerLink="reporting">View Reporting</a> <br>
+
+    <router-outlet></router-outlet>
+</div>

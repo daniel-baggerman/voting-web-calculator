@@ -1,8 +1,4 @@
-<div class="election_search" *ngIf="!show_ballot">
-    <app-search-elections (election_selected)="election_selected($event.election_id)"></app-search-elections>
-</div>
-<hr>
-<div class="sidebar" *ngIf="show_ballot">
+<div class="sidebar">
     <app-bp-election-options></app-bp-election-options>
     <div class="bootans">
         <!-- <form> -->
@@ -15,7 +11,7 @@
         </button>
     </div>
 </div>
-<app-bp-ballot class="ballot" *ngIf="show_ballot"></app-bp-ballot>
+<app-bp-ballot class="ballot"></app-bp-ballot>
 <div *ngIf="submission_message.length>0">
     <p>{{ submission_message }}</p>
 </div>

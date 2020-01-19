@@ -9,39 +9,13 @@ import { AuthenticationService } from './authentication.service';
 import { ManageElectionComponent } from './manage-election/manage-election.component';
 import { ReportingComponent } from './reporting/reporting.component';
 
-// const appRoutes: Routes = [
-//     { path: '', component: HomePageComponent},
-//     { path: 'create_poll', component: CreateElectionComponent},
-//     { path: 'manage_poll', 
-//         canActivateChild: [AuthenticationService], // TODO: authenticate password for public elections that have passwords
-//         component: ManageElectionComponent, 
-//         children: [
-//             { path: ':election_id', component: ManageElectionComponent}
-//         ]
-//     },
-//     { path: 'cast_vote', 
-//         canActivateChild: [AuthenticationService], // TODO: authenticate password for public elections that have passwords
-//         component: BeatpathBallotCastComponent,
-//         children: [
-//             { path: ':election_id', component: BeatpathBallotCastComponent}
-//         ]
-//     },
-//     { path: 'reporting', 
-//         component: ReportingComponent,
-//         children: [
-//             { path: ':election_id', component: ReportingComponent}
-//         ]
-//     },
-//     { path: '**', component: PageNotFoundComponent}
-// ]
-
 const appRoutes: Routes = [
     { path: '', component: HomePageComponent},
     { path: 'election_search', component: SearchElectionsComponent},
-    { path: 'create_poll', component: CreateElectionComponent},
-    { path: ':election_name', 
+    { path: 'create_election', component: CreateElectionComponent},
+    { path: 'manage_election/:election_name',
         component: ManageElectionComponent,
-        canActivateChild: [AuthenticationService],
+        // canActivateChild: [AuthenticationService],
         children: [
             { path: 'cast_vote', component: BeatpathBallotCastComponent},
             { path: 'reporting', component: ReportingComponent}

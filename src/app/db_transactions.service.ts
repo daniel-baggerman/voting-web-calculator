@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { bpOption } from './beatpath/bp_models/bp_option.model';
-import { post_response } from './shared/post_response.model';
+import { http_response } from './shared/http_response.model';
 
 @Injectable({providedIn: 'root'})
 export class DBTransactions {
@@ -18,16 +18,20 @@ export class DBTransactions {
     submit_ballot(election_id: number, voter_id: number, selected_options: bpOption[]){
         let options = JSON.stringify(Object.assign({},selected_options));
         // options is an array of the bpOption objects taken from the selected_options in the bp-ballot service
-        return this.http.post<post_response>("../backend/submit_ballot.php?election_id="+election_id+"&voter_id="+voter_id,options);
+        return this.http.post<http_response>("../backend/submit_ballot.php?election_id="+election_id+"&voter_id="+voter_id,options);
     }
 
     create_election(election: object){
         let ls_election = JSON.stringify(election);
         // console.log(ls_election);
-        return this.http.post<post_response>("../backend/create_election.php",ls_election);
+        return this.http.post<http_response>("../backend/create_election.php",ls_election);
     }
 
     get_elections_like(election_name: string){
         return this.http.get("../backend/get_elections_like.php?string="+election_name);
+    }
+
+    get_election_from_url_name(url_election_name:string){
+        return this.http.get("../backend/get_election_from_url_name.php?url_election_name="+url_election_name);
     }
 }

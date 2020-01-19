@@ -12,7 +12,9 @@
     </div>
     <ul *ngIf="searched">
         <li *ngFor="let election of elections">
-            <a [routerLink]="[election.election_id]" (click)="election_selected(election.election_id)">
+            <a routerLink="/election.url_election_name" 
+                [state]="{election.election_id, election.description}"
+                (click)="election_selected(election.election_id)">
                 {{ election.description }}
             </a>
         </li>

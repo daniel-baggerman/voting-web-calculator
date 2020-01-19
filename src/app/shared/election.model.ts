@@ -8,7 +8,8 @@ export class election{
                 public anon_results?: number,    // 1 or 0, 1 = yes
                 public start_time?: string,
                 public halt_time?: string,
-                public password?: string
+                public password?: string,
+                public url_election_name?: string
                 ){
     }
 }

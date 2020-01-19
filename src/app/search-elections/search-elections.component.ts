@@ -2,7 +2,6 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { DBTransactions } from '../db_transactions.service';
 import { election } from '../shared/election.model';
-import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-search-elections',
@@ -14,17 +13,15 @@ export class SearchElectionsComponent implements OnInit {
   elections: election[];
   @Output('election_selected') election_selected_from_search = new EventEmitter<{election_id: number}>();
 
-  constructor(private trans: DBTransactions,
-              private route: ActivatedRoute) { }
+  constructor(private trans: DBTransactions) { }
 
   ngOnInit() { }
 
   get_elections_like(form: NgForm){
-    this.searched = true;
-
     this.trans.get_elections_like(form.value.name)
     .subscribe(
-      (data: any) => {
+      (data: {election_id: number, description: string, url_election_name: string}[]) => {
+        this.searched = true;
         this.elections = data;
       },
       (error) => {

@@ -12,6 +12,11 @@ import { BpBallotComponent } from './beatpath/beatpath-ballot-cast/bp-ballot/bp-
 import { HomePageComponent } from './home-page/home-page.component';
 import { CreateElectionComponent } from './create-election/create-election.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { SearchElectionsComponent } from './search-elections/search-elections.component';
+import { AuthenticationService } from './authentication.service';
+import { ManageElectionComponent } from './manage-election/manage-election.component';
+import { ReportingComponent } from './reporting/reporting.component';
+import { BeatpathGraphComponent } from './reporting/beatpath-graph/beatpath-graph.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +27,11 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
     BpBallotComponent,
     HomePageComponent,
     CreateElectionComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    SearchElectionsComponent,
+    ManageElectionComponent,
+    ReportingComponent,
+    BeatpathGraphComponent
   ],
   imports: [
     BrowserModule,
@@ -30,7 +39,7 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
     AppRoutingModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [AuthenticationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

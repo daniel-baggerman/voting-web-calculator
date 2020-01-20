@@ -31,19 +31,7 @@ export class BpBallotService {
     this.trans.get_election_options(election_id)
       .subscribe(
         (data: any) => {
-          this.election_options = data
-            .sort(
-              (a: bpOption, b:bpOption) => {
-                if(a.description > b.description){
-                  return 1;
-                } 
-                else if (a.description > b.description) {
-                  return -1;
-                } else {
-                  return 0;
-                }
-              });
-          console.log(this.election_options);
+          this.election_options = data;
           this.election_options_changed.next();
         },
         (error) => {

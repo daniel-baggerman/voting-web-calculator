@@ -5,6 +5,8 @@
     <a >Alter Election Details</a> <br>
     <a routerLink="cast_vote">Cast Vote</a> <br>
     <a routerLink="reporting">View Reporting</a> <br>
+    <button (click)='calc_election()'>Tally Votes</button> <br>
+    <p *ngIf="tally_response"></p>
 
     <router-outlet></router-outlet>
 </div>

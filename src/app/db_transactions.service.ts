@@ -34,4 +34,8 @@ export class DBTransactions {
     get_election_from_url_name(url_election_name:string){
         return this.http.get("../backend/get_election_from_url_name.php?url_election_name="+url_election_name);
     }
+
+    calc_election(election_id: number){
+        return this.http.get<http_response>("../backend/winner_calc.php?election_id="+election_id);
+    }
 }

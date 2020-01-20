@@ -12,6 +12,7 @@ import { http_response } from '../shared/http_response.model';
 export class ManageElectionComponent implements OnInit {
   show_election_details = false;
   valid_election_url: boolean;
+  tally_response: string;
 
   constructor(private route: ActivatedRoute,
               private election_manager: ManageElectionService,
@@ -28,15 +29,15 @@ export class ManageElectionComponent implements OnInit {
     // get the election information passed when coming from search_elections and store it.
     let ls_state = history.state;
 
-    // if state null then have to retrieve necessary information from the database based on url_election_name. This would happen if the user navigated here by typing the URL into their browser's navigation bar.
+    // if state null then have to retrieve necessary information from the database based on url_election_name. 
+    // This would happen if the user navigated here by typing the URL into their browser's navigation bar.
     if(ls_state.election_id == null){
       this.trans.get_election_from_url_name(url_election_name)
         .subscribe(
           (http_response: http_response) => {
-            if(http_response.data){
-              console.log(http_response.data);
+            if(http_response.data && http_response.data.length !==0){
               ls_state = { election_id: http_response.data[0].election_id, description: http_response.data[0].description };
-              console.log(ls_state);
+              this.election_manager.election = { election_id: ls_state.election_id, description: ls_state.description, url_election_name: url_election_name };
               this.valid_election_url = true;
             } else {
               this.valid_election_url = false;
@@ -50,9 +51,22 @@ export class ManageElectionComponent implements OnInit {
         );
     } else {
       this.valid_election_url = true;
+      this.election_manager.election = { election_id: ls_state.election_id, description: ls_state.description, url_election_name: url_election_name };
     }
+  }
 
-    this.election_manager.election = { election_id: ls_state.election_id, description: ls_state.description, url_election_name: url_election_name };
-    console.log(this.election_manager.election);
+  calc_election(){
+    if(this.election_manager.election.election_id){
+      this.trans.calc_election(this.election_manager.election.election_id)
+        .subscribe(
+          (http_response: http_response) => {
+            this.tally_response = http_response.message;
+          },
+          (error) => {
+            alert(error.error.text);
+            console.error(error);
+          }
+        );
+    }
   }
 }

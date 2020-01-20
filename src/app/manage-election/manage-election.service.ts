@@ -4,7 +4,7 @@ import { election } from '../shared/election.model';
 @Injectable({
   providedIn: 'root'
 })
-export class ManageElectionService {
+export class ManageElectionService{
   election: election;
 
   constructor() { }

@@ -17,10 +17,7 @@ export class BeatpathBallotCastComponent implements OnInit, OnDestroy {
               private election_manager: ManageElectionService) {}
 
   ngOnInit() {
-    console.log('out');
-    console.log(this.election_manager.election.election_id);
     if(this.election_manager.election.election_id){
-      console.log('in');
       this.bp_ballot_service.set_election_options(this.election_manager.election.election_id);
       this.bp_ballot_service.election_id = this.election_manager.election.election_id;
     }

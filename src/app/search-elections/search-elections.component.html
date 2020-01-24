@@ -1,16 +1,18 @@
 <div>
-    <div>
-        <form (ngSubmit)="get_elections_like(f)" #f="ngForm">
-            <div>
-                <label>Election Name</label>
-                <input type="text" name="name" id="name" ngModel required>
+    <div class="search-election-container">
+        <form (ngSubmit)="get_elections_like(f)" #f="ngForm" class="search-election-form">
+            <div class="search-input-container">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="10.5" cy="10.5" r="7.5" />
+                    <line x1="21" y1="21" x2="15.8" y2="15.8" />
+                </svg>
+                <input type="search" name="name" id="name" placeholder="Enter ballot name here" ngModel required>
             </div>
-            <div>
-                <button type="submit" [disabled]="!f.valid" class="submit">Search Elections</button>
-            </div>
+            <button type="submit" [disabled]="!f.valid" class="submit">Search Elections</button>
         </form>
     </div>
-    <ul *ngIf="searched">
+    <ul *ngIf="searched" class="search-election-results">
         <li *ngFor="let election of elections">
             <a [routerLink]="['/manage_election',election.url_election_name]" 
                 [state]="{election_id: election.election_id, description: election.description}">

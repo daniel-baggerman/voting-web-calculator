@@ -1,5 +1,5 @@
 <div>
-    <form (ngSubmit)="create_election(f)" #f="ngForm">
+    <form class="create-poll-form" (ngSubmit)="create_election(f)" #f="ngForm">
         <div class="create-poll-container">
             <div>
                 <label>Name</label>
@@ -45,8 +45,8 @@
                 <input type="email" name="email" id="email" ngModel required>
             </div>
             <div>
-                <label>Anonymous Results?</label>
                 <input type="checkbox" name="anon" id="anon" ngModel>
+                <label for="anon">Anonymous Results?</label>
             </div>
         </div>
         <div>

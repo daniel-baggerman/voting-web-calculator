@@ -35,6 +35,8 @@ export class BeatpathGraphComponent implements OnInit, OnDestroy {
 
   reporting_data_update_sub: Subscription;
 
+  beatpath_winner: String[];
+
   constructor(private reporting_service: ReportingServiceService) { }
 
   ngOnInit() {
@@ -44,9 +46,10 @@ export class BeatpathGraphComponent implements OnInit, OnDestroy {
 
     this.reporting_data_update_sub = this.reporting_service.report_data_updated
         .subscribe(
-            (report_data: {strongest_paths:[][], labels: String[]}) => {
+            (report_data: { strongest_paths:[][], labels: String[], winner: String[] }) => {
                 this.ia_strongest_paths = report_data.strongest_paths;
                 this.ia_node_labels = report_data.labels;
+                this.beatpath_winner = report_data.winner;
 
                 // console.log('report data');
                 // console.log(this.ia_strongest_paths);

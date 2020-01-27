@@ -57,20 +57,33 @@ function get_election_from_url_name($ai_election_id){
 
     // Fetch the labels
     $labels = executeselect("SELECT description 
-                            FROM vote_options 
-                            WHERE option_id IN (SELECT DISTINCT option_id
-                                                FROM vote_cast_ballots
-                                                WHERE election_id = ".$ai_election_id.")
-                            ORDER BY description",
-                            $ab_fetch_column=true);
+                             FROM vote_options 
+                             WHERE option_id IN (SELECT DISTINCT option_id
+                                                 FROM vote_cast_ballots
+                                                 WHERE election_id = ".$ai_election_id.")
+                             ORDER BY description",
+                             $ab_fetch_column=true);
     if(is_string($val)){ 
         return "Error selecting node labels. Error Message:\r\n".$val;
+    }
+
+    // Fetch the winner
+    $winner = executeselect("SELECT description
+                             FROM vote_election_winners vew
+                             JOIN vote_options vo ON vew.option_id = vo.option_id
+                             WHERE vew.run_id = (SELECT max(run_id) FROM vote_election_runs WHERE election_id=".$ai_election_id.")
+                             AND vew.election_id = ".$ai_election_id,
+                             $ab_fetch_column=true);
+
+    if(is_string($winner)){ 
+        return "Error selecting election winner. Error Message:\r\n".$winner;
     }
 
     $data = json_encode(["status" => "Success!",
                          "message" => "Election data successfully retrieved!",
                          "data" => ["strongest_paths" => $strongest_paths,
-                                    "labels" => $labels]
+                                    "labels" => $labels,
+                                    "winner" => $winner]
                          ],JSON_NUMERIC_CHECK);
 
     if($data === false){

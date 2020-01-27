@@ -26,6 +26,8 @@ export class ReportingServiceService implements OnInit{
   */
 
   report_data_updated = new Subject<{}>();
+  
+  beatpath_winner: String[];
 
   constructor(private trans: DBTransactions,
               private election_management: ManageElectionService) { }
@@ -40,12 +42,16 @@ export class ReportingServiceService implements OnInit{
           // console.log(http_response);
           this.ia_strongest_paths = http_response.data.strongest_paths;
           this.ia_node_labels = http_response.data.labels;
+          this.beatpath_winner = http_response.data.winner;
+
+          console.log(this.beatpath_winner);
 
           // Let components know when election data is updated and send that data.
           this.report_data_updated
             .next({
               strongest_paths: this.ia_strongest_paths.slice(),
-              labels: this.ia_node_labels.slice()
+              labels: this.ia_node_labels.slice(),
+              winner: this.beatpath_winner.slice()
               }
             );
         },

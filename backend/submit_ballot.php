@@ -30,10 +30,14 @@ function post_ballot($as_election_id, $as_voter_id){
         return json_last_error_msg();
     };
 
+    // temp hack, delete when voter_ids can be coded
+    $li_voter_id = select_scalar("SELECT ifnull(max(voter_id),0)+1 FROM vote_cast_ballots WHERE election_id=".$as_election_id);
+    // end temp hack
+
     // delete voter's previous ballot submission
     $rtn = executesql("delete from vote_cast_ballots 
                        where election_id = ".$as_election_id."
-                       and voter_id = ".$as_voter_id
+                       and voter_id = ".$li_voter_id
                        );
     // error catch
     if($rtn <> 'OK'){
@@ -55,7 +59,7 @@ function post_ballot($as_election_id, $as_voter_id){
                  values 
                     (   ifnull((select max(cast_ballot_id) from vote_cast_ballots),0)+1
                       , ".$as_election_id."
-                      , ".$as_voter_id."
+                      , ".$li_voter_id."
                       , ".strval($option['option_id'])."
                       , ".strval($rank).")";
 

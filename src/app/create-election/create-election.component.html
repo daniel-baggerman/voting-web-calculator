@@ -1,4 +1,4 @@
-<div>
+<div *ngIf="!election_created">
     <form class="create-poll-form" (ngSubmit)="create_election(f)" #f="ngForm">
         <div class="create-poll-container">
             <div>
@@ -54,4 +54,7 @@
             <button type="reset" (clear)="clear_form()" class="clear">Clear</button>
         </div>
     </form>
+</div>
+<div *ngIf="election_created">
+    <h2>Election Created!</h2>
 </div>

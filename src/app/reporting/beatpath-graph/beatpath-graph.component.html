@@ -1,3 +1,24 @@
+<h2>Data Array:</h2>
+<table>
+    <tbody>
+        <tr>
+            <th></th>
+            <th *ngFor="let label of ia_diagram_labels">
+                <i>p</i>[*,{{ label }}]
+            </th>
+        </tr>
+        <tr *ngFor="let label of ia_diagram_labels; let row = index">
+            <td>
+                <i>p</i>[{{ label }},*]
+            </td>
+            <td *ngFor="let boggus of ia_strongest_paths; let col = index"
+                [ngClass]="tableCellRedOrGreen(row,col)">
+                {{ ia_strongest_paths[row][col]}}
+            </td>
+        </tr>
+    </tbody>
+</table>
+<h2>Visualization:</h2>
 <canvas
     #my_canvas 
     id="canvasElement" 

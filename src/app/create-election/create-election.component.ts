@@ -13,6 +13,8 @@ export class CreateElectionComponent implements OnInit {
 
   create_election_response_msg: string = "";
 
+  election_created: boolean;
+
   public_private: string;
 
   constructor(private trans: DBTransactions) { }
@@ -36,6 +38,7 @@ export class CreateElectionComponent implements OnInit {
     this.trans.create_election(form.value).subscribe(
       (http_response: http_response) => {
         this.create_election_response_msg = http_response.message;
+        this.election_created = true;
       },
       (error) => {
         alert( error.error.text );

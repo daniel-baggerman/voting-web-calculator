@@ -32,7 +32,13 @@ function post_new_election($election_data){
 
     // insert election
     // check that the election name is unique
-    $unique_check = select_scalar("select count(1) from vote_elections where description = '".$election_data['name']."'");
+    $unique_check = select_scalar("select count(1) from vote_elections where description = ?"
+                                    , array($election_data['name']));
+
+    if(is_string($unique_check)){
+        rollback_create_election($new_election_id);
+        return "Error selecting election count for unique check. Error Message: \r\n".$unique_check;
+    }
 
     if($unique_check !== 0){
         return "Cannot complete operation. Election name must be unique.";
@@ -99,7 +105,7 @@ function post_new_election($election_data){
 
     // explode the options from $election_data into an array based on the ';' character, then use the strlen() function
     // to filter out any elements of the array that are empty or null. Then trim the resulting elements.
-    $options = array_map('trim') array_filter( explode(';', $election_data['options']) ,'strlen') );
+    $options = array_map('trim', array_filter( explode(';', $election_data['options']) ,'strlen') );
 
     foreach($options as $option){
         // check that option description is already in use. 

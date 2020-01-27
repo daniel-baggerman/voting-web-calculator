@@ -38,4 +38,8 @@ export class DBTransactions {
     calc_election(election_id: number){
         return this.http.get<http_response>("../backend/winner_calc.php?election_id="+election_id);
     }
+
+    get_paths_and_labels(election_id: number){
+        return this.http.get<http_response>("../backend/get_paths_and_labels.php?election_id="+election_id);
+    }
 }

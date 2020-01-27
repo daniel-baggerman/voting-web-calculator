@@ -26,6 +26,9 @@ else{
 function executesql($sqls,$aa_bind_params = NULL)
 // executes dml and ddl. will also execute Select statement but will not error or return any message about it.
 {
+    /*
+        Anything that takes input from the user should use bind params to avoid errors with quotes and possible code injection.
+    */
     global $pdo_handle;
 
     $stmt = $pdo_handle->prepare($sqls);
@@ -54,13 +57,16 @@ function executesql($sqls,$aa_bind_params = NULL)
 } // end executesql()
 
 // ----------------------------------------------------------------------------
-function executeselect($sqls,array $aa_bind_params = NULL)
+function executeselect($sqls, $ab_fetch_column = NULL, array $aa_bind_params = NULL)
 // Executes select statement and returns the data as an array. Returns a string if it errors.
 {
     /*
     $sqls can be defined "plainly" without any retrieval arguments by leaving the bind params array ($aa_bind_params) null.
-    If $aa_bind_params is not null, it will attempt to bind the parameters to the SQL string.
+    If $aa_bind_params is not null, it will attempt to bind the parameters to the SQL string. Anything that takes input from
+    the user should use bind params to avoid errors with quotes and possible code injection.
     See https://www.php.net/manual/en/pdostatement.execute.php for designing select statements with bind params for execute().
+
+    ab_fetch_column can be set to true to change the fetch behavior to return a one-dimensional array useful for fetching just one column. https://phpdelusions.net/pdo/fetch_modes#FETCH_COLUMN
     */
 
     global $pdo_handle;
@@ -88,7 +94,13 @@ function executeselect($sqls,array $aa_bind_params = NULL)
     }
     
     // retrieve the data
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if ($ab_fetch_column == false){
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    elseif ($ab_fetch_column == true){
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC|PDO::FETCH_COLUMN);
+    }
+
     // check if data retrieval worked
     if ($data === false){
         $err = $pdo_handle->errorInfo();

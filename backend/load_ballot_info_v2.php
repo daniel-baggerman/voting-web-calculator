@@ -7,6 +7,7 @@ function load_ballot_info($an_ballot_option_id){
                             join vote_options vo on vo.option_id = vbo.option_id
                             where vbo.election_id = ?
                             order by vo.description"
+                          , false
                           , $bind_params);
 
     // if error occurred, return the error string

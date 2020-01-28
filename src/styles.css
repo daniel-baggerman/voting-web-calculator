@@ -144,6 +144,7 @@ h1 {
 .bootans {
     margin-top: 16px;
 }
+.button,
 .submit,
 .clear {
     border: none;
@@ -154,6 +155,15 @@ h1 {
     font-family: inherit;
     padding: 8px;
     width: 100%;
+}
+.button {
+    background: #44484C;
+    margin: 16px 0;
+    width: auto;
+}
+.button:hover,
+.button:focus {
+    background: #55595D;
 }
 .submit {
     background: #1C75D9;
@@ -182,6 +192,7 @@ h1 {
     background:#2E343D;
     border-radius: 4px;
     box-shadow: 0 3px 8px rgba(0,0,0,.25);
+    margin-bottom: 16px;
     padding: 16px;
 }
 .create-poll-container label {
@@ -238,6 +249,7 @@ input#anon {
 }
 .search-election-form {
     display: flex;
+    margin-bottom: 16px;
 }
 .search-input-container {
     display: flex;
@@ -255,7 +267,9 @@ input#anon {
     border: none;
     border-bottom-left-radius: 4px;
     border-top-left-radius: 4px;
+    color: #1e2228;
     padding: 0.5rem 1rem 0.5rem 3.75rem;
+    width: 100%;
 }
 .search-election-form button {
     border-bottom-left-radius: 0;

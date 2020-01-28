@@ -55,9 +55,14 @@ export class BeatpathGraphComponent implements OnInit, OnDestroy {
                 // console.log(this.ia_strongest_paths);
                 // console.log(this.ia_node_labels);
 
-                this.drawCanvas(this.my_canvas.nativeElement, {pairwise_data: this.ia_strongest_paths, labels: this.ia_node_labels});
+                this.drawCanvas(this.my_canvas.nativeElement, 
+                                {   pairwise_data: this.ia_strongest_paths, 
+                                    labels: this.ia_node_labels, 
+                                    winner: this.beatpath_winner});
 
-                this.draw_grid({pairwise_data: this.ia_strongest_paths, labels: this.ia_node_labels});
+                this.draw_grid({pairwise_data: this.ia_strongest_paths, 
+                                labels: this.ia_node_labels, 
+                                winner: this.beatpath_winner});
             }
         );
   }
@@ -146,6 +151,7 @@ export class BeatpathGraphComponent implements OnInit, OnDestroy {
         // In our HTML canvas, we passed the array [ia_strongest_paths, ia_node_labels] to it through the custom v-draw-canvas directive, so now we're accessing that array below:
         data = inputData.pairwise_data,
         nodes = inputData.labels,
+        winner = inputData.winner,
         
         // This will be used to check which pairwise preference is stronger
         transposedData = [],
@@ -184,16 +190,21 @@ export class BeatpathGraphComponent implements OnInit, OnDestroy {
         nodeFontSize = 16,
         nodeFontFamily = "Arial",
         nodeFillColor = "rgba(255, 255, 255, 0.15)",  // (red, green blue, opacity)
+        nodeWinnerFillColor = "rgba(236, 203, 5, 0.15)",
+        nodeWinnerGlow = "rgba(236, 203, 5, 0.9000000)",
+        nodeWinnerGlowSize = 10,
         nodeHasFill = true,
         nodeStrokeColor = "#FFF",
+        nodeWinnerStrokeColor = "rgb(236, 203, 5)",
         nodeStrokeThickness = 2,  // I was tempted to use 'thiccness' instead
         nodeTextColor = "#FFF",
+        nodeWinnerTextColor = "rgb(236, 203, 5)",
         
         // Settings for the arrow lines
         arrowColor = "#FFF",
         arrowLineThickness = 2,
         arrowDistanceFromNodes = 28,
-        arrowHeadSize = 12,
+        arrowHeadSize = 14,
         arrowHeadAngle = Math.PI / 7,  // in radians
         
         // Settings for the arrow labels (with strength values in them)
@@ -261,7 +272,7 @@ export class BeatpathGraphComponent implements OnInit, OnDestroy {
     }
     
     // Draws a node on the diagram
-    function Node(text: string, x: number, y: number) {
+    function Node(text: string, x: number, y: number, nodeName: String, winner: String[]) {
 
         // Start drawing the node's circle on the main diagram
         ctx.beginPath();
@@ -276,20 +287,41 @@ export class BeatpathGraphComponent implements OnInit, OnDestroy {
 
         // If node should be filled, then fill it
         if (nodeHasFill == true) {
-            ctx.fillStyle = nodeFillColor;
-            ctx.fill();
+            if ( winner.includes(nodeName) ) {
+                ctx.fillStyle = nodeWinnerFillColor;
+                ctx.fill();
+                // ctx.shadowBlur = nodeWinnerGlowSize;
+                // ctx.shadowColor = nodeWinnerGlow;
+            } else {
+                ctx.fillStyle = nodeFillColor;
+                ctx.fill();
+                // ctx.shadowBlur = 0;
+                // ctx.shadowColor = "rgba(0, 0, 0, 0)";
+            }
         }
         
         if (nodeStrokeThickness > 0) {
-            ctx.strokeStyle = nodeStrokeColor;
-            ctx.lineWidth = nodeStrokeThickness;
-            ctx.stroke();
+            if ( winner.includes(nodeName) ) {
+                ctx.strokeStyle = nodeWinnerStrokeColor;
+                ctx.lineWidth = nodeStrokeThickness;
+                ctx.stroke();
+            } else {
+                ctx.strokeStyle = nodeStrokeColor;
+                ctx.lineWidth = nodeStrokeThickness;
+                ctx.stroke();
+            }
         }
         
         // Create text labels on top of the node
         ctx.textAlign = "center";
         ctx.font = "bold " + nodeFontSize + "px " + nodeFontFamily;
-        ctx.fillStyle = nodeTextColor;
+
+        if ( winner.includes(nodeName) ) {
+            ctx.fillStyle = nodeWinnerTextColor;
+        } else {
+            ctx.fillStyle = nodeTextColor;
+        }
+
         ctx.fillText(text, x, y + (nodeFontSize * 0.35));
     }
     
@@ -485,7 +517,7 @@ export class BeatpathGraphComponent implements OnInit, OnDestroy {
             nodeY = diagramRadius * Math.sin(angle) + (diagramCenterY);
             
         // Draw the label
-        new Node(nodeLabels[i], nodeX, nodeY);
+        new Node(nodeLabels[i], nodeX, nodeY, nodes[i], winner);
         
         // Add the label name, and [X,Y] position to the labelsArray
         nodesArray.push({

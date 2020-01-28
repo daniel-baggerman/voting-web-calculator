@@ -7,17 +7,17 @@
                     <circle cx="10.5" cy="10.5" r="7.5" />
                     <line x1="21" y1="21" x2="15.8" y2="15.8" />
                 </svg>
-                <input type="search" name="name" id="name" placeholder="Enter ballot name here" ngModel required>
+                <input class="search-election-input" type="search" name="name" id="name" placeholder="Enter ballot name here" ngModel required>
             </div>
             <button type="submit" [disabled]="!f.valid" class="submit">Search Elections</button>
         </form>
+        <ul *ngIf="searched" class="search-election-results">
+            <li *ngFor="let election of elections">
+                <a [routerLink]="['/manage_election',election.url_election_name]" 
+                    [state]="{election_id: election.election_id, description: election.description}">
+                    {{ election.description }}
+                </a>
+            </li>
+        </ul>
     </div>
-    <ul *ngIf="searched" class="search-election-results">
-        <li *ngFor="let election of elections">
-            <a [routerLink]="['/manage_election',election.url_election_name]" 
-                [state]="{election_id: election.election_id, description: election.description}">
-                {{ election.description }}
-            </a>
-        </li>
-    </ul>
 </div>

@@ -22,3 +22,6 @@ td.red {
 td.gray {
     background: #DDD;
 }
+td:first-child {
+    font-weight: bold;
+}

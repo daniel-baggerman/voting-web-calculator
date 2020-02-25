@@ -2,13 +2,13 @@
 include 'vote_db.php';
 
 if(isset($_GET['election_id'])){
-    echo get_election_from_url_name($_GET['election_id']);
+    echo get_paths_and_labels($_GET['election_id']);
 } else {
     echo "Election ID not set.";
 }
 
-function get_election_from_url_name($ai_election_id){
-    /* example strongest_paths = [
+function get_paths_and_labels($ai_election_id){
+    /* example pref_strengths = [
     // d[*,A], d[*,B], d[*,C], d[*,D], d[*,E]
         [null, 20,     26,     30,     22],  // d[A,*]
         [25,   null,   16,     33,     18],  // d[B,*]
@@ -29,17 +29,17 @@ function get_election_from_url_name($ai_election_id){
                                 );
 
     // Blank array to start.
-    $strongest_paths = [];
+    $pref_strengths = [];
     // Add rows for each option
     for( $i=0; $i < count($la_options); $i++ ){
-        array_push($strongest_paths, []);
+        array_push($pref_strengths, []);
     }
 
     // Add values to array
     for( $i=0; $i < count($la_options); $i++ ){
         for( $j=0; $j < count($la_options); $j++ ){
             // Fetch the value
-            $val = select_scalar("SELECT strongest_path 
+            $val = select_scalar("SELECT pref_strength 
                                     FROM vote_winner_calc 
                                     WHERE run_id = (SELECT max(run_id) FROM vote_election_runs WHERE election_id=".$ai_election_id.")
                                     AND election_id = ".$ai_election_id."
@@ -51,7 +51,7 @@ function get_election_from_url_name($ai_election_id){
             }
             
             // Store the value in the array
-            array_push($strongest_paths[$i], $val);
+            array_push($pref_strengths[$i], $val);
         }
     }
 
@@ -81,7 +81,7 @@ function get_election_from_url_name($ai_election_id){
 
     $data = json_encode(["status" => "Success!",
                          "message" => "Election data successfully retrieved!",
-                         "data" => ["strongest_paths" => $strongest_paths,
+                         "data" => ["pref_strengths" => $pref_strengths,
                                     "labels" => $labels,
                                     "winner" => $winner]
                          ],JSON_NUMERIC_CHECK);

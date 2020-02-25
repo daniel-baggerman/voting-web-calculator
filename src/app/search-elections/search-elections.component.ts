@@ -18,7 +18,7 @@ export class SearchElectionsComponent implements OnInit {
   ngOnInit() { }
 
   get_elections_like(form: NgForm){
-    this.trans.get_elections_like(form.value.name)
+    this.trans.get_elections_like(form.value.searched_election)
     .subscribe(
       (data: {election_id: number, description: string, url_election_name: string}[]) => {
         this.searched = true;

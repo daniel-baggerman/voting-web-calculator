@@ -1,4 +1,37 @@
-<a href="https://baggerman.org/~daniel/">Daniel's Home</a> 
-- <a routerLink='/'>Home</a>
-- <a routerLink='/create_election'>Create Election</a> 
-- <a routerLink='/election_search'>Find Election</a>
+<nav class="nav">
+    <div class="nav__container">
+        <div class="nav__home">
+            <a class="btn btn--nav" routerLink='/'>
+                <!-- <img class="btn--nav-home" src="img/home.svg" alt="Home"> -->
+                <svg class="btn--nav-home" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2E3944" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15,21v-8H9v8H4c-0.6,0-1-0.4-1-1V8l9-7l9,7v12c0,0.6-0.4,1-1,1H15z" />
+                </svg>
+                Home
+            </a>
+        </div>
+        <ul class="nav__links">
+            <li>
+                <a class="btn btn--nav" routerLink='/election_search'>Find an Election</a>
+            </li>
+            <li>
+                <a class="btn btn--nav" href="#">How It Works</a>
+            </li>
+            <li>
+                <a class="btn btn--nav" href="#">Login/Register</a>
+            </li>
+            <li>
+                <a class="btn btn--nav-create-poll" routerLink='/create_election'>Create a Poll</a>
+            </li>
+        </ul>
+        <div class="nav__links-shadow"></div>
+        <button class="btn btn--nav btn--nav-menu" href="#">
+            Menu
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+        </button>
+    </div>
+</nav>

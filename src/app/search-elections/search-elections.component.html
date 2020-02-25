@@ -1,23 +1,29 @@
-<div>
-    <div class="search-election-container">
-        <form (ngSubmit)="get_elections_like(f)" #f="ngForm" class="search-election-form">
-            <div class="search-input-container">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="10.5" cy="10.5" r="7.5" />
-                    <line x1="21" y1="21" x2="15.8" y2="15.8" />
-                </svg>
-                <input class="search-election-input" type="search" name="name" id="name" placeholder="Enter ballot name here" ngModel required>
+<section class="grid-container layout-narrow">
+    <div class="panel">
+        <form (ngSubmit)="get_elections_like(f)" #f="ngForm">
+            <div class="input-group">
+                <label for="election_search">Search:</label>
+                <input type="search" placeholder="Search input" id="election_search" name="searched_election" ngModel required>
             </div>
-            <button type="submit" [disabled]="!f.valid" class="submit">Search Elections</button>
+            <button type="submit" [disabled]="!f.valid" class="btn">Search Elections</button>
         </form>
-        <ul *ngIf="searched" class="search-election-results">
+    </div>
+    <div *ngIf="searched" class="panel">
+        <!-- <ul>
             <li *ngFor="let election of elections">
                 <a [routerLink]="['/manage_election',election.url_election_name]" 
-                    [state]="{election_id: election.election_id, description: election.description}">
+                   [state]="{election_id: election.election_id, description: election.description}">
                     {{ election.description }}
                 </a>
+                <br>
             </li>
-        </ul>
+        </ul> -->
+        <div *ngFor="let election of elections">
+            <a [routerLink]="['/manage_election',election.url_election_name]" 
+                [state]="{election_id: election.election_id, description: election.description}">
+                {{ election.description }}
+            </a>
+            <br>
+        </div>
     </div>
-</div>
+</section>

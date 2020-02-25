@@ -27,7 +27,7 @@ export class CreateElectionComponent implements OnInit {
     // value: {
     // ​​​  anon: true
     // ​​ ​ desc: "A poll."
-    // ​ ​​ halt_date: "2019-12-02"
+    // ​ ​​ end_date: "2019-12-02"
     // ​ ​​ name: "Test"
     //  ​​ ​options: "A;b;c;d;E"
     //  ​​ ​password: "password"

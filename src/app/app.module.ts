@@ -17,6 +17,7 @@ import { AuthenticationService } from './authentication.service';
 import { ManageElectionComponent } from './manage-election/manage-election.component';
 import { ReportingComponent } from './reporting/reporting.component';
 import { BeatpathGraphComponent } from './reporting/beatpath-graph/beatpath-graph.component';
+import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { BeatpathGraphComponent } from './reporting/beatpath-graph/beatpath-grap
     SearchElectionsComponent,
     ManageElectionComponent,
     ReportingComponent,
-    BeatpathGraphComponent
+    BeatpathGraphComponent,
+    FooterComponent
   ],
   imports: [
     BrowserModule,

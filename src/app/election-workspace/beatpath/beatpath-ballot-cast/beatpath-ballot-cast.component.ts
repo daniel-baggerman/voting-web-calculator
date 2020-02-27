@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { BpBallotService } from './bp-ballot.service';
 import { Subscription } from 'rxjs';
-import { ManageElectionService } from 'src/app/manage-election/manage-election.service';
+import { ManageElectionService } from 'src/app/election-workspace/manage-election.service';
 
 @Component({
   selector: 'app-beatpath-ballot-cast',

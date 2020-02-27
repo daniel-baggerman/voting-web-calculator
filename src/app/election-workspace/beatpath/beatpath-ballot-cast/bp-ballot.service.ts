@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { bpOption } from '../bp_models/bp_option.model';
 import { Subject } from 'rxjs';
-import { DBTransactions } from '../../db_transactions.service';
+import { DBTransactions } from '../../../db_transactions.service';
 import { http_response } from 'src/app/shared/http_response.model';
 
 @Injectable({

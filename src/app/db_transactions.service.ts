@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { bpOption } from './beatpath/bp_models/bp_option.model';
+import { bpOption } from './election-workspace/beatpath/bp_models/bp_option.model';
 import { http_response } from './shared/http_response.model';
 
 @Injectable({providedIn: 'root'})

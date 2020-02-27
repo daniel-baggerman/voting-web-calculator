@@ -19,7 +19,7 @@
             </li>
         </ul> -->
         <div *ngFor="let election of elections">
-            <a [routerLink]="['/manage_election',election.url_election_name]" 
+            <a [routerLink]="['/'+election.url_election_name]" 
                 [state]="{election_id: election.election_id, description: election.description}">
                 {{ election.description }}
             </a>

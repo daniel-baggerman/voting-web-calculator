@@ -1,11 +1,10 @@
 <div *ngIf="!valid_election_url">
     <p>Not a valid election. Try <a routerLink="/election_search">searching for a different one</a>.</p>
 </div>
-<div *ngIf="valid_election_url" class="panel">
-    <a routerLink="cast_vote">Cast Vote</a> <br>
+<div *ngIf="valid_election_url">
+    <a routerLink="vote">Cast Vote</a> <br>
+    <a routerLink="manage">Manage Election</a> <br>
     <a routerLink="reporting">View Reporting</a> <br>
-    <button class="btn" (click)='calc_election()'>Tally Votes</button> <br>
-    <p *ngIf="tally_response"></p>
 
     <router-outlet></router-outlet>
 </div>

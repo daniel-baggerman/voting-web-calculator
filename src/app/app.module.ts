@@ -5,19 +5,20 @@ import { HttpClientModule } from '@angular/common/http'
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
-import { BeatpathBallotCastComponent } from './beatpath/beatpath-ballot-cast/beatpath-ballot-cast.component';
+import { BeatpathBallotCastComponent } from './election-workspace/beatpath/beatpath-ballot-cast/beatpath-ballot-cast.component';
 import { AppRoutingModule } from './app-routing.module';
-import { BpElectionOptionsComponent } from './beatpath/beatpath-ballot-cast/bp-election-options/bp-election-options.component';
-import { BpBallotComponent } from './beatpath/beatpath-ballot-cast/bp-ballot/bp-ballot.component';
+import { BpElectionOptionsComponent } from './election-workspace/beatpath/beatpath-ballot-cast/bp-election-options/bp-election-options.component';
+import { BpBallotComponent } from './election-workspace/beatpath/beatpath-ballot-cast/bp-ballot/bp-ballot.component';
 import { HomePageComponent } from './home-page/home-page.component';
 import { CreateElectionComponent } from './create-election/create-election.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { SearchElectionsComponent } from './search-elections/search-elections.component';
 import { AuthenticationService } from './authentication.service';
-import { ManageElectionComponent } from './manage-election/manage-election.component';
-import { ReportingComponent } from './reporting/reporting.component';
-import { BeatpathGraphComponent } from './reporting/beatpath-graph/beatpath-graph.component';
+import { ManageElectionComponent } from './election-workspace/manage-election/manage-election.component';
+import { ReportingComponent } from './election-workspace/reporting/reporting.component';
+import { BeatpathGraphComponent } from './election-workspace/reporting/beatpath-graph/beatpath-graph.component';
 import { FooterComponent } from './footer/footer.component';
+import { ElectionWorkspaceComponent } from './election-workspace/election-workspace.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { FooterComponent } from './footer/footer.component';
     ManageElectionComponent,
     ReportingComponent,
     BeatpathGraphComponent,
-    FooterComponent
+    FooterComponent,
+    ElectionWorkspaceComponent
   ],
   imports: [
     BrowserModule,

@@ -16,9 +16,9 @@
                 <td>
                     <i>p</i>[{{ label }},*]
                 </td>
-                <td *ngFor="let boggus of ia_strongest_paths; let col = index"
+                <td *ngFor="let boggus of ia_pref_strengths; let col = index"
                     [ngClass]="tableCellRedOrGreen(row,col)">
-                    {{ ia_strongest_paths[row][col]}}
+                    {{ ia_pref_strengths[row][col]}}
                 </td>
             </tr>
         </tbody>

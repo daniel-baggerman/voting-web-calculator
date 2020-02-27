@@ -1,7 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
-import { DBTransactions } from '../db_transactions.service';
-import { ManageElectionService } from '../manage-election/manage-election.service';
-import { http_response } from '../shared/http_response.model';
+import { DBTransactions } from '../../db_transactions.service';
+import { ManageElectionService } from '../manage-election.service';
+import { http_response } from '../../shared/http_response.model';
 import { Subject } from 'rxjs';
 
 @Injectable({
@@ -44,12 +44,10 @@ export class ReportingServiceService implements OnInit{
           this.ia_node_labels = http_response.data.labels;
           this.beatpath_winner = http_response.data.winner;
 
-          console.log(this.beatpath_winner);
-
           // Let components know when election data is updated and send that data.
           this.report_data_updated
             .next({
-              strongest_paths: this.ia_pref_strengths.slice(),
+              pref_strengths: this.ia_pref_strengths.slice(),
               labels: this.ia_node_labels.slice(),
               winner: this.beatpath_winner.slice()
               }
@@ -62,7 +60,7 @@ export class ReportingServiceService implements OnInit{
       );
   }
 
-  get_strongest_paths(){
+  get_pref_strengths(){
     return this.ia_pref_strengths.slice();
   }
    

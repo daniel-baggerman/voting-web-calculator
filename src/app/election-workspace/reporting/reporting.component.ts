@@ -1,5 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { Params, ActivatedRoute } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-reporting',
@@ -8,25 +7,8 @@ import { Params, ActivatedRoute } from '@angular/router';
 })
 export class ReportingComponent implements OnInit {
 
-  show_reporting = false;
-
-  constructor(private route: ActivatedRoute) { }
+  constructor() { }
 
   ngOnInit() {
-    // subscribe to the route params 
-    this.route.params.subscribe(
-      (params: Params) => {
-        if (params['election_id']){
-          this.election_selected(params['election_id']);
-        } else {
-          this.show_reporting = false;
-        }
-      }
-    );
-  }
-
-  election_selected(election_id: number){
-    // show election details
-    this.show_reporting = true;
   }
 }

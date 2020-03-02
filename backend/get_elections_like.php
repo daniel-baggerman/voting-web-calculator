@@ -6,9 +6,11 @@ if(isset($_GET['string'])){
 }
 
 function get_elections_like($as_string){
-    $data = executeselect("select election_id, description, url_election_name
-                           from vote_elections
-                           where lower(description) like '%".strtolower($as_string)."%'");
+    $data = executeselect("SELECT election_id, description, url_election_name
+                           FROM vote_elections
+                           WHERE lower(description) LIKE :election_name ",
+                           false,
+                           [":election_name" => strtolower("%{$as_string}%")] );
 
     // if error occurred, return the error string
     if(is_string($data)){ 
@@ -16,13 +18,19 @@ function get_elections_like($as_string){
     }
     // else convert array to json text and return it
     else{
-        $output = json_encode($data, JSON_NUMERIC_CHECK);
-        if($output === false){
-            return "Error encoding sql select array as json.";
+        $data = json_encode(["status" => "Success!",
+                             "message" => "Election retrieved.",
+                             "data" => ["election_args" => array(":election_name" => "%{$as_string}%"),
+                                        "elections" => $data]
+                             ],JSON_NUMERIC_CHECK);
+        if($data === false){
+            return "Error encoding array as json.";
         }
         else{
-            return $output;
+            return $data;
         }
     }
+
+    
 }
 ?>

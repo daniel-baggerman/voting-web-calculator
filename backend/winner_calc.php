@@ -13,28 +13,19 @@ function f_election_winner_process( $ai_election_id ){
         ai_election_id: election_id argument passed to designate election winner to be calculated
         ls_msg: local string variable for storing messages to return from the function
     */
-
-    // initialize the run
-    $li_run_id = select_scalar("SELECT ifnull(max(run_id),0)+1 from vote_election_runs where election_id = ".$ai_election_id);
-
-    $ls_msg = executesql("INSERT INTO vote_election_runs (run_id, election_id) SELECT ".$li_run_id.",".$ai_election_id);
-    if($ls_msg<>"OK"){
-        rollback_winner_calc($ai_election_id, $li_run_id);
-        return "Error inserting into vote_election_runs. Error Message:\r\n".$ls_msg;
-    }
     
     // start the calc
-    $ls_msg = f_initialize( $ai_election_id, $li_run_id );
+    $ls_msg = f_initialize( $ai_election_id );
     if($ls_msg <> 'OK'){
         return $ls_msg;
     }
 
-    $ls_msg = f_strongest_path( $ai_election_id, $li_run_id );
+    $ls_msg = f_strongest_path( $ai_election_id );
     if($ls_msg <> 'OK'){
         return $ls_msg;
     }
 
-    $ls_msg = f_winner_calc( $ai_election_id, $li_run_id );
+    $ls_msg = f_winner_calc( $ai_election_id );
     if($ls_msg <> 'OK'){
         return $ls_msg;
     }
@@ -46,7 +37,7 @@ function f_election_winner_process( $ai_election_id ){
                         ]);
 }
 
-function f_initialize( $ai_election_id, $ai_run_id ){
+function f_initialize( $ai_election_id ){
 /* 
     Initialize the database with info about election and setting up rows to store info.
 
@@ -65,7 +56,7 @@ function f_initialize( $ai_election_id, $ai_run_id ){
     // I used sum() instead of count() because count was excluding option pairs where no one ranked X above Y.
     // update the pref_strength and strongest_path to the base preference strength from this count. The strongest path will be updated later.
 
-    $ls_msg = executesql("INSERT INTO vote_winner_calc (run_id, election_id, first_option_id, second_option_id, pref_strength, strongest_path)
+    $ls_msg = executesql("INSERT INTO vote_winner_calc (election_id, first_option_id, second_option_id, pref_strength, strongest_path)
         WITH vote_cast_ballots_temp AS
         (   SELECT vote_cast_ballots.election_id, vote_cast_ballots.voter_id, vote_cast_ballots.option_id, ifnull(voter_option_ranks.option_rank,16180339) option_rank
                     FROM (SELECT vbo.election_id, option_id, voters.voter_id 
@@ -78,7 +69,7 @@ function f_initialize( $ai_election_id, $ai_run_id ){
                         AND vote_cast_ballots.election_id = voter_option_ranks.election_id 
                         AND vote_cast_ballots.voter_id    = voter_option_ranks.voter_id
                 )
-        SELECT distinct ".$ai_run_id." run_id, a.election_id election_id, a.option_id first_option_id, b.option_id second_option_id,
+        SELECT DISTINCT a.election_id election_id, a.option_id first_option_id, b.option_id second_option_id,
             sum(case when a.option_rank-b.option_rank<0  then 1
                 when a.option_rank-b.option_rank>=0 then 0
             end) over (partition by 1, a.election_id, a.option_id, b.option_id) pref_strength,
@@ -113,14 +104,14 @@ function f_initialize( $ai_election_id, $ai_run_id ){
     //     ");
 
     if($ls_msg<>"OK"){
-        rollback_winner_calc($ai_election_id, $ai_run_id);
+        rollback_winner_calc($ai_election_id);
         return "Error inserting into vote_winner_calc. Error Message:\r\n".$ls_msg;
     } else {
         return $ls_msg;
     }
 }
 
-function f_strongest_path( $ai_election_id, $ai_run_id ){
+function f_strongest_path( $ai_election_id ){
 /* 
     Calculate the strongest path for each option pair using modified Floyd–Warshall algorithm.
 
@@ -140,7 +131,7 @@ function f_strongest_path( $ai_election_id, $ai_run_id ){
                                 );
 
     if(empty($la_options) or is_null($la_options)){
-        rollback_winner_calc($ai_election_id, $ai_run_id);
+        rollback_winner_calc($ai_election_id);
         $ls_msg = "Error: Unable to retrieve options in election: ".strval($ai_election_id);
         return $ls_msg;
     };
@@ -166,7 +157,6 @@ function f_strongest_path( $ai_election_id, $ai_run_id ){
                         $pref_jk = select_scalar(  "SELECT strongest_path
                                                     FROM vote_winner_calc
                                                     WHERE election_id    = " . strval($ai_election_id) . "
-                                                    AND run_id           = " . strval($ai_run_id) . "
                                                     AND first_option_id  = " . strval($la_options[$j]['option_id']) . "
                                                     AND second_option_id = " . strval($la_options[$k]['option_id'])
                                                 );
@@ -174,7 +164,6 @@ function f_strongest_path( $ai_election_id, $ai_run_id ){
                         $pref_ji = select_scalar(  "SELECT strongest_path
                                                     FROM vote_winner_calc
                                                     WHERE election_id    = " . strval($ai_election_id) . "
-                                                    AND run_id           = " . strval($ai_run_id) . "
                                                     AND first_option_id  = " . strval($la_options[$j]['option_id']) . "
                                                     AND second_option_id = " . strval($la_options[$i]['option_id'])
                                                 );
@@ -182,7 +171,6 @@ function f_strongest_path( $ai_election_id, $ai_run_id ){
                         $pref_ik = select_scalar(  "SELECT strongest_path
                                                     FROM vote_winner_calc
                                                     WHERE election_id    = " . strval($ai_election_id) . "
-                                                    AND run_id           = " . strval($ai_run_id) . "
                                                     AND first_option_id  = " . strval($la_options[$i]['option_id']) . "
                                                     AND second_option_id = " . strval($la_options[$k]['option_id'])
                                                 );
@@ -195,8 +183,7 @@ function f_strongest_path( $ai_election_id, $ai_run_id ){
                                               VALUES (".$ai_election_id.",".$i.",".$j.",".$k.",".$pref_jk.",".$pref_ji.",".$pref_ik.",".$strongest_path.")");
                     
                         if($ls_msg <> "OK"){
-                            // executesql( "delete from vote_winner_calc_audit where election_id = ".$ai_election_id." AND run_id = ".$ai_run_id )
-                            rollback_winner_calc($ai_election_id, $ai_run_id);
+                            rollback_winner_calc($ai_election_id);
                             return "Error inserting into calc audit in strongest path calc. Error message:\r\n".$ls_msg;
                         }
                         
@@ -204,13 +191,12 @@ function f_strongest_path( $ai_election_id, $ai_run_id ){
                         $ls_msg = executesql("UPDATE vote_winner_calc
                                                 SET strongest_path    = " . strval($strongest_path) . "
                                                 WHERE election_id     = " . strval($ai_election_id) . "
-                                                AND run_id            = " . strval($ai_run_id) . "
                                                 AND first_option_id   = " . strval($la_options[$j]['option_id']) . "
                                                 AND second_option_id  = " . strval($la_options[$k]['option_id']) 
                                             );
 
                         if($ls_msg <> "OK"){
-                            rollback_winner_calc($ai_election_id, $ai_run_id);
+                            rollback_winner_calc($ai_election_id);
                             return "Error updating vote_winner_calc in strongeth path calc. Error message:\r\n".$ls_msg;
                         }
                     }
@@ -220,7 +206,7 @@ function f_strongest_path( $ai_election_id, $ai_run_id ){
     }
 
     if($ls_msg<>"OK"){
-        rollback_winner_calc($ai_election_id, $ai_run_id);
+        rollback_winner_calc($ai_election_id);
         return "Error during strongest path calculation. Error Message:\r\n".$ls_msg;
     }
     else{
@@ -228,7 +214,7 @@ function f_strongest_path( $ai_election_id, $ai_run_id ){
     }
 }
 
-function f_winner_calc( $ai_election_id, $ai_run_id ){
+function f_winner_calc( $ai_election_id ){
 /* 
     Calculate the winner of the election. 
 
@@ -238,8 +224,8 @@ function f_winner_calc( $ai_election_id, $ai_run_id ){
     la_options: array that stores IDs of options in the election
     */
 
-    $ls_msg = executesql(" INSERT INTO vote_election_winners (run_id, election_id, option_id)
-                           SELECT ".$ai_run_id.",".$ai_election_id.", option_id
+    $ls_msg = executesql(" INSERT INTO vote_election_winners (election_id, option_id)
+                           SELECT ".$ai_election_id.", option_id
                            FROM vote_ballot_options
                            WHERE election_id=".$ai_election_id);
 
@@ -253,7 +239,7 @@ function f_winner_calc( $ai_election_id, $ai_run_id ){
                                 );
 
     if(empty($la_options) or is_null($la_options)){
-        rollback_winner_calc($ai_election_id, $ai_run_id);
+        rollback_winner_calc($ai_election_id);
         $ls_msg = "Unable to retrieve options in election: " . strval($ai_election_id);
         return $ls_msg;
     };
@@ -269,7 +255,6 @@ function f_winner_calc( $ai_election_id, $ai_run_id ){
                 $pref_ij = select_scalar(  "SELECT strongest_path
                                             FROM vote_winner_calc
                                             WHERE election_id      = ".strval($ai_election_id)."
-                                            AND run_id             = ".strval($ai_run_id)."
                                             AND first_option_id    = ".strval($la_options[$i]['option_id'])."
                                             AND second_option_id   = ".strval($la_options[$j]['option_id'])
                                         ) ;
@@ -277,7 +262,6 @@ function f_winner_calc( $ai_election_id, $ai_run_id ){
                 $pref_ji = select_scalar(  "SELECT strongest_path
                                             FROM vote_winner_calc
                                             WHERE election_id      = " . strval($ai_election_id) . "
-                                            AND run_id             = " . strval($ai_run_id) . "
                                             AND first_option_id    = " . strval($la_options[$j]['option_id']) . "
                                             AND second_option_id   = " . strval($la_options[$i]['option_id'])
                                         ) ;
@@ -292,7 +276,7 @@ function f_winner_calc( $ai_election_id, $ai_run_id ){
     }
 
     if($ls_msg<>"OK"){
-        rollback_winner_calc($ai_election_id, $ai_run_id);
+        rollback_winner_calc($ai_election_id);
         return "Error during final winner calculation. Error Message:\r\n".$ls_msg;
     }
     else{
@@ -300,13 +284,8 @@ function f_winner_calc( $ai_election_id, $ai_run_id ){
     }
 }
 
-function rollback_winner_calc($ai_election_id, $ai_run_id){
-    $ls_msg = executesql( "DELETE FROM vote_winner_calc WHERE election_id=".strval($ai_election_id)." AND run_id=".strval($ai_run_id) );
-    if($ls_msg<>"OK"){
-        return "Error during rollback of winner calculation. Error Message:\r\n".$ls_msg;
-    }
-
-    $ls_msg = executesql( "DELETE FROM vote_election_runs WHERE election_id=".strval($ai_election_id)." AND run_id=".strval($ai_run_id) );
+function rollback_winner_calc($ai_election_id){
+    $ls_msg = executesql( "DELETE FROM vote_winner_calc WHERE election_id=".$ai_election_id);
     if($ls_msg<>"OK"){
         return "Error during rollback of winner calculation. Error Message:\r\n".$ls_msg;
     }

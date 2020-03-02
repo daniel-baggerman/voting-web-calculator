@@ -1,21 +1,26 @@
 <div *ngIf="!election_created" class="grid-container layout-narrow">
     <form class="create-poll-form" (ngSubmit)="create_election(f)" #f="ngForm">
+        <!-- Election Name -->
         <div class="input-group">
             <label for="name">Name</label>
             <input type="text" name="name" id="name" ngModel required minlength="1" maxlength="60">
         </div>
+        <!-- Start Date -->
         <div class="input-group">
             <label for="start_date">Start Date</label>
             <input type="date" name="start_date" id="start_date" ngModel>
         </div>
+        <!-- End Date -->
         <div class="input-group">
             <label for="end_date">End Date</label>
             <input type="date" name="end_date" id="end_date" ngModel required>
         </div>
+        <!-- Description -->
         <div class="input-group">
             <label for="desc">Description</label>
             <input type="text" name="desc" id="desc" ngModel required maxlength="400">
         </div>
+        <!-- Options -->
         <div class="input-group">
             <label for="options">
                 Ballot Options <br>
@@ -23,25 +28,28 @@
             </label>
             <input type="text" name="options" id="options" ngModel required>
         </div>
+        <!-- Public or Private -->
         <div class="input-group">
             <p>Public or Private?</p>
             <input type="radio" value="public" id="radioPublic" name="radioPublicPrivate" [(ngModel)]="public_private" class="input-group--radio">
-            <label for="radioPublic">Public</label>
+            <label for="radioPublic">Public</label> 
+            <br>
             <input type="radio" value="private" id="radioPrivate" name="radioPublicPrivate" [(ngModel)]="public_private" class="input-group--radio">
             <label for="radioPrivate">Private</label>
         </div>
-        <div *ngIf="public_private == 'public'">
-            <!-- if public -->
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password" ngModel required maxlength="40">
-        </div>
-        <div *ngIf="public_private == 'private'">
-            <!-- if private -->
-            <label for="email">Emails</label>
-            <br>
-            <span style="font-style: italic;font-size:smaller;">Separate emails by comma ","</span> 
-            <input type="email" name="email" id="email" ngModel required>
-        </div>
+            <div *ngIf="public_private == 'public'">
+                <!-- if public -->
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" ngModel required maxlength="40">
+            </div>
+            <div *ngIf="public_private == 'private'">
+                <!-- if private -->
+                <label for="email">Emails</label>
+                <br>
+                <span style="font-style: italic;font-size:smaller;">Separate emails by comma ","</span> 
+                <input type="email" name="email" id="email" ngModel required>
+            </div>
+        <!-- Anonymous Results -->
         <div class="input-group">
             <input type="checkbox" name="anon" id="anon" ngModel>
             <label for="anon">Anonymous Results?</label>

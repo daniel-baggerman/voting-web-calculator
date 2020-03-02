@@ -1,14 +1,13 @@
 <?php
 include 'vote_db.php';
-function load_ballot_info($an_ballot_option_id){
-    $bind_params = array($an_ballot_option_id);
-    $data = executeselect("Select vo.description description, vo.option_id option_id, 1 enabled
+function load_ballot_info($an_election_id){
+    $data = executeselect("SELECT vo.description description, vo.option_id option_id, 1 enabled
                             from vote_ballot_options vbo 
                             join vote_options vo on vo.option_id = vbo.option_id
                             where vbo.election_id = ?
                             order by vo.description"
                           , false
-                          , $bind_params);
+                          , [$an_election_id]);
 
     // if error occurred, return the error string
     if(is_string($data)){ 

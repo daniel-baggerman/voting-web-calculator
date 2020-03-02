@@ -41,8 +41,7 @@ function get_paths_and_labels($ai_election_id){
             // Fetch the value
             $val = select_scalar("SELECT pref_strength 
                                     FROM vote_winner_calc 
-                                    WHERE run_id = (SELECT max(run_id) FROM vote_election_runs WHERE election_id=".$ai_election_id.")
-                                    AND election_id = ".$ai_election_id."
+                                    WHERE election_id = ".$ai_election_id."
                                     AND first_option_id   = ".$la_options[$i]."
                                     AND second_option_id  = ".$la_options[$j]);
             
@@ -71,8 +70,7 @@ function get_paths_and_labels($ai_election_id){
     $winner = executeselect("SELECT description
                              FROM vote_election_winners vew
                              JOIN vote_options vo ON vew.option_id = vo.option_id
-                             WHERE vew.run_id = (SELECT max(run_id) FROM vote_election_runs WHERE election_id=".$ai_election_id.")
-                             AND vew.election_id = ".$ai_election_id,
+                             WHERE vew.election_id = ".$ai_election_id,
                              $ab_fetch_column=true);
 
     if(is_string($winner)){ 

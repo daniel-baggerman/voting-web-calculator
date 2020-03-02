@@ -51,7 +51,7 @@ function post_new_election($election_data){
     $url_election_name = $election_data['name'];
     $url_election_name = str_replace(' ','_',$url_election_name); // Replace spaces with underscores
     $url_election_name = str_replace(str_split(';,/?:@&=+$'),'',$url_election_name); // Remove special characters
-    $url_election_name = rawurlencode($url_election_name); // Encode anything left
+    $url_election_name = strtolower(rawurlencode($url_election_name)); // Encode anything left and lower it
 
     // check that the url encoding is unique. If it's not unique, then try to add numbers to the end of it until it is unique.
     $unique_check = select_scalar("select count(1) from vote_elections where url_election_name = '".$url_election_name."'");
@@ -83,18 +83,30 @@ function post_new_election($election_data){
                     , anon_results
                     , url_election_name)
                 values 
-                (   ".$new_election_id."
-                    , '".$election_data['name']."'
-                    , date('".$election_data['start_date']."')
-                    , date('".$election_data['end_date']."')
-                    , '".$election_data['desc']."'
-                    , ".($election_data['radioPublicPrivate'] == 'public' ? '1' : '0')."
-                    , '".$election_data['password']."'
-                    , ".($election_data['anon'] ? "1" : "0")."
-                    , '".$url_election_name."'
+                (     ?
+                    , ?
+                    , date(?)
+                    , date(?)
+                    , ?
+                    , ?
+                    , ?
+                    , ?
+                    , ?
                 )";
 
-    $rtn = executesql($sqls);
+    $rtn = executesql($sqls,
+                        array(
+                            $new_election_id,
+                            $election_data['name'],
+                            $election_data['start_date'],
+                            $election_data['end_date'],
+                            $election_data['desc'],
+                            ($election_data['radioPublicPrivate'] == 'public' ? '1' : '0'),
+                            $election_data['password'],
+                            ($election_data['anon'] ? "1" : "0"),
+                            $url_election_name
+                        )
+                    );
 
     if($rtn <> "OK"){
         rollback_create_election($new_election_id);
@@ -110,13 +122,13 @@ function post_new_election($election_data){
     foreach($options as $option){
         // check that option description is already in use. 
         // If it's not already in use, make a new one, else use the old one.
-        $option_id = select_scalar('select option_id from vote_options where description="'. $option.'"');
+        $option_id = select_scalar('select option_id from vote_options where description=?',array($option));
 
         if( empty($option_id) ){
             // insert the option into vote_options
             $max_id = select_scalar('select max(option_id)+1 from vote_options');
             $rtn = executesql( 'insert into vote_options (option_id, description)
-                                values ('.$max_id.', "'.$option.'")' );
+                                values (?, ?)' , array($max_id, $option));
             if($rtn <> 'OK'){
                 rollback_create_election($new_election_id);
                 return "Error inserting into vote_options. Error Message: \r\n".$rtn;

@@ -47,8 +47,8 @@ export class ElectionWorkspaceComponent implements OnInit {
         .subscribe(
           (http_response: http_response) => {
             if(http_response.data && http_response.data.length !==0){
-              ls_state = { election_id: http_response.data[0].election_id, description: http_response.data[0].description };
-              this.election_manager.election = { election_id: ls_state.election_id, description: ls_state.description, url_election_name: url_election_name };
+              ls_state = { election_id: http_response.data[0].election_id, name: http_response.data[0].name, description: http_response.data[0].description };
+              this.election_manager.election = { election_id: ls_state.election_id, name: ls_state.name, description: ls_state.description, url_election_name: url_election_name };
               this.valid_election_url = true;
             } else {
               this.valid_election_url = false;
@@ -56,13 +56,13 @@ export class ElectionWorkspaceComponent implements OnInit {
           },
           (error) => {
             this.valid_election_url = false;
-            alert(error.message);
+            alert(error.error.text);
             console.error(error);
           }
         );
     } else {
       this.valid_election_url = true;
-      this.election_manager.election = { election_id: ls_state.election_id, description: ls_state.description, url_election_name: url_election_name };
+      this.election_manager.election = { election_id: ls_state.election_id, name: ls_state.name, description: ls_state.description, url_election_name: url_election_name };
     }
   }
 

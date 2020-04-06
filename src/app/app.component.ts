@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
 
 @Component({
   selector: 'app-root',
@@ -12,19 +11,27 @@ export class AppComponent implements OnInit{
   ngOnInit(){
     // Mobile menu toggle button
     const mobileMenuButton = document.querySelector('.btn--nav-menu'),
-        mobileMenuLinks = document.querySelector('.nav__links'),
-        mobileMenuShadow = document.querySelector('.nav__links-shadow');
+    mobileMenuLinks = document.querySelector('.nav__links'),
+    mobileMenuShadow = document.querySelector('.nav__links-shadow'),
+    navMenuLinks = document.querySelectorAll('.nav__links a, .nav__links button');
 
-    function toggleMobileMenu() {
+    mobileMenuButton.addEventListener('click', function () {
         mobileMenuLinks.classList.toggle('nav__links--expanded');
+    });
+
+    mobileMenuShadow.addEventListener('click', function () {
+        mobileMenuLinks.classList.remove('nav__links--expanded');
+    });
+
+    for (let i = 0; i < navMenuLinks.length; i++) {
+        navMenuLinks[i].addEventListener('click', function() {
+            mobileMenuLinks.classList.remove('nav__links--expanded');
+        });
     }
 
-    mobileMenuButton.addEventListener('click', evt => {
-        toggleMobileMenu();
-    });
-    mobileMenuShadow.addEventListener('click', evt => {
-        toggleMobileMenu();
-    });
+// ---------------------------------------------- //
+// Toggle light/dark mode                         //
+// ---------------------------------------------- //
 
     // Remove no-js class from root <html> element so the toggle button displays when JS is enabled
     document.documentElement.classList.remove('no-js');
@@ -50,7 +57,7 @@ export class AppComponent implements OnInit{
     const applySetting = (passedSetting:string = '') => {
         let currentSetting = passedSetting || localStorage.getItem(STORAGE_KEY);
 
-        if (currentSetting) { 
+        if (currentSetting) {
             document.documentElement.setAttribute('data-user-color-scheme', currentSetting);
         }
     };

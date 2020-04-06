@@ -1,6 +1,30 @@
-<div class="grid-sidebar panel">
-    <p>Options:</p>
-    <button
+<div class="choices">
+    <h3>Available Choices:</h3>
+        <ul class="ballot__items-ul">
+            <li *ngFor="let option of election_options" >
+                <div class="ballot__item" >
+                    <span class="ballot__item-container" *ngIf="option.enabled; else elseBlock" (click)="add_to_ballot(option)">
+                        <div class="ballot__item-text">
+                            {{ option.description }} 
+                        </div>
+                        <div class="ballot__item-buttons">
+                            <button class="ballot__item-buttons__btn" data-tooltip="Add to Ballot">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="7" x2="12" y2="17" />
+                                    <line x1="7" y1="12" x2="17" y2="12" />
+                                    <path d="M19,23H5c-2.2,0-4-1.8-4-4V5c0-2.2,1.8-4,4-4h14c2.2,0,4,1.8,4,4v14C23,21.2,21.2,23,19,23z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </span>
+                    <ng-template #elseBlock>
+                        <span class="ballot__item-container--empty"></span>
+                    </ng-template>
+                </div>
+                <hr class="ballot__item-divider">
+            </li>
+        </ul>
+    <!-- <button
         *ngFor="let option of election_options"
         [class]="option.enabled ? 'btn btn--ballot-option' : 'btn btn--ballot-option disabled'"
         (click)="add_to_ballot(option)">
@@ -10,5 +34,5 @@
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
         </svg>
-    </button>
+    </button> -->
 </div>

@@ -30,8 +30,8 @@ export class BpBallotService {
   set_election_options(election_id: number){
     this.trans.get_election_options(election_id)
       .subscribe(
-        (data: any) => {
-          this.election_options = data;
+        (http_response: http_response) => {
+          this.election_options = http_response.data;
           this.election_options_changed.next();
         },
         (error) => {

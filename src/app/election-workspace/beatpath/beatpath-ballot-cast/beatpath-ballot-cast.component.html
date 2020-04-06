@@ -1,15 +1,23 @@
-<section *ngIf="submission_message.length==0" class="grid-container layout-sidebar">
-    <app-bp-election-options></app-bp-election-options>
-    <div class="grid-buttons">
-        <button class="btn" (click)="submit_ballot()">
-            Submit Ballot
-        </button>
-        <button class="btn btn--warning" (click)="clear_ballot()">
-            Clear Ballot
-        </button>
+<div class="grid-main panel">
+    <div class="ballot-top">
+        <h2 class="ballot-title">{{election_manager.election.name}}</h2>
+        <p>{{election_manager.election.description}}</p>
     </div>
-    <app-bp-ballot *ngIf="submission_message.length==0"></app-bp-ballot>
-</section>
-<div *ngIf="submission_message.length>0">
-    <p>{{ submission_message }}</p>
+
+    <div class="grid-content layout-2-col">
+        <app-bp-election-options></app-bp-election-options>
+        <app-bp-ballot *ngIf="submission_message.length==0"></app-bp-ballot>
+    </div>
+
+    <div *ngIf="submission_message.length>0">
+        <p>{{ submission_message }}</p>
+    </div>
+</div>
+<div class="grid-bottom">
+    <button class="btn" (click)="submit_ballot()">
+        Submit Ballot
+    </button>
+    <button class="btn btn--warning" (click)="clear_ballot()">
+        Clear Ballot
+    </button>
 </div>

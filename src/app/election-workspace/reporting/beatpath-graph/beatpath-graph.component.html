@@ -1,32 +1,30 @@
-<div class="panel">
-    <h1>Winner:</h1>
-    <h2 *ngFor="let winner of beatpath_winner">{{ winner }}</h2>
-    
-    <h1>Data Array:</h1>
-    <table>
-        <tbody>
-            <tr>
-                <th></th>
-                <th *ngFor="let label of ia_diagram_labels">
-                    <i>p</i>[*,{{ label }}]
-                </th>
-            </tr>
-            <tr *ngFor="let label of ia_diagram_labels; let row = index">
-                <td>
-                    <i>p</i>[{{ label }},*]
-                </td>
-                <td *ngFor="let boggus of ia_pref_strengths; let col = index"
-                    [ngClass]="tableCellRedOrGreen(row,col)">
-                    {{ ia_pref_strengths[row][col]}}
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <h1>Visualization:</h1>
-    <canvas
-        #my_canvas 
-        id="canvasElement" 
-        width="638" 
-        height="408">
-    </canvas>
-</div>
+<h1>Winner:</h1>
+<h2 *ngFor="let winner of beatpath_winner">{{ winner }}</h2>
+
+<h1>Data Array:</h1>
+<table>
+    <tbody>
+        <tr>
+            <th></th>
+            <th *ngFor="let label of ia_diagram_labels">
+                <i>p</i>[*,{{ label }}]
+            </th>
+        </tr>
+        <tr *ngFor="let label of ia_diagram_labels; let row = index">
+            <td>
+                <i>p</i>[{{ label }},*]
+            </td>
+            <td *ngFor="let boggus of ia_pref_strengths; let col = index"
+                [ngClass]="tableCellRedOrGreen(row,col)">
+                {{ ia_pref_strengths[row][col]}}
+            </td>
+        </tr>
+    </tbody>
+</table>
+<h1>Visualization:</h1>
+<canvas
+    #my_canvas 
+    id="canvasElement" 
+    width="638" 
+    height="408">
+</canvas>

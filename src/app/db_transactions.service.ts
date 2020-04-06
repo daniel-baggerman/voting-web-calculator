@@ -12,7 +12,7 @@ export class DBTransactions {
     }
 
     get_election_options(election_id: number){
-        return this.http.get("../backend/load_ballot_info_v2.php?election_id="+election_id);
+        return this.http.get<http_response>("../backend/load_ballot_info_v2.php?election_id="+election_id);
     }
 
     submit_ballot(election_id: number, voter_id: number, selected_options: bpOption[]){

@@ -5,14 +5,17 @@ $ga_postdata = file_get_contents('php://input');
 
 /* example of expected postdata
 {
-    "name":"arst",
-    "start_date":"2019-12-02",
-    "end_date":"2019-12-04",
-    "desc":"long description",
-    "options":"a;r;s;t;",
-    "radioPublicPrivate":"public",
-    "password":"",
-    "anon":true
+    desc: "This is a long description."
+    end_date: "2020-04-09"
+    name: "Test Ballot 3"
+    options: "a;b;c;d"
+    start_date: "2020-04-07" // optional
+    public_private: "public" || "private"
+    // these two if public
+    password_protect: false
+    password: arst // only if password_protect = true
+    // this if private
+    email: "adam@test.com,barb@test.com"
 }
 */
 
@@ -72,8 +75,8 @@ function post_new_election($election_data){
     };
 
     // insert the data into the vote_elections table
-    $sqls = "insert into vote_elections 
-                (   election_id
+    $sqls = "INSERT INTO vote_elections 
+                (     election_id
                     , description
                     , start_date
                     , end_date
@@ -82,7 +85,7 @@ function post_new_election($election_data){
                     , password
                     , anon_results
                     , url_election_name)
-                values 
+                VALUES 
                 (     ?
                     , ?
                     , date(?)
@@ -95,17 +98,25 @@ function post_new_election($election_data){
                 )";
 
     $rtn = executesql($sqls,
-                        array(
+                        [
                             $new_election_id,
                             $election_data['name'],
-                            $election_data['start_date'],
+                            (array_has_key('start_date',$election_data) ? $election_data['start_date'] : ''),
                             $election_data['end_date'],
                             $election_data['desc'],
                             ($election_data['radioPublicPrivate'] == 'public' ? '1' : '0'),
-                            $election_data['password'],
-                            ($election_data['anon'] ? "1" : "0"),
+                            ($election_data['radioPublicPrivate'] == 'public' ?
+                                (array_has_key('password_protect',$election_data) ?
+                                    ($election_data['password_protect'] ?
+                                        (array_has_key('password',$election_data) ? 
+                                            $election_data['password'] 
+                                            : '' ) 
+                                        : '')
+                                    : '')
+                                : '' ),
+                            (array_has_key('anon',$election_data) ? ($election_data['anon'] ? '1' : '0') : '0'),
                             $url_election_name
-                        )
+                        ]
                     );
 
     if($rtn <> "OK"){
@@ -154,6 +165,8 @@ function post_new_election($election_data){
             }
         }
     }
+
+    // TODO: do something with email list passed
 
     return json_encode(["status" => "Success!",
                         "message" => "Election successfully created!",

@@ -14,7 +14,7 @@ export class BeatpathBallotCastComponent implements OnInit, OnDestroy {
   submission_message: string = "";
 
   constructor(private bp_ballot_service: BpBallotService,
-              private election_manager: ManageElectionService) {}
+              public election_manager: ManageElectionService) {}
 
   ngOnInit() {
     if(this.election_manager.election.election_id){

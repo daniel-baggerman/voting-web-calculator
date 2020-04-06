@@ -19,6 +19,8 @@ import { ReportingComponent } from './election-workspace/reporting/reporting.com
 import { BeatpathGraphComponent } from './election-workspace/reporting/beatpath-graph/beatpath-graph.component';
 import { FooterComponent } from './footer/footer.component';
 import { ElectionWorkspaceComponent } from './election-workspace/election-workspace.component';
+import { EmailListValidatorDirective } from './helpers/email-list-validator.directive';
+import { EndPastStartDirective } from './helpers/end-past-start.directive';
 
 @NgModule({
   declarations: [
@@ -35,7 +37,9 @@ import { ElectionWorkspaceComponent } from './election-workspace/election-worksp
     ReportingComponent,
     BeatpathGraphComponent,
     FooterComponent,
-    ElectionWorkspaceComponent
+    ElectionWorkspaceComponent,
+    EmailListValidatorDirective,
+    EndPastStartDirective
   ],
   imports: [
     BrowserModule,

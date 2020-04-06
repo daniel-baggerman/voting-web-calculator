@@ -46,7 +46,10 @@ function get_paths_and_labels($ai_election_id){
                                     AND second_option_id  = ".$la_options[$j]);
             
             if(is_string($val)){ 
-                return "Error selecting strongest path from vote_winner_calc. Error Message:\r\n".$val;
+                return json_encode(["status" => "Failure :(",
+                                    "message" => $val,
+                                    "data" => []
+                                    ],JSON_NUMERIC_CHECK);
             }
             
             // Store the value in the array
@@ -63,7 +66,10 @@ function get_paths_and_labels($ai_election_id){
                              ORDER BY description",
                              $ab_fetch_column=true);
     if(is_string($val)){ 
-        return "Error selecting node labels. Error Message:\r\n".$val;
+        return json_encode(["status" => "Failure :(",
+                            "message" => $val,
+                            "data" => []
+                            ],JSON_NUMERIC_CHECK);
     }
 
     // Fetch the winner
@@ -74,7 +80,10 @@ function get_paths_and_labels($ai_election_id){
                              $ab_fetch_column=true);
 
     if(is_string($winner)){ 
-        return "Error selecting election winner. Error Message:\r\n".$winner;
+        return json_encode(["status" => "Failure :(",
+                            "message" => $val,
+                            "data" => []
+                            ],JSON_NUMERIC_CHECK);
     }
 
     $data = json_encode(["status" => "Success!",

@@ -83,14 +83,12 @@ function post_new_election($election_data){
                     , long_description
                     , public_private
                     , password
-                    , anon_results
                     , url_election_name)
                 VALUES 
                 (     ?
                     , ?
                     , date(?)
                     , date(?)
-                    , ?
                     , ?
                     , ?
                     , ?
@@ -114,7 +112,6 @@ function post_new_election($election_data){
                                         : '')
                                     : '')
                                 : '' ),
-                            (array_has_key('anon',$election_data) ? ($election_data['anon'] ? '1' : '0') : '0'),
                             $url_election_name
                         ]
                     );

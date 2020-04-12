@@ -61,11 +61,6 @@
                     <input type="email" name="email" id="email" [(ngModel)]="form.email" #email="ngModel" required EmailListValidator>
                     <div *ngIf="email.errors && (email.dirty || email.touched)"><p style="color: red">Invalid email list.</p></div>
                 </div>
-            <!-- Anonymous Results -->
-            <div class="input-group">
-                <input type="checkbox" name="anon" id="anon" [(ngModel)]="form.anon" #anon="ngModel">
-                <label for="anon">Anonymous Results?</label>
-            </div>
             <button type="submit" [disabled]="!f.valid" [ngClass]="f.valid ? 'btn' : 'btn btn--hollow'">Create Election</button>
             <button type="reset" class="btn btn--warning">Clear</button>
         </form>

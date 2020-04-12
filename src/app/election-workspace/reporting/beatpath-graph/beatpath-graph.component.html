@@ -1,22 +1,25 @@
 <h1>Winner:</h1>
 <h2 *ngFor="let winner of beatpath_winner">{{ winner }}</h2>
 
-<h1>Data Array:</h1>
+<h1>Results:</h1>
+<p>This table shows the {{ data_grid_state }} between each ballot option. The ballot options are ordered by their results in the election. The top left performed the best and is the winner. The bottom right performed the worst.</p>
 <table>
     <tbody>
         <tr>
             <th></th>
             <th *ngFor="let label of ia_diagram_labels">
-                <i>p</i>[*,{{ label }}]
+                {{ label }}
+                <!-- <i>p</i>[*,{{ label }}] -->
             </th>
         </tr>
         <tr *ngFor="let label of ia_diagram_labels; let row = index">
             <td>
-                <i>p</i>[{{ label }},*]
+                {{ label }}
+                <!-- <i>p</i>[{{ label }},*] -->
             </td>
-            <td *ngFor="let boggus of ia_pref_strengths; let col = index"
+            <td *ngFor="let boggus of data_grid; let col = index"
                 [ngClass]="tableCellRedOrGreen(row,col)">
-                {{ ia_pref_strengths[row][col]}}
+                {{ data_grid[row][col] }}
             </td>
         </tr>
     </tbody>
@@ -28,3 +31,4 @@
     width="638" 
     height="408">
 </canvas>
+<button class="btn" (click)="switch_data()">Switch Display</button>

@@ -281,8 +281,9 @@ function new_vote_db($type = NULL){
     $pdo_handle->exec("CREATE TABLE vote_ballot_options
                         (
                           election_id   integer,
-                          option_id   integer,
-                          time_stamp  text,
+                          option_id     integer,
+                          rank          integer,
+                          time_stamp    text,
                           primary key (election_id,option_id),
                           foreign key (election_id) references vote_elections(election_id),
                           foreign key (option_id) references vote_options(option_id)

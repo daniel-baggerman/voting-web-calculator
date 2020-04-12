@@ -32,6 +32,9 @@ export class BeatpathBallotCastComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(){
     this.successful_ballot_submittion_sub.unsubscribe();
+
+    // Reset the ballot.
+    this.bp_ballot_service.clear_ballot();
   }
 
   submit_ballot(){

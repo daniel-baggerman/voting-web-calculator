@@ -20,15 +20,16 @@ function get_paths_and_labels($ai_election_id){
 
     // Fetch the options to loop through, fetch_column to get 1D array of values
     $la_options = executeselect("SELECT option_id 
-                                 FROM vote_options 
-                                 WHERE option_id IN (SELECT DISTINCT option_id
-                                                     FROM vote_cast_ballots
-                                                     WHERE election_id = ".$ai_election_id.")
-                                 ORDER BY description",
+                                 FROM vote_ballot_options
+                                 WHERE election_id = ".$ai_election_id."
+                                 AND option_id IN (SELECT DISTINCT option_id
+                                                    FROM vote_cast_ballots
+                                                    WHERE election_id = ".$ai_election_id.")
+                                 ORDER BY rank",
                                  $ab_fetch_column=true
                                 );
 
-    // Blank array to start.
+    // Fetch prefence strengths
     $pref_strengths = [];
     // Add rows for each option
     for( $i=0; $i < count($la_options); $i++ ){
@@ -57,13 +58,42 @@ function get_paths_and_labels($ai_election_id){
         }
     }
 
+    // Fetch strongest paths
+    $strongest_paths = [];
+    // Add rows for each option
+    for( $i=0; $i < count($la_options); $i++ ){
+        array_push($strongest_paths, []);
+    }
+
+    // Add values to array
+    for( $i=0; $i < count($la_options); $i++ ){
+        for( $j=0; $j < count($la_options); $j++ ){
+            // Fetch the value
+            $val = select_scalar("SELECT strongest_path 
+                                    FROM vote_winner_calc 
+                                    WHERE election_id = ".$ai_election_id."
+                                    AND first_option_id   = ".$la_options[$i]."
+                                    AND second_option_id  = ".$la_options[$j]);
+            
+            if(is_string($val)){ 
+                return json_encode(["status" => "Failure :(",
+                                    "message" => $val,
+                                    "data" => []
+                                    ],JSON_NUMERIC_CHECK);
+            }
+            
+            // Store the value in the array
+            array_push($strongest_paths[$i], $val);
+        }
+    }
+
     // Fetch the labels
-    $labels = executeselect("SELECT description 
-                             FROM vote_options 
-                             WHERE option_id IN (SELECT DISTINCT option_id
-                                                 FROM vote_cast_ballots
-                                                 WHERE election_id = ".$ai_election_id.")
-                             ORDER BY description",
+    $labels = executeselect("SELECT DISTINCT description 
+                             FROM vote_options vo
+                             JOIN vote_ballot_options vbo on vbo.option_id = vo.option_id
+                             JOIN vote_cast_ballots vcb on vcb.option_id = vo.option_id and vcb.election_id = vbo.election_id
+                             WHERE vbo.election_id = ".$ai_election_id."
+                             ORDER BY vbo.rank",
                              $ab_fetch_column=true);
     if(is_string($val)){ 
         return json_encode(["status" => "Failure :(",
@@ -73,15 +103,16 @@ function get_paths_and_labels($ai_election_id){
     }
 
     // Fetch the winner
-    $winner = executeselect("SELECT description
-                             FROM vote_election_winners vew
-                             JOIN vote_options vo ON vew.option_id = vo.option_id
-                             WHERE vew.election_id = ".$ai_election_id,
+    $winner = executeselect("SELECT vo.description
+                             FROM vote_options vo 
+                             JOIN vote_ballot_options vbo ON vbo.option_id = vo.option_id
+                             WHERE vbo.rank = 1
+                             AND vbo.election_id = ".$ai_election_id,
                              $ab_fetch_column=true);
 
     if(is_string($winner)){ 
         return json_encode(["status" => "Failure :(",
-                            "message" => $val,
+                            "message" => $winner,
                             "data" => []
                             ],JSON_NUMERIC_CHECK);
     }
@@ -89,6 +120,7 @@ function get_paths_and_labels($ai_election_id){
     $data = json_encode(["status" => "Success!",
                          "message" => "Election data successfully retrieved!",
                          "data" => ["pref_strengths" => $pref_strengths,
+                                    "strongest_paths" => $strongest_paths,
                                     "labels" => $labels,
                                     "winner" => $winner]
                          ],JSON_NUMERIC_CHECK);

@@ -10,21 +10,6 @@ import { ReportingComponent } from './election-workspace/reporting/reporting.com
 import { ElectionWorkspaceComponent } from './election-workspace/election-workspace.component';
 import { BeatpathBallotCastComponent } from './election-workspace/beatpath/beatpath-ballot-cast/beatpath-ballot-cast.component';
 
-// const appRoutes: Routes = [
-//     { path: '', component: HomePageComponent},
-//     { path: 'election_search', component: SearchElectionsComponent},
-//     { path: 'create_election', component: CreateElectionComponent},
-//     { path: 'manage_election/:election_name',
-//         component: ManageElectionComponent,
-//         // canActivateChild: [AuthenticationService],
-//         children: [
-//             { path: 'cast_vote', component: BeatpathBallotCastComponent},
-//             { path: 'reporting', component: ReportingComponent}
-//         ]
-//     },
-//     { path: '**', component: PageNotFoundComponent}
-// ]
-
 const appRoutes: Routes = [
     { path: '', component: HomePageComponent},
     { path: 'election_search', component: SearchElectionsComponent},
@@ -34,10 +19,11 @@ const appRoutes: Routes = [
         // canActivateChild: [AuthenticationService],
         children: [
             { path: 'vote', component: BeatpathBallotCastComponent},
-            { path: 'manage', component: ManageElectionComponent},
-            { path: 'reporting', component: ReportingComponent}
+            { path: 'reporting', component: ReportingComponent},
+            { path: 'manage', component: ManageElectionComponent}
         ]
     },
+    { path: 'v/:voter_code', component: BeatpathBallotCastComponent },
     { path: '**', component: PageNotFoundComponent}
 ]
 

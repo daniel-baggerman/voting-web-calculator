@@ -19,6 +19,8 @@ export class ReportingServiceService implements OnInit{
         [23,     27,     21,     31,     null] // d[E,*]
     ];
   */
+  
+  ia_strongest_paths: Array<[]>; // Data structure same as pref_strengths
 
   ia_node_labels: Array<String>;
   /*
@@ -38,9 +40,8 @@ export class ReportingServiceService implements OnInit{
     this.trans.get_paths_and_labels(this.election_management.election.election_id)
       .subscribe(
         (http_response: http_response) => {
-          // console.log('http_response');
-          // console.log(http_response);
           this.ia_pref_strengths = http_response.data.pref_strengths;
+          this.ia_strongest_paths = http_response.data.strongest_paths;
           this.ia_node_labels = http_response.data.labels;
           this.beatpath_winner = http_response.data.winner;
 
@@ -48,6 +49,7 @@ export class ReportingServiceService implements OnInit{
           this.report_data_updated
             .next({
               pref_strengths: this.ia_pref_strengths.slice(),
+              strongest_paths: this.ia_strongest_paths.slice(),
               labels: this.ia_node_labels.slice(),
               winner: this.beatpath_winner.slice()
               }

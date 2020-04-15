@@ -247,16 +247,15 @@ function new_vote_db($type = NULL){
                           time_stamp        DATE,
                           description       text,
                           long_description  text,
-                          election_winner   integer,
-                          allow_write_ins   integer,
                           start_date        date,
                           end_date          date,
-                          public_private    integer,
+                          public_private    integer default 0,
+                          password_protect  integer default 0,
                           password          text,
-                          anon_results      integer,
                           url_election_name text,
+                          allow_write_ins   integer,
+                          anon_results      integer,
                           primary key (election_id),
-                          foreign key (election_winner) references vote_options(option_id),
                           constraint constraint_name UNIQUE (url_election_name)
                         )");
 
@@ -436,37 +435,7 @@ function new_vote_db($type = NULL){
                             where i = new.i
                             and j = new.j
                             and k = new.k;
-                        end");
-
-    $pdo_handle->exec("CREATE table vote_election_winners
-                        (
-                            election_id integer,
-                            option_id   integer,
-                            time_stamp  text,
-                            primary key (election_id, option_id),
-                            foreign key (election_id) references vote_elections(election_id),
-                            foreign key (option_id) references vote_options(option_id)
-                        )");
-
-    $pdo_handle->exec("create trigger tr_vote_election_winners_time_audit_up
-                        after update on vote_election_winners
-                        for each row
-                        begin
-                            update vote_election_winners
-                            set time_stamp = datetime('now','localtime')
-                            where election_id = new.election_id
-                            and option_id = new.option_id;
-                        end");
-
-    $pdo_handle->exec("create trigger tr_vote_election_winners_time_audit_in
-                        after insert on vote_election_winners
-                        for each row
-                        begin
-                            update vote_election_winners
-                            set time_stamp = datetime('now','localtime')
-                            where election_id = new.election_id
-                            and option_id = new.option_id;
-                        end");                        
+                        end");                      
     
     //insert dummy data
     $pdo_handle->exec("INSERT INTO vote_elections (election_id, description, url_election_name) 

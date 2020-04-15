@@ -1,7 +1,7 @@
 <?php
 include 'vote_db.php';
 function get_election_from_url_name($url_election_name){
-    $data = executeselect( "select election_id, description, long_description
+    $data = executeselect( "select election_id, description, long_description, public_private, password_protect
                             from vote_elections
                             where url_election_name = ?",
                             false,
@@ -14,9 +14,9 @@ function get_election_from_url_name($url_election_name){
     // else convert array to json text and return it
     else{
         $output = json_encode(["status" => "Success!",
-                             "message" => "Election data successfully retrieved!",
-                             "data" => $data
-                             ],JSON_NUMERIC_CHECK);
+                               "message" => "Election data successfully retrieved!",
+                               "data" => $data
+                               ],JSON_NUMERIC_CHECK);
         if($output === false){
             return "Error encoding sql select array as json.";
         }

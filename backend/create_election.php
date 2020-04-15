@@ -82,6 +82,7 @@ function post_new_election($election_data){
                     , end_date
                     , long_description
                     , public_private
+                    , password_protect
                     , password
                     , url_election_name)
                 VALUES 
@@ -93,20 +94,22 @@ function post_new_election($election_data){
                     , ?
                     , ?
                     , ?
+                    , ?
                 )";
 
     $rtn = executesql($sqls,
-                        [
+                        [   
                             $new_election_id,
                             $election_data['name'],
-                            (array_has_key('start_date',$election_data) ? $election_data['start_date'] : ''),
+                            (array_key_exists('start_date',$election_data) ? $election_data['start_date'] : ''),
                             $election_data['end_date'],
                             $election_data['desc'],
-                            ($election_data['radioPublicPrivate'] == 'public' ? '1' : '0'),
-                            ($election_data['radioPublicPrivate'] == 'public' ?
-                                (array_has_key('password_protect',$election_data) ?
+                            ($election_data['public_private'] == 'public' ? '1' : '0'),
+                            (array_key_exists('password_protect',$election_data) ? ($election_data['password_protect'] ? 1 : 0) : 0 ),
+                            ($election_data['public_private'] == 'public' ?
+                                (array_key_exists('password_protect',$election_data) ?
                                     ($election_data['password_protect'] ?
-                                        (array_has_key('password',$election_data) ? 
+                                        (array_key_exists('password',$election_data) ? 
                                             $election_data['password'] 
                                             : '' ) 
                                         : '')

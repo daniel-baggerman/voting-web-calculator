@@ -32,12 +32,12 @@ export class ReportingServiceService implements OnInit{
   beatpath_winner: String[];
 
   constructor(private trans: DBTransactions,
-              private election_management: ManageElectionService) { }
+              private election_manager: ManageElectionService) { }
 
   ngOnInit(){ }
 
   get_beatpath_election_data(){
-    this.trans.get_paths_and_labels(this.election_management.election.election_id)
+    this.trans.get_paths_and_labels(this.election_manager.election.election_id)
       .subscribe(
         (http_response: http_response) => {
           this.ia_pref_strengths = http_response.data.pref_strengths;

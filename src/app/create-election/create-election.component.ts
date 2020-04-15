@@ -9,7 +9,7 @@ import { http_response } from '../shared/http_response.model';
   styleUrls: ['./create-election.component.css']
 })
 export class CreateElectionComponent implements OnInit {
-  @ViewChild('f',{static: false}) election_form: NgForm;
+  // @ViewChild('f',{static: false}) election_form: NgForm;
   create_election_response_msg: string = "";
   election_created: boolean;
 

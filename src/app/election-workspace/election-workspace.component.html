@@ -2,11 +2,6 @@
     <p>Not a valid election. Try <a routerLink="/election_search">searching for a different one</a>.</p>
 </div>
 <div *ngIf="valid_election_url">
-    <!-- 
-    <a routerLink="vote" routerLinkActive="active">Cast Vote</a> <br>
-    <a routerLink="manage" routerLinkActive="active">Manage Election</a> <br>
-    <a routerLink="reporting" routerLinkActive="active">View Reporting</a> <br> 
-    -->
     <section class="grid-container layout-sidebar">
         <div class="grid-sidebar sidebar-nav">
             <a class="sidebar-nav__link" routerLink="vote" routerLinkActive="sidebar-nav__link--active">

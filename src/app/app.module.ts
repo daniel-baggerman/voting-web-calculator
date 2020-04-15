@@ -13,7 +13,6 @@ import { HomePageComponent } from './home-page/home-page.component';
 import { CreateElectionComponent } from './create-election/create-election.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { SearchElectionsComponent } from './search-elections/search-elections.component';
-import { AuthenticationService } from './authentication.service';
 import { ManageElectionComponent } from './election-workspace/manage-election/manage-election.component';
 import { ReportingComponent } from './election-workspace/reporting/reporting.component';
 import { BeatpathGraphComponent } from './election-workspace/reporting/beatpath-graph/beatpath-graph.component';
@@ -21,6 +20,9 @@ import { FooterComponent } from './footer/footer.component';
 import { ElectionWorkspaceComponent } from './election-workspace/election-workspace.component';
 import { EmailListValidatorDirective } from './helpers/email-list-validator.directive';
 import { EndPastStartDirective } from './helpers/end-past-start.directive';
+import { VoterAuthenticationComponent } from './election-workspace/voter_auth/voter-authentication.component';
+import { PrivateBallotVoterAuthComponent } from './election-workspace/private-ballot-voter-auth/private-ballot-voter-auth.component';
+import { AuthGuard } from './auth.guard';
 
 @NgModule({
   declarations: [
@@ -39,7 +41,9 @@ import { EndPastStartDirective } from './helpers/end-past-start.directive';
     FooterComponent,
     ElectionWorkspaceComponent,
     EmailListValidatorDirective,
-    EndPastStartDirective
+    EndPastStartDirective,
+    VoterAuthenticationComponent,
+    PrivateBallotVoterAuthComponent
   ],
   imports: [
     BrowserModule,
@@ -47,7 +51,7 @@ import { EndPastStartDirective } from './helpers/end-past-start.directive';
     AppRoutingModule,
     HttpClientModule
   ],
-  providers: [AuthenticationService],
+  providers: [AuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

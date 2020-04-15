@@ -1,7 +1,12 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, OnDestroy } from '@angular/core';
-import { canvas_data } from 'src/app/shared/canvas_data.model';
 import { ReportingServiceService } from '../reporting-service.service';
 import { Subscription } from 'rxjs';
+
+interface canvas_data {
+    pairwise_data: Array<Array<number>>,
+    labels: Array<String>,
+    winner: Array<String>
+}
 
 @Component({
   selector: 'app-beatpath-graph',
@@ -83,7 +88,6 @@ export class BeatpathGraphComponent implements OnInit, OnDestroy {
   switch_data(){
     // Switches data displayed in the data grid between preference strengths and strongest paths.
     if (this.data_grid_state == 'preference strengths'){
-        console.log(this.data_grid);
         this.data_grid = this.ia_strongest_paths;
         this.data_grid_state = 'strongest paths';
 

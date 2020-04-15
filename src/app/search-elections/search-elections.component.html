@@ -10,8 +10,11 @@
     </div>
     <div *ngIf="searched" class="panel">
         <div *ngFor="let election of elections">
-            <a [routerLink]="['/'+election.url_election_name]" 
+            <!-- <a [routerLink]="['/'+election.url_election_name]" 
                 [state]="{election_id: election.election_id, description: election.description}">
+                {{ election.description }}
+            </a> -->
+            <a [routerLink]="['/'+election.url_election_name]">
                 {{ election.description }}
             </a>
             <br>

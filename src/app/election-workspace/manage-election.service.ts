@@ -5,7 +5,15 @@ import { election } from '../shared/election.model';
   providedIn: 'root'
 })
 export class ManageElectionService{
-  election: election;
+  private _election: election;
 
   constructor() { }
+
+  get election(): election{
+    return this._election;
+  }
+
+  set election(election: election){
+    this._election = election;
+  }
 }

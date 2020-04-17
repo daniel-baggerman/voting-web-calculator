@@ -16,6 +16,7 @@ else{
     try {
         $pdo_handle  = new PDO($pdo_db_name);
         $pdo_handle->exec( 'PRAGMA foreign_keys = ON;' );
+        $pdo_handle->exec( 'PRAGMA case_sensitive_like=ON;' );
     }
     catch (PDOException $e){
         echo 'Caught exception: ',  $e->getMessage(), "\n";
@@ -26,6 +27,9 @@ else{
 function executesql($sqls,$aa_bind_params = NULL)
 // executes dml and ddl. will also execute Select statement but will not error or return any message about it.
 {
+    /*
+        Anything that takes input from the user should use bind params to avoid errors with quotes and possible code injection.
+    */
     global $pdo_handle;
 
     $stmt = $pdo_handle->prepare($sqls);
@@ -54,13 +58,16 @@ function executesql($sqls,$aa_bind_params = NULL)
 } // end executesql()
 
 // ----------------------------------------------------------------------------
-function executeselect($sqls,array $aa_bind_params = NULL)
+function executeselect($sqls, $ab_fetch_column = NULL, array $aa_bind_params = NULL)
 // Executes select statement and returns the data as an array. Returns a string if it errors.
 {
     /*
     $sqls can be defined "plainly" without any retrieval arguments by leaving the bind params array ($aa_bind_params) null.
-    If $aa_bind_params is not null, it will attempt to bind the parameters to the SQL string.
+    If $aa_bind_params is not null, it will attempt to bind the parameters to the SQL string. Anything that takes input from
+    the user should use bind params to avoid errors with quotes and possible code injection.
     See https://www.php.net/manual/en/pdostatement.execute.php for designing select statements with bind params for execute().
+
+    ab_fetch_column can be set to true to change the fetch behavior to return a one-dimensional array useful for fetching just one column. https://phpdelusions.net/pdo/fetch_modes#FETCH_COLUMN
     */
 
     global $pdo_handle;
@@ -73,13 +80,22 @@ function executeselect($sqls,array $aa_bind_params = NULL)
         return "Error: SQL Select script failed on prepare.\r\nError Code: ".$err[1]."\r\nError Message: ".$err[2]."\r\nSQL: ".$sqls;
     }
 
+    // bind variables if provided
+    if (!is_null($aa_bind_params)){
+        foreach($aa_bind_params as $bind_var => $bind_val){
+            if(is_int($bind_var)){ //check if array is indexed by number or string, allows for '?' parameter binding
+                $rtn = $stmt->bindValue($bind_var+1, $bind_val);
+            } else {
+                $rtn = $stmt->bindValue($bind_var, $bind_val);
+            }
+            if($rtn === false){
+                return "Error: SQL Select script faild on binding parameters to prepared statement.";
+            }
+        }
+    }
+
     // check if bind params are null to determine what kind of select to do.
-    if (is_null($aa_bind_params)){
-        $result = $stmt->execute();
-    }
-    else{
-        $result = $stmt->execute($aa_bind_params);
-    }
+    $result = $stmt->execute();
     
     // if the select statement errored, return an error message.
     if ($result === false){
@@ -88,7 +104,13 @@ function executeselect($sqls,array $aa_bind_params = NULL)
     }
     
     // retrieve the data
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if ($ab_fetch_column == false){
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    elseif ($ab_fetch_column == true){
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC|PDO::FETCH_COLUMN);
+    }
+
     // check if data retrieval worked
     if ($data === false){
         $err = $pdo_handle->errorInfo();
@@ -187,7 +209,7 @@ function new_vote_db($type = NULL){
     try {
         $pdo_handle  = new PDO($pdo_db_name);
         $pdo_handle->exec( 'PRAGMA foreign_keys = ON;' );
-        //$pdo_handle->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo_handle->exec( 'PRAGMA case_sensitive_like=ON;' );
     }
     catch (PDOException $e){
         echo "Caught exception: ",  $e->getMessage(), "\n";
@@ -225,16 +247,15 @@ function new_vote_db($type = NULL){
                           time_stamp        DATE,
                           description       text,
                           long_description  text,
-                          election_winner   integer,
-                          allow_write_ins   integer,
                           start_date        date,
                           end_date          date,
-                          public_private    integer,
+                          public_private    integer default 0,
+                          password_protect  integer default 0,
                           password          text,
-                          anon_results      integer,
                           url_election_name text,
+                          allow_write_ins   integer,
+                          anon_results      integer,
                           primary key (election_id),
-                          foreign key (election_winner) references vote_options(option_id),
                           constraint constraint_name UNIQUE (url_election_name)
                         )");
 
@@ -259,8 +280,9 @@ function new_vote_db($type = NULL){
     $pdo_handle->exec("CREATE TABLE vote_ballot_options
                         (
                           election_id   integer,
-                          option_id   integer,
-                          time_stamp  text,
+                          option_id     integer,
+                          rank          integer,
+                          time_stamp    text,
                           primary key (election_id,option_id),
                           foreign key (election_id) references vote_elections(election_id),
                           foreign key (option_id) references vote_options(option_id)
@@ -346,14 +368,13 @@ function new_vote_db($type = NULL){
 
     $pdo_handle->exec("CREATE TABLE vote_winner_calc
                         (
-                          run_id            integer,
                           election_id       integer,
                           first_option_id   integer,
                           second_option_id  integer,
                           pref_strength     integer,
                           strongest_path    integer,
                           time_stamp        text,
-                          primary key (run_id, election_id, first_option_id, second_option_id),
+                          primary key (election_id, first_option_id, second_option_id),
                           foreign key (election_id) references vote_elections(election_id),
                           foreign key (first_option_id) references vote_options(option_id),
                           foreign key (second_option_id) references vote_options(option_id)
@@ -383,7 +404,6 @@ function new_vote_db($type = NULL){
 
     $pdo_handle->exec("CREATE TABLE vote_winner_calc_audit
                         (
-                          run_id         integer,
                           election_id    integer,
                           i              integer,
                           j              integer,
@@ -415,12 +435,12 @@ function new_vote_db($type = NULL){
                             where i = new.i
                             and j = new.j
                             and k = new.k;
-                        end");
+                        end");                      
     
     //insert dummy data
     $pdo_handle->exec("INSERT INTO vote_elections (election_id, description, url_election_name) 
-                        SELECT 1, 'Test Ballot 1', 'Test_Ballot_1' union 
-                        select 2, 'Test Ballot 2', 'Test_Ballot_2' ");
+                        SELECT 1, 'Test Ballot 1', 'test_ballot_1' union 
+                        select 2, 'Test Ballot 2', 'test_ballot_2' ");
 
     $pdo_handle->exec("INSERT INTO vote_voters (voter_id, voter_name)
                         SELECT 1,'Daniel'  UNION

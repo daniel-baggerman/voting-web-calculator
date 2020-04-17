@@ -13,21 +13,19 @@ function f_election_winner_process( $ai_election_id ){
         ai_election_id: election_id argument passed to designate election winner to be calculated
         ls_msg: local string variable for storing messages to return from the function
     */
-
-    // Get the next run_id
-    $ln_run_id = select_scalar("select ifnull(max(run_id),0)+1 from vote_winner_calc where election_id = ".$ai_election_id);
     
-    $ls_msg = f_initialize( $ai_election_id, $ln_run_id );
+    // start the calc
+    $ls_msg = f_initialize( $ai_election_id );
     if($ls_msg <> 'OK'){
         return $ls_msg;
     }
 
-    $ls_msg = f_strongest_path( $ai_election_id, $ln_run_id );
+    $ls_msg = f_strongest_path( $ai_election_id );
     if($ls_msg <> 'OK'){
         return $ls_msg;
     }
 
-    $ls_msg = f_winner_calc( $ai_election_id, $ln_run_id );
+    $ls_msg = f_winner_calc( $ai_election_id );
     if($ls_msg <> 'OK'){
         return $ls_msg;
     }
@@ -39,7 +37,7 @@ function f_election_winner_process( $ai_election_id ){
                         ]);
 }
 
-function f_initialize( $ai_election_id, $ai_run_id ){
+function f_initialize( $ai_election_id ){
 /* 
     Initialize the database with info about election and setting up rows to store info.
 
@@ -50,30 +48,54 @@ function f_initialize( $ai_election_id, $ai_run_id ){
     option_pairs: local array of option pairs in an election for comparison
     la_voters: local array of voters in the election
 */
-
-    // initialize winner calc with election and options info
-    // join the cast ballots table to itself on election_id and voter_id to get a crosswise comparison of each option on a voter's ballot
-    // then count the number of times option A is ranked more highly than option B
-    // update the pref_strength and strongest_path to the base preference strength from this count. The strongest path will be updated later.
-
-    $ls_msg = executesql(" INSERT INTO vote_winner_calc (run_id, election_id, first_option_id, second_option_id, pref_strength, strongest_path)
-                            SELECT ".$ai_run_id." run_id, a.election_id election_id, a.option_id first_option_id, b.option_id second_option_id, count(1) pref_strength, count(1) strongest_path
-                            FROM vote_cast_ballots a
-                            LEFT OUTER JOIN vote_cast_ballots b ON a.election_id = b.election_id AND a.voter_id = b.voter_id
-                            WHERE a.election_id=".$ai_election_id."
-                            AND a.option_id<>b.option_id
-                            AND a.option_rank<b.option_rank
-                            GROUP BY a.election_id, a.option_id, b.option_id");
+    $ls_msg = executesql( "DELETE from vote_winner_calc where election_id = ".$ai_election_id );
 
     if($ls_msg<>"OK"){
-        rollback_winner_calc($ai_election_id, $ai_run_id);
+        rollback_winner_calc($ai_election_id);
+        return "Error clearing into vote_winner_calc. Error Message:\r\n".$ls_msg;
+    }
+
+    // initialize winner calc with election and options info
+    // vote_cast_ballots_temp logic creates a table like vote_cast_ballots but where options not ranked by a voter are placed in dead last tied on their ballot
+    // join the cast ballots temp table (vote_cast_ballots_temp) to itself on election_id and voter_id to get a crosswise comparison of each option on a voter's ballot
+    // then count the number of times option A is ranked more highly than option B.
+    // I used sum() instead of count() because count was excluding option pairs where no one ranked X above Y.
+    // update the pref_strength and strongest_path to the base preference strength from this count. The strongest path will be updated later.
+
+    $ls_msg = executesql("INSERT INTO vote_winner_calc (election_id, first_option_id, second_option_id, pref_strength, strongest_path)
+        WITH vote_cast_ballots_temp AS
+        (   SELECT vote_cast_ballots.election_id, vote_cast_ballots.voter_id, vote_cast_ballots.option_id, ifnull(voter_option_ranks.option_rank,16180339) option_rank
+            FROM (SELECT vbo.election_id, option_id, voters.voter_id 
+                    FROM vote_ballot_options vbo
+                    JOIN (SELECT DISTINCT election_id, voter_id FROM vote_cast_ballots) voters ON vbo.election_id = voters.election_id
+                    WHERE vbo.election_id = ".$ai_election_id."
+                    ) vote_cast_ballots
+            LEFT JOIN vote_cast_ballots voter_option_ranks 
+                ON vote_cast_ballots.option_id    = voter_option_ranks.option_id 
+                AND vote_cast_ballots.election_id = voter_option_ranks.election_id 
+                AND vote_cast_ballots.voter_id    = voter_option_ranks.voter_id
+        )
+        SELECT DISTINCT a.election_id election_id, a.option_id first_option_id, b.option_id second_option_id,
+            sum(case when a.option_rank-b.option_rank<0  then 1
+                when a.option_rank-b.option_rank>=0 then 0
+            end) over (partition by 1, a.election_id, a.option_id, b.option_id) pref_strength,
+            sum(case when a.option_rank-b.option_rank<0  then 1
+                when a.option_rank-b.option_rank>=0 then 0
+            end) over (partition by 1, a.election_id, a.option_id, b.option_id) strongest_path
+        FROM vote_cast_ballots_temp a
+        LEFT OUTER JOIN vote_cast_ballots_temp b ON a.election_id = b.election_id AND a.voter_id = b.voter_id
+        WHERE a.option_id<>b.option_id
+        ORDER BY a.voter_id, a.option_id, b.option_id");
+
+    if($ls_msg<>"OK"){
+        rollback_winner_calc($ai_election_id);
         return "Error inserting into vote_winner_calc. Error Message:\r\n".$ls_msg;
     } else {
         return $ls_msg;
     }
 }
 
-function f_strongest_path( $ai_election_id, $ai_run_id ){
+function f_strongest_path( $ai_election_id ){
 /* 
     Calculate the strongest path for each option pair using modified Floyd–Warshall algorithm.
 
@@ -87,18 +109,26 @@ function f_strongest_path( $ai_election_id, $ai_run_id ){
 */
 
     $la_options = executeselect("SELECT DISTINCT option_id
-                                    FROM vote_cast_ballots
-                                    WHERE election_id = " . strval($ai_election_id)." 
-                                    ORDER BY option_id"
+                                 FROM vote_cast_ballots
+                                 WHERE election_id = ".strval($ai_election_id)." 
+                                 ORDER BY option_id"
                                 );
 
     if(empty($la_options) or is_null($la_options)){
-        rollback_winner_calc($ai_election_id, $ai_run_id);
-        $ls_msg = "Error: Unable to retrieve options in election: " . strval($ai_election_id);
+        rollback_winner_calc($ai_election_id);
+        $ls_msg = "Error: Unable to retrieve options in election: ".strval($ai_election_id);
         return $ls_msg;
     };
 
+    // clear audit table before the calc
+    $ls_msg = executesql("DELETE FROM vote_winner_calc_audit WHERE election_id=".$ai_election_id);
+    
+    if($ls_msg <> "OK"){
+        return "Error error deleting from vote_winner_calc_audit. Error message:\r\n".$ls_msg;
+    }
+
     // modified Floyd–Warshall algorithm
+    // compares the path from j to k against any alternative route from j to k through i
     for($i = 0; $i < count($la_options); $i++){
         for($j = 0; $j < count($la_options); $j++){
             if($i <> $j){
@@ -111,7 +141,6 @@ function f_strongest_path( $ai_election_id, $ai_run_id ){
                         $pref_jk = select_scalar(  "SELECT strongest_path
                                                     FROM vote_winner_calc
                                                     WHERE election_id    = " . strval($ai_election_id) . "
-                                                    AND run_id           = " . strval($ai_run_id) . "
                                                     AND first_option_id  = " . strval($la_options[$j]['option_id']) . "
                                                     AND second_option_id = " . strval($la_options[$k]['option_id'])
                                                 );
@@ -119,7 +148,6 @@ function f_strongest_path( $ai_election_id, $ai_run_id ){
                         $pref_ji = select_scalar(  "SELECT strongest_path
                                                     FROM vote_winner_calc
                                                     WHERE election_id    = " . strval($ai_election_id) . "
-                                                    AND run_id           = " . strval($ai_run_id) . "
                                                     AND first_option_id  = " . strval($la_options[$j]['option_id']) . "
                                                     AND second_option_id = " . strval($la_options[$i]['option_id'])
                                                 );
@@ -127,7 +155,6 @@ function f_strongest_path( $ai_election_id, $ai_run_id ){
                         $pref_ik = select_scalar(  "SELECT strongest_path
                                                     FROM vote_winner_calc
                                                     WHERE election_id    = " . strval($ai_election_id) . "
-                                                    AND run_id           = " . strval($ai_run_id) . "
                                                     AND first_option_id  = " . strval($la_options[$i]['option_id']) . "
                                                     AND second_option_id = " . strval($la_options[$k]['option_id'])
                                                 );
@@ -135,27 +162,26 @@ function f_strongest_path( $ai_election_id, $ai_run_id ){
                         // Compare the preferences. This is where the magic happens.
                         $strongest_path = max( $pref_jk, min( $pref_ji, $pref_ik ) );
 
+                        // save the variables used for calc in audit table in case the processing logic needs to be checked
+                        $ls_msg = executesql("INSERT INTO vote_winner_calc_audit (election_id, i,j,k, pref_jk, pref_ji, pref_ik, strongest_path)
+                                              VALUES (".$ai_election_id.",".$i.",".$j.",".$k.",".$pref_jk.",".$pref_ji.",".$pref_ik.",".$strongest_path.")");
+                    
+                        if($ls_msg <> "OK"){
+                            rollback_winner_calc($ai_election_id);
+                            return "Error inserting into calc audit in strongest path calc. Error message:\r\n".$ls_msg;
+                        }
+                        
+                        // update the strongest path
                         $ls_msg = executesql("UPDATE vote_winner_calc
                                                 SET strongest_path    = " . strval($strongest_path) . "
                                                 WHERE election_id     = " . strval($ai_election_id) . "
-                                                AND run_id            = " . strval($ai_run_id) . "
                                                 AND first_option_id   = " . strval($la_options[$j]['option_id']) . "
                                                 AND second_option_id  = " . strval($la_options[$k]['option_id']) 
                                             );
 
                         if($ls_msg <> "OK"){
-                            rollback_winner_calc($ai_election_id, $ai_run_id);
+                            rollback_winner_calc($ai_election_id);
                             return "Error updating vote_winner_calc in strongeth path calc. Error message:\r\n".$ls_msg;
-                        }
-
-                        // save the variables used for calc in audit table in case the processing logic needs to be checked
-                        $ls_msg = executesql("INSERT INTO vote_winner_calc_audit (run_id, election_id, i,j,k, pref_jk, pref_ji, pref_ik, strongest_path)
-                                                VALUES (".$ai_election_id.", ".$ai_run_id.", ".$i.",".$j.",".$k.",".$pref_jk.",".$pref_ji.",".$pref_ik.",".$strongest_path.")");
-                    
-                        if($ls_msg <> "OK"){
-                            // executesql( "delete from vote_winner_calc_audit where election_id = ".$ai_election_id." AND run_id = ".$ai_run_id )
-                            rollback_winner_calc($ai_election_id, $ai_run_id);
-                            return "Error inserting into calc audit in strongest path calc. Error message:\r\n".$ls_msg;
                         }
                     }
                 }
@@ -164,7 +190,7 @@ function f_strongest_path( $ai_election_id, $ai_run_id ){
     }
 
     if($ls_msg<>"OK"){
-        rollback_winner_calc($ai_election_id, $ai_run_id);
+        rollback_winner_calc($ai_election_id);
         return "Error during strongest path calculation. Error Message:\r\n".$ls_msg;
     }
     else{
@@ -172,64 +198,93 @@ function f_strongest_path( $ai_election_id, $ai_run_id ){
     }
 }
 
-function f_winner_calc( $ai_election_id, $ai_run_id ){
-/* 
-    Calculate the winner of the election. 
+function f_winner_calc( $ai_election_id ){
+    /* 
+    Calculate the winner of the election and the ranking of all the options.
 
     ls_msg: string for holding error messages or return 'OK' for successful function completion
-    pref_ij: stores preference for option i over j
-    pref_ji: stores preference for option j over i
+    pref_ij: stores strongest path for option i over j
+    pref_ji: stores strongest path for option j over i
     la_options: array that stores IDs of options in the election
     */
-    $la_options = executeselect("SELECT DISTINCT option_id
-                                    FROM vote_cast_ballots
-                                    WHERE election_id = ".strval($ai_election_id)
-                                );
+
+    $la_options = executeselect( "SELECT DISTINCT option_id FROM vote_cast_ballots WHERE election_id = ".$ai_election_id );
 
     if(empty($la_options) or is_null($la_options)){
-        rollback_winner_calc($ai_election_id, $ai_run_id);
-        $ls_msg = "Unable to retrieve options in election: " . strval($ai_election_id);
+        rollback_winner_calc($ai_election_id);
+        $ls_msg = "Unable to retrieve options in election: ".$ai_election_id;
         return $ls_msg;
     };
 
-    for($i = 0; $i < count($la_options); $i++){
-        // start off assuming i is the winner and remove that if a stronger preference over i is found.
-        $ls_msg = executesql("UPDATE vote_elections SET election_winner = " . strval($la_options[$i]['option_id']) . " WHERE election_id = " . strval($ai_election_id));
+    // After an option is declared a winner in the for loop over rank below, it is added to the removed list so that the next loop will compare all options except the ones that have won already.
+    $la_removed_options = [];
+    $rank = 1;
+
+    // Start by finding the first winner, rank 1.    
+    while($rank <= count($la_options)){
         
-        if($ls_msg <> "OK"){
-            return "Error updating vote_elections with winner. Error message:\r\n".$ls_msg;
-        }
+        // Loop through each option
+        for($i = 0; $i < count($la_options); $i++){
 
-        for($j = 0; $j < count($la_options); $j++){
-            if($i<>$j){
-                // fetch strongest paths for the options
-                $pref_ij = select_scalar(  "SELECT strongest_path
-                                            FROM vote_winner_calc
-                                            WHERE election_id      = " . strval($ai_election_id) . "
-                                            AND run_id             = " . strval($ai_run_id) . "
-                                            AND first_option_id    = " . strval($la_options[$i]['option_id']) . "
-                                            AND second_option_id   = " . strval($la_options[$j]['option_id'])
-                                        ) ;
+            // Skip this option, i, if it has been removed already.
+            if(in_array($la_options[$i]['option_id'],$la_removed_options)){
+                continue;
+            }
 
-                $pref_ji = select_scalar(  "SELECT strongest_path
-                                            FROM vote_winner_calc
-                                            WHERE election_id      = " . strval($ai_election_id) . "
-                                            AND run_id             = " . strval($ai_run_id) . "
-                                            AND first_option_id    = " . strval($la_options[$j]['option_id']) . "
-                                            AND second_option_id   = " . strval($la_options[$i]['option_id'])
-                                        ) ;
+            // Assume they are a winner until defeated later.
+            $winner = true;
 
-                // if there is an option with a higher strongest path over i then i is not the winner.
-                // don't set j to winner because that option will be considered elsewhere in the loop
-                if($pref_ji > $pref_ij){
-                    $ls_msg = executesql("UPDATE vote_elections SET election_winner = ".$la_options[$j]['option_id']." WHERE election_id = " . strval($ai_election_id));
+            // Compare i to every other option, j.
+            for($j = 0; $j < count($la_options); $j++){
+                if($i<>$j){
+
+                    // Skip this comparison if option j has been removed already.
+                    if(in_array($la_options[$j]['option_id'],$la_removed_options)){
+                        continue;
+                    }
+
+                    // Fetch strongest paths for the options
+                    $pref_ij = select_scalar(  "SELECT strongest_path
+                                                FROM vote_winner_calc
+                                                WHERE election_id      = ".$ai_election_id."
+                                                AND first_option_id    = ".$la_options[$i]['option_id']."
+                                                AND second_option_id   = ".$la_options[$j]['option_id']
+                                            );
+
+                    $pref_ji = select_scalar(  "SELECT strongest_path
+                                                FROM vote_winner_calc
+                                                WHERE election_id      = ".$ai_election_id."
+                                                AND first_option_id    = ".$la_options[$j]['option_id']."
+                                                AND second_option_id   = ".$la_options[$i]['option_id']
+                                            );
+
+                    // If j beats i, then i is not the winner.
+                    if($pref_ji > $pref_ij){
+                        $winner = false;
+                    }
                 }
+            }
+
+            // If i survived elimination, i is the winner 
+            if($winner){
+                array_push($la_removed_options,$la_options[$i]['option_id']);
+
+                $ls_msg = executesql("UPDATE vote_ballot_options
+                                      SET rank = ".$rank."
+                                      WHERE election_id = ".$ai_election_id."
+                                      AND option_id = ".$la_options[$i]['option_id']);
+                if($ls_msg <> "OK"){
+                    rollback_winner_calc($ai_election_id);
+                    return "Error updating option rank. Error message:\r\n".$ls_msg;
+                }
+
+                $rank++;
             }
         }
     }
 
     if($ls_msg<>"OK"){
-        rollback_winner_calc($ai_election_id, $ai_run_id);
+        rollback_winner_calc($ai_election_id);
         return "Error during final winner calculation. Error Message:\r\n".$ls_msg;
     }
     else{
@@ -237,8 +292,12 @@ function f_winner_calc( $ai_election_id, $ai_run_id ){
     }
 }
 
-function rollback_winner_calc($ai_election_id, $ai_run_id){
-    $ls_msg = executesql( "DELETE FROM vote_winner_calc WHERE election_id=".strval($ai_election_id)." AND run_id=".strval($ai_run_id) );
+function rollback_winner_calc($ai_election_id){
+    $ls_msg = executesql( "DELETE FROM vote_winner_calc WHERE election_id=".$ai_election_id);
+    if($ls_msg<>"OK"){
+        return "Error during rollback of winner calculation. Error Message:\r\n".$ls_msg;
+    }
+    $ls_msg = executesql( "UPDATE vote_ballot_options SET rank = NULL WHERE election_id=".$ai_election_id);
     if($ls_msg<>"OK"){
         return "Error during rollback of winner calculation. Error Message:\r\n".$ls_msg;
     }

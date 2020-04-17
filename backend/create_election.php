@@ -5,14 +5,17 @@ $ga_postdata = file_get_contents('php://input');
 
 /* example of expected postdata
 {
-    "name":"arst",
-    "start_date":"2019-12-02",
-    "end_date":"2019-12-04",
-    "desc":"long description",
-    "options":"a;r;s;t;",
-    "radioPublicPrivate":"public",
-    "password":"",
-    "anon":true
+    desc: "This is a long description."
+    end_date: "2020-04-09"
+    name: "Test Ballot 3"
+    options: "a;b;c;d"
+    start_date: "2020-04-07" // optional
+    public_private: "public" || "private"
+    // these two if public
+    password_protect: false
+    password: arst // only if password_protect = true
+    // this if private
+    email: "adam@test.com,barb@test.com"
 }
 */
 
@@ -32,7 +35,13 @@ function post_new_election($election_data){
 
     // insert election
     // check that the election name is unique
-    $unique_check = select_scalar("select count(1) from vote_elections where description = '".$election_data['name']."'");
+    $unique_check = select_scalar("select count(1) from vote_elections where description = ?"
+                                    , array($election_data['name']));
+
+    if(is_string($unique_check)){
+        rollback_create_election($new_election_id);
+        return "Error selecting election count for unique check. Error Message: \r\n".$unique_check;
+    }
 
     if($unique_check !== 0){
         return "Cannot complete operation. Election name must be unique.";
@@ -45,7 +54,7 @@ function post_new_election($election_data){
     $url_election_name = $election_data['name'];
     $url_election_name = str_replace(' ','_',$url_election_name); // Replace spaces with underscores
     $url_election_name = str_replace(str_split(';,/?:@&=+$'),'',$url_election_name); // Remove special characters
-    $url_election_name = rawurlencode($url_election_name); // Encode anything left
+    $url_election_name = strtolower(rawurlencode($url_election_name)); // Encode anything left and lower it
 
     // check that the url encoding is unique. If it's not unique, then try to add numbers to the end of it until it is unique.
     $unique_check = select_scalar("select count(1) from vote_elections where url_election_name = '".$url_election_name."'");
@@ -66,29 +75,49 @@ function post_new_election($election_data){
     };
 
     // insert the data into the vote_elections table
-    $sqls = "insert into vote_elections 
-                (   election_id
+    $sqls = "INSERT INTO vote_elections 
+                (     election_id
                     , description
                     , start_date
                     , end_date
                     , long_description
                     , public_private
+                    , password_protect
                     , password
-                    , anon_results
                     , url_election_name)
-                values 
-                (   ".$new_election_id."
-                    , '".$election_data['name']."'
-                    , date('".$election_data['start_date']."')
-                    , date('".$election_data['end_date']."')
-                    , '".$election_data['desc']."'
-                    , ".($election_data['radioPublicPrivate'] == 'public' ? '1' : '0')."
-                    , '".$election_data['password']."'
-                    , ".($election_data['anon'] ? "1" : "0")."
-                    , '".$url_election_name."'
+                VALUES 
+                (     ?
+                    , ?
+                    , date(?)
+                    , date(?)
+                    , ?
+                    , ?
+                    , ?
+                    , ?
+                    , ?
                 )";
 
-    $rtn = executesql($sqls);
+    $rtn = executesql($sqls,
+                        [   
+                            $new_election_id,
+                            $election_data['name'],
+                            (array_key_exists('start_date',$election_data) ? $election_data['start_date'] : ''),
+                            $election_data['end_date'],
+                            $election_data['desc'],
+                            ($election_data['public_private'] == 'public' ? '1' : '0'),
+                            (array_key_exists('password_protect',$election_data) ? ($election_data['password_protect'] ? 1 : 0) : 0 ),
+                            ($election_data['public_private'] == 'public' ?
+                                (array_key_exists('password_protect',$election_data) ?
+                                    ($election_data['password_protect'] ?
+                                        (array_key_exists('password',$election_data) ? 
+                                            $election_data['password'] 
+                                            : '' ) 
+                                        : '')
+                                    : '')
+                                : '' ),
+                            $url_election_name
+                        ]
+                    );
 
     if($rtn <> "OK"){
         rollback_create_election($new_election_id);
@@ -99,18 +128,18 @@ function post_new_election($election_data){
 
     // explode the options from $election_data into an array based on the ';' character, then use the strlen() function
     // to filter out any elements of the array that are empty or null. Then trim the resulting elements.
-    $options = array_map('trim') array_filter( explode(';', $election_data['options']) ,'strlen') );
+    $options = array_map('trim', array_filter( explode(';', $election_data['options']) ,'strlen') );
 
     foreach($options as $option){
         // check that option description is already in use. 
         // If it's not already in use, make a new one, else use the old one.
-        $option_id = select_scalar('select option_id from vote_options where description="'. $option.'"');
+        $option_id = select_scalar('select option_id from vote_options where description=?',array($option));
 
         if( empty($option_id) ){
             // insert the option into vote_options
             $max_id = select_scalar('select max(option_id)+1 from vote_options');
             $rtn = executesql( 'insert into vote_options (option_id, description)
-                                values ('.$max_id.', "'.$option.'")' );
+                                values (?, ?)' , array($max_id, $option));
             if($rtn <> 'OK'){
                 rollback_create_election($new_election_id);
                 return "Error inserting into vote_options. Error Message: \r\n".$rtn;
@@ -136,6 +165,8 @@ function post_new_election($election_data){
             }
         }
     }
+
+    // TODO: do something with email list passed
 
     return json_encode(["status" => "Success!",
                         "message" => "Election successfully created!",

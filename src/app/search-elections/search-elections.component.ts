@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { DBTransactions } from '../db_transactions.service';
 import { election } from '../shared/election.model';
+import { http_response } from '../shared/http_response.model';
 
 @Component({
   selector: 'app-search-elections',
@@ -17,12 +18,27 @@ export class SearchElectionsComponent implements OnInit {
 
   ngOnInit() { }
 
+  // get_elections_like(form: NgForm){
+  //   this.trans.get_elections_like(form.value.searched_election)
+  //   .subscribe(
+  //     (data: {election_id: number, description: string, url_election_name: string}[]) => {
+  //       this.searched = true;
+  //       this.elections = data;
+  //     },
+  //     (error) => {
+  //       alert(error.message);
+  //       console.error(error);
+  //     }
+  //   );
+  // }
+
   get_elections_like(form: NgForm){
-    this.trans.get_elections_like(form.value.name)
+    this.trans.get_elections_like(form.value.searched_election)
     .subscribe(
-      (data: {election_id: number, description: string, url_election_name: string}[]) => {
+      (http_response: http_response) => {
         this.searched = true;
-        this.elections = data;
+        this.elections = http_response.data.elections;
+        console.log(this.elections);
       },
       (error) => {
         alert(error.message);

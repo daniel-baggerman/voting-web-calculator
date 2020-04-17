@@ -1,21 +1,23 @@
-<div>
-    <div>
+<section class="grid-container layout-narrow">
+    <div class="panel">
         <form (ngSubmit)="get_elections_like(f)" #f="ngForm">
-            <div>
-                <label>Election Name</label>
-                <input type="text" name="name" id="name" ngModel required>
+            <div class="input-group">
+                <label for="election_search">Search:</label>
+                <input type="search" placeholder="Search input" id="election_search" name="searched_election" ngModel required>
             </div>
-            <div>
-                <button type="submit" [disabled]="!f.valid" class="submit">Search Elections</button>
-            </div>
+            <button type="submit" [disabled]="!f.valid" class="btn">Search Elections</button>
         </form>
     </div>
-    <ul *ngIf="searched">
-        <li *ngFor="let election of elections">
-            <a [routerLink]="['/manage_election',election.url_election_name]" 
+    <div *ngIf="searched" class="panel">
+        <div *ngFor="let election of elections">
+            <!-- <a [routerLink]="['/'+election.url_election_name]" 
                 [state]="{election_id: election.election_id, description: election.description}">
                 {{ election.description }}
+            </a> -->
+            <a [routerLink]="['/'+election.url_election_name]">
+                {{ election.description }}
             </a>
-        </li>
-    </ul>
-</div>
+            <br>
+        </div>
+    </div>
+</section>

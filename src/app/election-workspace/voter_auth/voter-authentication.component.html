@@ -1,0 +1,19 @@
+<form class="create-poll-form" (ngSubmit)="submit(f)" #f="ngForm">
+    <div [ngSwitch]="election_type">
+        <div *ngSwitchCase="'private'">
+            <!-- private and username -->
+            <div class="input-group">
+                <label for="ballot_code">Ballot Code</label>
+                <input type="text" name="ballot_code" id="ballot_code" required>
+            </div>
+        </div>
+        <div *ngSwitchCase="'public'">
+            <!-- public and password -->
+            <div class="input-group">
+                <label for="password">Poll Password</label>
+                <input type="password" name="password" id="password" required>
+            </div>
+        </div>
+    </div>
+    <button type="submit" [disabled]="!f.valid" [ngClass]="f.valid ? 'btn' : 'btn btn--hollow'">Submit</button>
+</form>

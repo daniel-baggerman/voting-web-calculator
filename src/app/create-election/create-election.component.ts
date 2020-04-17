@@ -9,42 +9,45 @@ import { http_response } from '../shared/http_response.model';
   styleUrls: ['./create-election.component.css']
 })
 export class CreateElectionComponent implements OnInit {
-  @ViewChild('f',{static: false}) election_form: NgForm;
-
+  // @ViewChild('f',{static: false}) election_form: NgForm;
   create_election_response_msg: string = "";
+  election_created: boolean;
 
-  public_private: string;
+  form: any = {};
 
   constructor(private trans: DBTransactions) { }
 
   ngOnInit() {
   }
 
-  create_election(form: NgForm){
-    // example form value
-    // value: {
-    // ​​​  anon: true
-    // ​​ ​ desc: "A poll."
-    // ​ ​​ halt_date: "2019-12-02"
-    // ​ ​​ name: "Test"
-    //  ​​ ​options: "A;b;c;d;E"
-    //  ​​ ​password: "password"
-    //  ​​ ​radioPublicPrivate: "public"
-    //  ​​ ​start_date: "2019-12-02"
-    // }
+  create_election(){
+    /* example of expected postdata
+    {
+        desc: "This is a long description."
+        end_date: "2020-04-09"
+        name: "Test Ballot 3"
+        options: "a;b;c;d"
+        start_date: "2020-04-07" // optional
+        public_private: "public" || "private"
+        // these two if public
+        password_protect: false
+        password: arst // only if password_protect = true
+        // this if private
+        email: "adam@test.com,barb@test.com"
+    }
+    */
 
-    this.trans.create_election(form.value).subscribe(
+    console.log(this.form);
+
+    this.trans.create_election(this.form).subscribe(
       (http_response: http_response) => {
         this.create_election_response_msg = http_response.message;
+        this.election_created = true;
       },
       (error) => {
         alert( error.error.text );
         // console.error(error);
       }
     );
-  }
-
-  clear_form(){
-    this.election_form.reset();
   }
 }

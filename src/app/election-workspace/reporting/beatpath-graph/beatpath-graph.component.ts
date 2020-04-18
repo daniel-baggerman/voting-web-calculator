@@ -190,9 +190,11 @@ export class BeatpathGraphComponent implements OnInit, OnDestroy {
     /* Useful variables                                */
     /* ----------------------------------------------- */
 
-    var ctx:CanvasRenderingContext2D = canvas.getContext("2d"),
-        width = canvas.width,
-        height = canvas.height,
+    var canvasElement = document.getElementById("canvasElement"),
+        ctx:CanvasRenderingContext2D = canvas.getContext("2d"),
+        width = canvasElement.parentNode.clientWidth * window.devicePixelRatio,
+        height = width,
+        scalingFactor = canvas.parentNode.clientWidth, // by default, the canvas should be about 416 pixels wide (if in a 2-column layout)
         
         // In our HTML canvas, we passed the array [ia_pref_strengths, ia_node_labels] to it through the custom v-draw-canvas directive, so now we're accessing that array below:
         data = inputData.pairwise_data,
@@ -219,53 +221,60 @@ export class BeatpathGraphComponent implements OnInit, OnDestroy {
             // This means the arrow goes from A (stronger node) to B (weaker node) with a strength value of 24
         ],
         
-    /* ----------------------------------------------- */
-    /* Settings                                        */
-    /* ----------------------------------------------- */
+        /* ----------------------------------------------- */
+        /* Settings                                        */
+        /* ----------------------------------------------- */
         
         // Padding around the edges of the canvas
-        canvasPadding = 48,
+        canvasPadding = scalingFactor / 17, // ~24px
         
+        // Get the main colors used on the page
+        colorPrimary = getComputedStyle(document.body).getPropertyValue('--color-text'),
+        colorSecondary = getComputedStyle(document.body).getPropertyValue('--color-blue'),
+        colorSecondaryFaint = getComputedStyle(document.body).getPropertyValue('--color-blue-faint'),
+        colorSuccess = getComputedStyle(document.body).getPropertyValue('--color-green'),
+        colorSuccessFaint = getComputedStyle(document.body).getPropertyValue('--color-green-faint'),
+
         // Settings for the key on the side
-        keyFontSize = 16,
-        keyFontColor = "#FFF",
+        keyFontSize = scalingFactor / 24,
+        keyFontColor = colorPrimary,
         keyFontFamily = "sans-serif",
         
         // Settings for the nodes (circles labels in them)
-        nodeSize = 16,
-        nodeFontSize = 16,
-        nodeFontFamily = "Arial",
-        nodeFillColor = "rgba(255, 255, 255, 0.15)",  // (red, green blue, opacity)
-        nodeWinnerFillColor = "rgba(236, 203, 5, 0.15)",
-        nodeWinnerGlow = "rgba(236, 203, 5, 0.9000000)",
-        nodeWinnerGlowSize = 10,
+        nodeSize = scalingFactor / 24,
+        nodeFontSize = scalingFactor / 24,
+        nodeFontFamily = "sans-serif",
+        nodeFillColor = colorSecondaryFaint,  // (red, green blue, opacity)
+        nodeWinnerFillColor = colorSuccessFaint,
+        nodeWinnerGlow = colorSuccessFaint,
+        nodeWinnerGlowSize = scalingFactor / 40,
         nodeHasFill = true,
-        nodeStrokeColor = "#FFF",
-        nodeWinnerStrokeColor = "rgb(236, 203, 5)",
-        nodeStrokeThickness = 2,  // I was tempted to use 'thiccness' instead
-        nodeTextColor = "#FFF",
-        nodeWinnerTextColor = "rgb(236, 203, 5)",
+        nodeStrokeColor = colorSecondary,
+        nodeWinnerStrokeColor = colorSuccess,
+        nodeStrokeThickness = scalingFactor / 208,  // I was tempted to use 'thiccness' instead
+        nodeTextColor = colorSecondary,
+        nodeWinnerTextColor = colorSuccess,
         
         // Settings for the arrow lines
-        arrowColor = "#FFF",
-        arrowLineThickness = 2,
-        arrowDistanceFromNodes = 28,
-        arrowHeadSize = 14,
+        arrowColor = colorPrimary,
+        arrowLineThickness = scalingFactor / 208,
+        arrowDistanceFromNodes = scalingFactor / 15,
+        arrowHeadSize = scalingFactor / 34,
         arrowHeadAngle = Math.PI / 7,  // in radians
         
         // Settings for the arrow labels (with strength values in them)
-        labelHeight = 24,
-        labelWidth = 28,
-        labelBorderRadius = 9,
-        labelFontSize = 12,
-        labelFontFamily = "monospace",
-        labelFillColor = "rgba(255, 255, 255, 0.15)",
-        labelTextColor = "#FFF",
+        labelHeight = scalingFactor / 17,
+        labelWidth = scalingFactor / 15,
+        labelBorderRadius = scalingFactor / 52,
+        labelFontSize = scalingFactor / 34,
+        labelFontFamily = "sans-serif",
+        labelFillColor = "rgba(255, 255, 255, 0)",
+        labelTextColor = colorPrimary,
         
         // Settings for the size, position, and rotation of the diagram
-        diagramCenterX = canvas.width - (canvas.height / 2),
-        diagramCenterY = canvas.height / 2,
-        diagramRadius = canvas.height / 2 - canvasPadding,
+        diagramCenterX = width - (height / 2),
+        diagramCenterY = height / 2,
+        diagramRadius = height / 2 - canvasPadding,
         diagramRotationOffset = 90; // in degrees
         
     // Clear the canvas
@@ -604,16 +613,16 @@ export class BeatpathGraphComponent implements OnInit, OnDestroy {
     /* Step 4: Generate the key on the side            */
     /* ----------------------------------------------- */
     
-    for (let i = 0; i < nodes.length; i++) {
-        ctx.textAlign = "left";
-        ctx.font = "normal " + keyFontSize + "px " + keyFontFamily;
-        ctx.fillStyle = keyFontColor;
-        ctx.fillText(
-            nodeLabels[i] + " = " + nodes[i],                               // text
-            canvasPadding - nodeSize,                                         // X position
-            canvasPadding + keyFontSize + ((keyFontSize + 6) * i) - nodeSize  // Y position
-        );
-    }
+    // for (let i = 0; i < nodes.length; i++) {
+    //     ctx.textAlign = "left";
+    //     ctx.font = "normal " + keyFontSize + "px " + keyFontFamily;
+    //     ctx.fillStyle = keyFontColor;
+    //     ctx.fillText(
+    //         nodeLabels[i] + " = " + nodes[i],                               // text
+    //         canvasPadding - nodeSize,                                         // X position
+    //         canvasPadding + keyFontSize + ((keyFontSize + 6) * i) - nodeSize  // Y position
+    //     );
+    // }
     
     /* ----------------------------------------------- */
     /* Step 5: Add hidden smiley at the bottom  :)     */

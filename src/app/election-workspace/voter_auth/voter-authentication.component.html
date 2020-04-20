@@ -2,16 +2,18 @@
     <div [ngSwitch]="election_type">
         <div *ngSwitchCase="'private'">
             <!-- private and username -->
+            <h1>Please enter your ballot code for "{{ election_manager.election.description }}"</h1>
             <div class="input-group">
-                <label for="ballot_code">Ballot Code</label>
-                <input type="text" name="ballot_code" id="ballot_code" required>
+                <label for="code">Ballot Code</label>
+                <input type="text" name="code" id="code" ngModel required>
             </div>
         </div>
         <div *ngSwitchCase="'public'">
             <!-- public and password -->
+            <h1>Please enter the password for "{{ election_manager.election.description }}"</h1>
             <div class="input-group">
-                <label for="password">Poll Password</label>
-                <input type="password" name="password" id="password" required>
+                <label for="code">Poll Password</label>
+                <input type="password" name="code" id="code" ngModel required>
             </div>
         </div>
     </div>

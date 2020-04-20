@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Subject } from 'rxjs';
+import { MessagingService } from './messaging.service';
 
 @Component({
   selector: 'app-root',
@@ -7,6 +9,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AppComponent implements OnInit{
   title = 'voting-web-calculator';
+
+  constructor(private messaging_service: MessagingService){}
 
   ngOnInit(){
     // Mobile menu toggle button
@@ -29,9 +33,9 @@ export class AppComponent implements OnInit{
         });
     }
 
-// ---------------------------------------------- //
-// Toggle light/dark mode                         //
-// ---------------------------------------------- //
+    // ---------------------------------------------- //
+    // Toggle light/dark mode                         //
+    // ---------------------------------------------- //
 
     // Remove no-js class from root <html> element so the toggle button displays when JS is enabled
     document.documentElement.classList.remove('no-js');
@@ -88,6 +92,8 @@ export class AppComponent implements OnInit{
         evt.preventDefault();
 
         applySetting(toggleSetting());
+
+        this.messaging_service.light_dark_toggle.next( localStorage.getItem(STORAGE_KEY) );
     });
 
     // Apply everything by default so the user first gets the color mode their system prefers

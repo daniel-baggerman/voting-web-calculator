@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { ReportingServiceService } from '../reporting-service.service';
 import { Subscription } from 'rxjs';
+import { MessagingService } from 'src/app/messaging.service';
 
 interface canvas_data {
     pairwise_data: Array<Array<number>>,
@@ -44,10 +45,12 @@ export class BeatpathGraphComponent implements OnInit, OnDestroy {
   transposedData: [][];
 
   reporting_data_update_sub: Subscription;
+  toggle_light_dark_sub: Subscription;
 
   beatpath_winner: String[];
 
-  constructor(private reporting_service: ReportingServiceService) { }
+  constructor(private reporting_service: ReportingServiceService,
+                private messaging_service: MessagingService) { }
 
   ngOnInit() {
     // define the election data
@@ -74,6 +77,14 @@ export class BeatpathGraphComponent implements OnInit, OnDestroy {
                                 winner: this.beatpath_winner});
             }
         );
+    
+    this.toggle_light_dark_sub = this.messaging_service.light_dark_toggle
+    .subscribe( ()=> {
+        this.drawCanvas(this.my_canvas.nativeElement, 
+                        {   pairwise_data: this.data_grid, 
+                            labels: this.ia_node_labels, 
+                            winner: this.beatpath_winner    });
+    }); 
   }
 
   ngOnDestroy(){
@@ -156,7 +167,7 @@ export class BeatpathGraphComponent implements OnInit, OnDestroy {
   }
 
   // Adds a green or red background to the table cell, depending on its value
-  tableCellRedOrGreen(rowIndex: number, columnIndex: number) {
+  tableCellRedOrGreen(rowIndex: number, columnIndex: number): String {
         
     // Get the values of the 2 cells to compare which is stronger
     let cell1 = this.data_grid[rowIndex][columnIndex],
@@ -189,13 +200,11 @@ export class BeatpathGraphComponent implements OnInit, OnDestroy {
     /* ----------------------------------------------- */
     /* Useful variables                                */
     /* ----------------------------------------------- */
-
-    var canvasElement = document.getElementById("canvasElement"),
-        ctx:CanvasRenderingContext2D = canvas.getContext("2d"),
-        width = canvasElement.parentNode.clientWidth * window.devicePixelRatio,
+    var ctx:CanvasRenderingContext2D = canvas.getContext("2d"),
+        width = canvas.parentElement.clientWidth * window.devicePixelRatio,
         height = width,
-        scalingFactor = canvas.parentNode.clientWidth, // by default, the canvas should be about 416 pixels wide (if in a 2-column layout)
-        
+        scalingFactor = canvas.parentElement.clientWidth, // by default, the canvas should be about 416 pixels wide (if in a 2-column layout)
+
         // In our HTML canvas, we passed the array [ia_pref_strengths, ia_node_labels] to it through the custom v-draw-canvas directive, so now we're accessing that array below:
         data = inputData.pairwise_data,
         nodes = inputData.labels,
@@ -279,6 +288,10 @@ export class BeatpathGraphComponent implements OnInit, OnDestroy {
         
     // Clear the canvas
     ctx.clearRect(0, 0, width, height);
+
+    // Set initial width and height
+    canvas.setAttribute('width', width.toString())
+    canvas.setAttribute('height', height.toString())
     
     /* ----------------------------------------------- */
     /* Helper functions                                */

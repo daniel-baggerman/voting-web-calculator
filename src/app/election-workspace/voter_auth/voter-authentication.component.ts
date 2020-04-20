@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ManageElectionService } from '../manage-election.service';
 import { NgForm } from '@angular/forms';
+import { AuthenticationService } from 'src/app/auth-guard/authentication.service';
 
 @Component({
   selector: 'app-voter-authentication',
@@ -9,10 +10,13 @@ import { NgForm } from '@angular/forms';
 })
 export class VoterAuthenticationComponent implements OnInit {
   election_type: string;
+  url_election_name: string;
 
-  constructor(private election_manager: ManageElectionService) { }
+  constructor(public election_manager: ManageElectionService,
+              private auth_service: AuthenticationService) { }
 
   ngOnInit() {
+    // Define the type of validation options the user gets
     let password_protect = this.election_manager.election.password_protect,
         public_private = this.election_manager.election.public_private;
 
@@ -30,7 +34,7 @@ export class VoterAuthenticationComponent implements OnInit {
   }
 
   submit(form: NgForm) {
-    // authenticate user based on submission.
+    this.auth_service.login(this.election_manager.election.url_election_name, form.value.code).subscribe();
   }
 
 }

@@ -47,10 +47,11 @@ export class ElectionWorkspaceComponent implements OnInit {
       // Update the election details in election_manager based on http response
       tap(
         (http_response: http_response) => {
+          console.log(http_response.data)
           if(http_response.data && http_response.data.length !==0){
             this.election_manager.election = {  election_id: http_response.data[0].election_id, 
-                                                name: http_response.data[0].name, 
                                                 description: http_response.data[0].description, 
+                                                long_description: http_response.data[0].long_description, 
                                                 url_election_name: url_election_name,
                                                 public_private: http_response.data[0].public_private,
                                                 password_protect: http_response.data[0].password_protect };

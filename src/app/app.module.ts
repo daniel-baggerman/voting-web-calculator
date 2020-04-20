@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http'
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
@@ -22,7 +22,9 @@ import { EmailListValidatorDirective } from './helpers/email-list-validator.dire
 import { EndPastStartDirective } from './helpers/end-past-start.directive';
 import { VoterAuthenticationComponent } from './election-workspace/voter_auth/voter-authentication.component';
 import { PrivateBallotVoterAuthComponent } from './election-workspace/private-ballot-voter-auth/private-ballot-voter-auth.component';
-import { AuthGuard } from './auth.guard';
+import { AuthGuard } from './auth-guard/auth.guard';
+import { AuthInterceptorService } from './auth-guard/auth-interceptor.service';
+import { JwtHelperService, JwtModule } from '@auth0/angular-jwt';
 
 @NgModule({
   declarations: [
@@ -51,7 +53,9 @@ import { AuthGuard } from './auth.guard';
     AppRoutingModule,
     HttpClientModule
   ],
-  providers: [AuthGuard],
+  providers: [AuthGuard,
+              {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true},
+              JwtHelperService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

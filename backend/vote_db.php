@@ -59,7 +59,7 @@ function executesql($sqls,$aa_bind_params = NULL)
 
 // ----------------------------------------------------------------------------
 function executeselect($sqls, $ab_fetch_column = NULL, array $aa_bind_params = NULL)
-// Executes select statement and returns the data as an array. Returns a string if it errors.
+// Executes select statement and returns the data as an array of rows. Each row is an array of the data indexed by column_name. Returns a string if it errors.
 {
     /*
     $sqls can be defined "plainly" without any retrieval arguments by leaving the bind params array ($aa_bind_params) null.
@@ -252,11 +252,10 @@ function new_vote_db($type = NULL){
                           public_private    integer default 0,
                           password_protect  integer default 0,
                           password          text,
-                          url_election_name text,
+                          url_election_name text UNIQUE,
                           allow_write_ins   integer,
                           anon_results      integer,
-                          primary key (election_id),
-                          constraint constraint_name UNIQUE (url_election_name)
+                          primary key (election_id)
                         )");
 
     $pdo_handle->exec("create trigger tr_vote_elections_time_audit_up
@@ -312,7 +311,7 @@ function new_vote_db($type = NULL){
                         (
                           voter_id      integer,
                           time_stamp    text,
-                          voter_name    text,
+                          voter_name    text UNIQUE,
                           primary key (voter_id)
                         )");
 
@@ -435,12 +434,42 @@ function new_vote_db($type = NULL){
                             where i = new.i
                             and j = new.j
                             and k = new.k;
-                        end");                      
+                        end");
+
+    $pdo_handle->exec("CREATE TABLE vote_election_voter_list
+                        (
+                          election_id   integer,
+                          voter_id      integer,
+                          time_stamp    text,
+                          primary key (election_id, voter_id),
+                          foreign key (election_id) references vote_elections(election_id),
+                          foreign key (voter_id) references vote_voters(voter_id)
+                        )");
+
+    $pdo_handle->exec("create trigger tr_vote_election_voter_list_time_audit_up
+                        after update on vote_election_voter_list
+                        for each row
+                        begin
+                            update vote_election_voter_list
+                            set time_stamp = datetime('now','localtime')
+                            where election_id = new.election_id
+                            and voter_id = new.voter_id;
+                        end");
+
+    $pdo_handle->exec("create trigger tr_vote_election_voter_list_time_audit_in
+                        after insert on vote_election_voter_list
+                        for each row
+                        begin
+                            update vote_election_voter_list
+                            set time_stamp = datetime('now','localtime')
+                            where election_id = new.election_id
+                            and voter_id = new.voter_id;
+                        end");
     
     //insert dummy data
-    $pdo_handle->exec("INSERT INTO vote_elections (election_id, description, url_election_name) 
-                        SELECT 1, 'Test Ballot 1', 'test_ballot_1' union 
-                        select 2, 'Test Ballot 2', 'test_ballot_2' ");
+    $pdo_handle->exec("INSERT INTO vote_elections (election_id, description, public_private, password_protect, password, url_election_name) 
+                        SELECT 1, 'Test Ballot 1', 1, 1, 'arst', 'test_ballot_1' union 
+                        select 2, 'Test Ballot 2', null, null, null, 'test_ballot_2' ");
 
     $pdo_handle->exec("INSERT INTO vote_voters (voter_id, voter_name)
                         SELECT 1,'Daniel'  UNION

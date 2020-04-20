@@ -2,8 +2,8 @@ import { bpOption } from '../election-workspace/beatpath/bp_models/bp_option.mod
 
 export class election{
     constructor(public election_id: number,
-                public name: string,
                 public description: string,
+                public long_description: string,
                 public options?: string,
                 public public_private?: number,  // 1 or 0, 1 = public
                 public start_date?: string,

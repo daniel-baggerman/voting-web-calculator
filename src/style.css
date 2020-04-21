@@ -1324,6 +1324,10 @@ hr,
   margin-right: 1rem;
 }
 
+.winner__icon svg {
+  stroke: var(--color-text);
+}
+
 .winner__list div {
   font-size: 1.375rem;
   line-height: 1.5;

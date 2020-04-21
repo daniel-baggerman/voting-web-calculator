@@ -31,9 +31,10 @@ if (intval($db_password_data['public_private']) === 1 && intval($db_password_dat
     if(password_verify($post_body['code'],$db_password_data['password'])){
     // if($password === $post_body['code']){
         $signer = new Sha256();
+        $private_key = new Key('file://../');
         $token = (new Builder())->expiresAt(time()+3600)
                                 ->withClaim('eid',$election_id)
-                                ->getToken($signer, new Key('testing'));
+                                ->getToken($signer, $private_key);
 
         // return token
         echo json_encode(["status" => "Success!",

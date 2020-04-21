@@ -64,8 +64,8 @@ export class BeatpathGraphComponent implements OnInit, OnDestroy {
                 this.ia_node_labels = report_data.labels;
                 this.beatpath_winner = report_data.winner;
 
-                this.data_grid = report_data.pref_strengths;
-                this.data_grid_state = 'preference strengths';
+                this.data_grid = report_data.strongest_paths;
+                this.data_grid_state = 'strongest paths';
 
                 this.drawCanvas(this.my_canvas.nativeElement, 
                                 {   pairwise_data: this.data_grid, 
@@ -83,8 +83,8 @@ export class BeatpathGraphComponent implements OnInit, OnDestroy {
         this.drawCanvas(this.my_canvas.nativeElement, 
                         {   pairwise_data: this.data_grid, 
                             labels: this.ia_node_labels, 
-                            winner: this.beatpath_winner    });
-    }); 
+                            winner: this.beatpath_winner});
+    });
   }
 
   ngOnDestroy(){

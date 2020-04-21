@@ -25,15 +25,13 @@
     <tbody>
         <tr>
             <th></th>
-            <th *ngFor="let label of ia_diagram_labels">
-                {{ label }}
-                <!-- <i>p</i>[*,{{ label }}] -->
+            <th *ngFor="let label of ia_diagram_labels; let row = index">
+                {{ row+1 }}
             </th>
         </tr>
-        <tr *ngFor="let label of ia_diagram_labels; let row = index">
+        <tr *ngFor="let label of ia_node_labels; let row = index">
             <td>
-                {{ label }}
-                <!-- <i>p</i>[{{ label }},*] -->
+                {{ row+1 }} - {{ ia_node_labels[row] }}
             </td>
             <td *ngFor="let boggus of data_grid; let col = index"
                 [ngClass]="tableCellRedOrGreen(row,col)">
@@ -53,8 +51,8 @@
     </div>
     <div>
         <ul class="visualization-legend">
-            <li *ngFor="let label of ia_diagram_labels">
-                {{ label }} = label-title-here
+            <li *ngFor="let label of ia_diagram_labels; let i = index">
+                {{ ia_diagram_labels[i] }} = {{ ia_node_labels[i] }}
             </li>
         </ul>
     </div>

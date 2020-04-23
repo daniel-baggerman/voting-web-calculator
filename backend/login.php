@@ -5,6 +5,10 @@ use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 
+/*
+ *  Authenticate a request to login from user. If they have the right password, give them a JWT with the election info.
+ */
+
 // Grab zee data
 $post_body = json_decode(file_get_contents('php://input'), true);
 
@@ -12,13 +16,19 @@ if(json_last_error() != 0){
     echo json_last_error_msg();
 };
 
-$db_password_data = executeselect('SELECT ifnull(public_private,1) public_private, ifnull(password_protect,0) password_protect, password 
+$db_password_data = executeselect('SELECT   election_id, 
+                                            ifnull(public_private,1) public_private, 
+                                            ifnull(password_protect,0) password_protect, 
+                                            password, 
+                                            url_election_name
                                     FROM vote_elections 
                                     WHERE url_election_name = ?',
                                     false, 
                                     [$post_body['url_election_name']])[0];
 
-$election_id = select_scalar('SELECT election_id FROM vote_elections WHERE url_election_name = ?', [$post_body['url_election_name']]);
+if(is_string($db_password_data)){
+    echo "Error fetching data from database. Error message: ".$db_password_data;
+}
 
 // Two possible treatments requiring a JWT:
 //   1. A public election requiring a password
@@ -29,25 +39,31 @@ if (intval($db_password_data['public_private']) === 1 && intval($db_password_dat
     // Public with password logic
     $password = $db_password_data['password'];
     if(password_verify($post_body['code'],$db_password_data['password'])){
-    // if($password === $post_body['code']){
+        // Issue temporary, bogus voter_id
+        $rtn = executesql("INSERT INTO vote_voters (voter_id, voter_name)
+                            SELECT ifnull(max(voter_id),0)+1, 'Schulze'||(ifnull(max(voter_id),0)+1) from vote_voters");
+
+        if($rtn <> "OK"){
+            echo "Failure to insert voter_id.";
+        }
+
+        $voter_id = select_scalar('SELECT max(voter_id) voter_id FROM vote_voters');
+
+        // token stuff
         $signer = new Sha256();
-        $private_key = new Key('file://../');
+        $private_key = new Key('file://../../keys/private_key.key');
         $token = (new Builder())->expiresAt(time()+3600)
-                                ->withClaim('eid',$election_id)
+                                ->withClaim('eid',$db_password_data['election_id'])
+                                ->withClaim('uen',$db_password_data['url_election_name'])
+                                ->withClaim('vid',$voter_id)
                                 ->getToken($signer, $private_key);
 
         // return token
-        echo json_encode(["status" => "Success!",
-                            "message" => "Logged in!",
-                            "data" => ['token'=>$token]
-                            ]);
+        // apparently you can't json_encode() a token :(
+        echo $token;
     } else {
         // return validation error http response
-        echo json_encode([  "status" => "Failure!",
-                            "message" => "Incorrect password.",
-                            "data" => ['db_password' => $password,
-                                        'user_password' => $post_body['code']]
-                            ]);
+        echo "Incorrect password.";
     }
 } else 
 if (intval($db_password_data['public_private']) === 0) {
@@ -59,24 +75,15 @@ if (intval($db_password_data['public_private']) === 0) {
 
     if(!is_null($voter_id)){
         $token = (new Builder())->expiresAt(time()+3600)
-                                ->withClaim('eid',$election_id)
+                                ->withClaim('eid',$db_password_data['election_id'])
+                                ->withClaim('uen',$db_password_data['url_election_name'])
                                 ->withClaim('vid',$voter_id)
                                 ->getToken();
 
-        echo json_encode(["status" => "Success!",
-                            "message" => "Logged in!",
-                            "data" => $token
-                            ]);
+        echo $token;
     } else {
-        echo json_encode(["status" => "Failure!",
-                            "message" => "No such user.",
-                            "data" => []
-                            ]);
+        echo "No such user.";
     }
 } else {
-    echo json_encode(["status" => "Epic Failure!",
-                        "message" => "Epic fail :'(",
-                        "data" => [ 'db_password_data' => $password_data
-                                    ]
-                        ]);
+    echo "Epic fail :'(";
 }

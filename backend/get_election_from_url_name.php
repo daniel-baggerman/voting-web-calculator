@@ -1,9 +1,9 @@
 <?php
 include 'vote_db.php';
 function get_election_from_url_name($url_election_name){
-    $data = executeselect( "select election_id, description, long_description, public_private, password_protect
-                            from vote_elections
-                            where url_election_name = ?",
+    $data = executeselect( "SELECT election_id, description, long_description, ifnull(public_private,1) public_private, ifnull(password_protect,0) password_protect
+                            FROM vote_elections
+                            WHERE url_election_name = ?",
                             false,
                             [$url_election_name]);
 

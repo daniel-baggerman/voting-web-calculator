@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { http_response } from '../shared/http_response.model';
 import { ManageElectionService } from './manage-election.service';
@@ -12,7 +12,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   templateUrl: './election-workspace.component.html',
   styleUrls: ['./election-workspace.component.css']
 })
-export class ElectionWorkspaceComponent implements OnInit {
+export class ElectionWorkspaceComponent implements OnInit, OnDestroy {
   valid_election_url: boolean;
   cast_vote_mode = true;
 
@@ -70,5 +70,9 @@ export class ElectionWorkspaceComponent implements OnInit {
       })
     )
     .subscribe();
+  }
+
+  ngOnDestroy(){
+    localStorage.removeItem('token');
   }
 }

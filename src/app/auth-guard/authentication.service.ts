@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
-import { tap, pluck, shareReplay } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { tap, shareReplay, switchMap } from 'rxjs/operators';
 import { User } from '../shared/user.model';
 import { HttpClient } from '@angular/common/http';
-import { http_response } from '../shared/http_response.model';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { decode } from 'jwt-decode';
 import { GlobalConstants } from '../shared/global-constants';
+import { http_response } from '../shared/http_response.model';
 
 @Injectable({providedIn: 'root'})
 export class AuthenticationService {
@@ -16,32 +15,34 @@ export class AuthenticationService {
     constructor(private http: HttpClient){ }
 
     login(url_election_name: string, code: string ){
-        console.log('login')
-        console.log({ url_election_name: url_election_name, code: code })
+        console.log('login');
+        console.log({ url_election_name: url_election_name, code: code });
 
         return this.http
-            .post<http_response>(
+            .post(
                 GlobalConstants.apiURL+'backend/login.php',
                 { url_election_name: url_election_name,
-                  code: code }
+                  code: code },
+                { responseType: 'text' }
             )
             .pipe(
-                // pluck('data'),
-                tap( (http_response: http_response) => {
-                    console.log('login')
-                    console.log(http_response)
-                    localStorage.setItem('token',http_response.data.token);
+                // TODO catch error
+                tap( (token: string) => {
+                    localStorage.setItem('token',token);
                 }),
                 shareReplay()
             );
     }
 
-    can_vote(url_election_name: string): boolean {
+    can_vote(expected_url_election_name: string): Observable<boolean> | boolean {
         const token = localStorage.getItem('token');
+        // console.log(token);
+        // console.log(this.jwtHelper.isTokenExpired(token));
+        // console.log(this.jwtHelper.decodeToken(token));
         
         if (token){
-            const token_payload = decode(token);
-            if ( !this.jwtHelper.isTokenExpired(token) && token_payload.election == url_election_name ){
+            const token_payload = this.jwtHelper.decodeToken(token);
+            if ( !this.jwtHelper.isTokenExpired(token) && token_payload.uen === expected_url_election_name ){
                 return true;
             } else {
                 return false;

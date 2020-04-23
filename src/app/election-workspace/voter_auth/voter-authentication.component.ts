@@ -17,8 +17,8 @@ export class VoterAuthenticationComponent implements OnInit {
 
   ngOnInit() {
     // Define the type of validation options the user gets
-    let password_protect = this.election_manager.election.password_protect,
-        public_private = this.election_manager.election.public_private;
+    let password_protect = +this.election_manager.election.password_protect,
+        public_private = +this.election_manager.election.public_private;
 
     if ( public_private == 0 ){
       this.election_type = 'private';

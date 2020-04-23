@@ -51,3 +51,4 @@ Thumbs.db
 /backend/execute_sql.php
 /backend/vendor
 /backend/execute_php.php
+/backend/get_elections.php

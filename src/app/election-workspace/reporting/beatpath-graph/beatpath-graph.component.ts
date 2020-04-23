@@ -94,6 +94,7 @@ export class BeatpathGraphComponent implements OnInit, OnDestroy {
     context.clearRect(0,0,this.my_canvas.nativeElement.width, this.my_canvas.nativeElement.height)
 
     this.reporting_data_update_sub.unsubscribe();
+    this.toggle_light_dark_sub.unsubscribe();
   }
   
   switch_data(){

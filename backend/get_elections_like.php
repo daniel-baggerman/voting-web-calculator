@@ -30,7 +30,5 @@ function get_elections_like($as_string){
             return $data;
         }
     }
-
-    
 }
 ?>

@@ -1,22 +1,24 @@
 :root {
   --color-mode: "light";
   --color-background: #F0F4F8;
-  --color-background-highlight: rgba(43, 133, 299, 0.1);
+  --color-background-highlight: rgba(43, 133, 255, 0.1);
   --color-text: #2E3944;
   --color-blue: #2B85E5;
   --color-blue-light: #4B92DD;
   --color-blue-faint: rgba(43, 133, 255, 0.1);
   --color-red: #D62643;
   --color-red-light: #E23F5A;
-  --color-red-faint: rgba(226, 63, 90, 0.1);
+  --color-red-faint: rgba(226, 63, 90, 0.2);
   --color-green: #39C84A;
   --color-green-light: #48D358;
-  --color-green-faint: rgba(57, 200, 74, 0.1);
+  --color-green-faint: rgba(57, 200, 74, 0.2);
   --color-nav-bg: #FFF;
   --color-panel-bg: #FFF;
   --color-panel-bg-transparent: rgba(255, 255, 255, 0.75);
   --color-input-bg: #FFF;
   --color-input-border: #B0B9C0;
+  --color-table-bg: rgba(240, 244, 248, 0);
+  --color-table-header: rgba(240, 244, 248, 1);
   --color-tooltip-text: #FFF;
   --color-tooltip-bg: rgba(0, 0, 0, 0.7);
   --color-divider: #CDD5DB;
@@ -994,6 +996,7 @@ textarea {
 .grid-container.layout-sidebar,
 .grid-content.layout-sidebar {
   grid-template-areas: "sidebar" "main" "bottom";
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .grid-container.layout-1-col,
@@ -1333,6 +1336,67 @@ hr,
   line-height: 1.5;
 }
 
+.report-table {
+  overflow-x: auto;
+  max-width: 100%;
+  width: 100%;
+}
+
+.report-table table {
+  background: var(--color-table-bg);
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.report-table td,
+.report-table th {
+  border-bottom: 1px solid var(--color-divider);
+  word-wrap: break-word;
+}
+
+.report-table td:not(:first-child),
+.report-table th:not(:first-child) {
+  padding: 0.25rem;
+  text-align: right;
+}
+
+.report-table td:last-child,
+.report-table th:last-child {
+  padding-right: 0.75rem;
+}
+
+.report-table tr:last-child td,
+.report-table tr:last-child th {
+  border-bottom: 0;
+}
+
+.report-table th {
+  background: var(--color-table-header);
+}
+
+.report-table td:first-child {
+  padding: 0.75rem 1rem;
+}
+
+.report-table span {
+  border-radius: 0.25rem;
+  display: block;
+  padding: 0.25rem 0.375rem;
+}
+
+.report-table .green,
+.report-table .red {
+  font-size: 0.875rem;
+}
+
+.report-table .green {
+  background: var(--color-green-faint);
+}
+
+.report-table .red {
+  background: var(--color-red-faint);
+}
+
 #reportCanvas {
   width: 100%;
 }
@@ -1370,6 +1434,9 @@ hr,
 
 /* 768px */
 @media screen and (min-width: 48rem) {
+  hr {
+    margin: 1rem 0;
+  }
   .panel {
     border-radius: 0.25rem;
   }
@@ -1441,6 +1508,7 @@ hr,
   .grid-container.layout-sidebar,
   .grid-content.layout-sidebar {
     grid-template: [row1-start] "sidebar main" auto [row1-end] [row2-start] "sidebar bottom" auto [row2-end]/13rem auto;
+    grid-template-columns: auto minmax(0, 1fr);
   }
   .grid-container {
     padding: 1rem;
@@ -1543,6 +1611,9 @@ hr,
   html {
     font-size: 1rem;
   }
+  hr {
+    margin: 2rem 0;
+  }
   .nav {
     margin-bottom: 2rem;
   }
@@ -1553,6 +1624,7 @@ hr,
   .grid-container.layout-sidebar,
   .grid-content.layout-sidebar {
     grid-template: [row1-start] "sidebar main" auto [row1-end] [row2-start] "sidebar bottom" auto [row2-end]/13rem auto;
+    grid-template-columns: auto minmax(0, 1fr);
   }
   .grid-content {
     grid-gap: 2rem;
@@ -1567,6 +1639,7 @@ hr,
   .grid-container.layout-sidebar,
   .grid-content.layout-sidebar {
     grid-template: [row1-start] "sidebar main" auto [row1-end] [row2-start] "sidebar bottom" auto [row2-end]/14rem auto;
+    grid-template-columns: auto minmax(0, 1fr);
   }
 }
 
@@ -1646,6 +1719,8 @@ hr,
     --color-panel-bg-transparent: rgba(46, 52, 61, 0.5);
     --color-input-bg: #4B5462;
     --color-input-border: #4B5462;
+    --color-table-bg: rgba(240, 244, 248, 0.05);
+    --color-table-header: rgba(240, 244, 248, 0.05);
     --color-tooltip-text: #1E2228;
     --color-tooltip-bg: rgba(255, 255, 255, 0.7);
     --color-divider: #4E545D;
@@ -1680,6 +1755,8 @@ hr,
   --color-panel-bg-transparent: rgba(46, 52, 61, 0.5);
   --color-input-bg: #4B5462;
   --color-input-border: #4B5462;
+  --color-table-bg: rgba(240, 244, 248, 0.05);
+  --color-table-header: rgba(240, 244, 248, 0.05);
   --color-tooltip-text: #1E2228;
   --color-tooltip-bg: rgba(255, 255, 255, 0.7);
   --color-divider: #4E545D;

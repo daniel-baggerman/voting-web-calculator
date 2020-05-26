@@ -16,7 +16,7 @@
                 <div>
                     <label for="end_date">End Date</label>
                     <input type="date" name="end_date" id="end_date" [(ngModel)]="form.end_date" #end_date="ngModel" required EndPastStart [start_date]="start_date.value">
-                    <div *ngIf="end_date.errors && (end_date.dirty || end_date.touched)"><p style="color: red">End date must come after start date.</p></div>
+                    <div *ngIf="end_date.errors && (end_date.dirty || end_date.touched)"><p style="color: var(--color-red)">End date must come after start date.</p></div>
                 </div>
             </div>
             <!-- Description -->
@@ -59,7 +59,7 @@
                     <br>
                     <span style="font-style: italic;font-size:smaller;">Separate emails by comma ","</span> 
                     <input type="email" name="email" id="email" [(ngModel)]="form.email" #email="ngModel" required EmailListValidator>
-                    <div *ngIf="email.errors && (email.dirty || email.touched)"><p style="color: red">Invalid email list.</p></div>
+                    <div *ngIf="email.errors && (email.dirty || email.touched)"><p style="color: var(--color-red)">Invalid email list.</p></div>
                 </div>
             <button type="submit" [disabled]="!f.valid" [ngClass]="f.valid ? 'btn' : 'btn btn--hollow'">Create Election</button>
             <button type="reset" class="btn btn--warning">Clear</button>

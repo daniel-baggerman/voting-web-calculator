@@ -7,7 +7,7 @@
                 <label for="code">Ballot Code</label>
                 <input type="text" name="code" id="code" ngModel required>
                 <div *ngIf="error_message">
-                    <p style="color: red">{{ error_message }}</p>
+                    <p style="color: var(--color-red)">{{ error_message }}</p>
                 </div>
             </div>
         </div>
@@ -18,7 +18,7 @@
                 <label for="code">Poll Password</label>
                 <input type="password" name="code" id="code" ngModel required>
                 <div *ngIf="error_message">
-                    <p style="color: red">{{ error_message }}</p>
+                    <p style="color: var(--color-red)">{{ error_message }}</p>
                 </div>
             </div>
         </div>

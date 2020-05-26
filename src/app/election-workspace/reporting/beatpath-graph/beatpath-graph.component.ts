@@ -251,8 +251,8 @@ export class BeatpathGraphComponent implements OnInit, OnDestroy {
         keyFontFamily = "sans-serif",
         
         // Settings for the nodes (circles labels in them)
-        nodeSize = scalingFactor / 24,
-        nodeFontSize = scalingFactor / 24,
+        nodeSize = scalingFactor / 20,
+        nodeFontSize = scalingFactor / 18,
         nodeFontFamily = "sans-serif",
         nodeFillColor = colorSecondaryFaint,  // (red, green blue, opacity)
         nodeWinnerFillColor = colorSuccessFaint,
@@ -273,10 +273,10 @@ export class BeatpathGraphComponent implements OnInit, OnDestroy {
         arrowHeadAngle = Math.PI / 7,  // in radians
         
         // Settings for the arrow labels (with strength values in them)
-        labelHeight = scalingFactor / 17,
-        labelWidth = scalingFactor / 15,
+        labelHeight = scalingFactor / 13,
+        labelWidth = scalingFactor / 11,
         labelBorderRadius = scalingFactor / 52,
-        labelFontSize = scalingFactor / 34,
+        labelFontSize = scalingFactor / 20, //34
         labelFontFamily = "sans-serif",
         labelFillColor = "rgba(255, 255, 255, 0)",
         labelTextColor = colorPrimary,

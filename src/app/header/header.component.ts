@@ -54,19 +54,18 @@ export class HeaderComponent implements OnInit {
 
     localStorage.setItem(this.STORAGE_KEY, currentSetting);
 
-    this.messaging_service.light_dark_toggle.next( localStorage.getItem(this.STORAGE_KEY) );
-
     return currentSetting;
   }
 
   applySetting = (passedSetting:string = '') => {
-    let currentSetting = passedSetting || localStorage.getItem(this.STORAGE_KEY) || 'light';
-
-    localStorage.setItem(this.STORAGE_KEY, currentSetting);
+    let currentSetting = passedSetting 
+                          || localStorage.getItem(this.STORAGE_KEY) 
+                          || this.getCSSCustomProp(this.COLOR_MODE_KEY);
 
     if (currentSetting) {
         document.documentElement.setAttribute('data-user-color-scheme', currentSetting);
+        localStorage.setItem(this.STORAGE_KEY, currentSetting);
+        this.messaging_service.light_dark_toggle.next( localStorage.getItem(this.STORAGE_KEY) );
     }
-}
-
+  }
 }

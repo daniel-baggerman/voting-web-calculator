@@ -10,9 +10,10 @@ if(!isset($_GET['election_id'])){
                         ],JSON_NUMERIC_CHECK);
 }
 
+// Get token from headers
 $token_string = array_key_exists('Authorization',getallheaders()) ? substr(getallheaders()['Authorization'],7) : null;
 
-// Verify
+// Verify token
 $valid = validate_token_to_election($token_string,$_GET['election_id']);
 
 // Do the stuff

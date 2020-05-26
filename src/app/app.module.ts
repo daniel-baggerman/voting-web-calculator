@@ -25,6 +25,7 @@ import { PrivateBallotVoterAuthComponent } from './election-workspace/private-ba
 import { AuthGuard } from './auth-guard/auth.guard';
 import { AuthInterceptorService } from './auth-guard/auth-interceptor.service';
 import { JwtHelperService, JwtModule } from '@auth0/angular-jwt';
+import { HowItWorksComponent } from './how-it-works/how-it-works.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { JwtHelperService, JwtModule } from '@auth0/angular-jwt';
     EmailListValidatorDirective,
     EndPastStartDirective,
     VoterAuthenticationComponent,
-    PrivateBallotVoterAuthComponent
+    PrivateBallotVoterAuthComponent,
+    HowItWorksComponent
   ],
   imports: [
     BrowserModule,

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ManageElectionService } from '../manage-election.service';
 import { NgForm } from '@angular/forms';
 import { AuthenticationService } from 'src/app/auth-guard/authentication.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-voter-authentication',
@@ -11,9 +12,11 @@ import { AuthenticationService } from 'src/app/auth-guard/authentication.service
 export class VoterAuthenticationComponent implements OnInit {
   election_type: string;
   url_election_name: string;
+  error_message: string = null;
 
   constructor(public election_manager: ManageElectionService,
-              private auth_service: AuthenticationService) { }
+              private auth_service: AuthenticationService,
+              private router: Router) { }
 
   ngOnInit() {
     // Define the type of validation options the user gets
@@ -34,7 +37,17 @@ export class VoterAuthenticationComponent implements OnInit {
   }
 
   submit(form: NgForm) {
-    this.auth_service.login(this.election_manager.election.url_election_name, form.value.code).subscribe();
+    this.auth_service.login(this.election_manager.election.url_election_name, form.value.code)
+    .subscribe(
+      resp => {
+        this.router.navigate([this.election_manager.election.url_election_name,'vote'])
+      },
+      error => {
+        console.log(error);
+
+        this.error_message = error.error;
+      }
+    );
   }
 
 }

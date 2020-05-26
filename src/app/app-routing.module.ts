@@ -11,10 +11,12 @@ import { BeatpathBallotCastComponent } from './election-workspace/beatpath/beatp
 import { AuthGuard } from './auth-guard/auth.guard';
 import { VoterAuthenticationComponent } from './election-workspace/voter_auth/voter-authentication.component';
 import { PrivateBallotVoterAuthComponent } from './election-workspace/private-ballot-voter-auth/private-ballot-voter-auth.component';
+import { HowItWorksComponent } from './how-it-works/how-it-works.component';
 
 const appRoutes: Routes = [
     { path: '', component: HomePageComponent },
     { path: 'election_search', component: SearchElectionsComponent },
+    { path: 'how_it_works', component: HowItWorksComponent },
     { path: 'create_election', component: CreateElectionComponent },
     { path: ':election_name',
         component: ElectionWorkspaceComponent,

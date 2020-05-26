@@ -1,11 +1,11 @@
 <div class="choices">
     <h3>Available Choices:</h3>
         <ul class="ballot__items-ul">
-            <li *ngFor="let option of election_options" >
-                <div class="ballot__item" >
+            <li *ngFor="let option of election_options">
+                <div class="ballot__item">
                     <span class="ballot__item-container" *ngIf="option.enabled; else elseBlock" (click)="add_to_ballot(option)">
                         <div class="ballot__item-text">
-                            {{ option.description }} 
+                            {{ option.description }}
                         </div>
                         <div class="ballot__item-buttons">
                             <button class="ballot__item-buttons__btn" data-tooltip="Add to Ballot">
@@ -24,15 +24,4 @@
                 <hr class="ballot__item-divider">
             </li>
         </ul>
-    <!-- <button
-        *ngFor="let option of election_options"
-        [class]="option.enabled ? 'btn btn--ballot-option' : 'btn btn--ballot-option disabled'"
-        (click)="add_to_ballot(option)">
-        {{ option.description }} 
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-        </svg>
-    </button> -->
 </div>

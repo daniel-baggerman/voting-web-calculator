@@ -1,6 +1,36 @@
 <?php
+include 'vendor/autoload.php';
 include 'vote_db.php';
+include 'security.php';
+use Lcobucci\JWT\Parser;
 
+if(!isset($_GET['election_id'])){
+    echo json_encode([  "status" => "Failure :(",
+                        "message" => "No election_id passed.",
+                        "data" => []
+                        ],JSON_NUMERIC_CHECK);
+}
+
+// Get token from headers
+$token_string = array_key_exists('Authorization',getallheaders()) ? substr(getallheaders()['Authorization'],7) : null;
+
+// Verify token
+$valid = validate_token_to_election($token_string,$_GET['election_id']);
+
+if(!$valid){
+    http_response_code(401);
+    echo json_encode(["status" => "Unauthenticated request",
+                      "message" => "User is not authenticated. Ballot not submitted.",
+                      "data" => []
+                     ]);
+}
+
+// Get the voter_id from the token since we validated it
+$token = (new Parser())->parse((string) $token_string);
+
+$voter_id = $token->getClaim('vid');
+
+// Do the stuff
 $ga_postdata = file_get_contents('php://input');
 
 /* example of expected postdata
@@ -14,11 +44,15 @@ $ga_postdata = file_get_contents('php://input');
 }
 */
 
-if(isset($_GET['election_id']) && isset($_GET['voter_id']) && !empty($ga_postdata) ){
-    echo post_ballot($_GET['election_id'], $_GET['voter_id']);
+if(isset($_GET['election_id']) && !empty($ga_postdata) && $valid ){
+    echo post_ballot($_GET['election_id'], $voter_id);
 }
 else{
-    echo "Error submitting ballot. Not all variables bound.";
+    http_response_code(500);
+    echo json_encode(["status" => "Incorrect Parameters",
+                      "message" => "Error submitting ballot. Not all variables bound.",
+                      "data" => []
+                     ]);
 }
 
 function post_ballot($as_election_id, $as_voter_id){
@@ -27,20 +61,26 @@ function post_ballot($as_election_id, $as_voter_id){
     $la_ballot = json_decode($ga_postdata, true);
 
     if(json_last_error() != 0){
-        return json_last_error_msg();
+        http_response_code(500);
+        return json_encode(["status" => "Error decoding request body.",
+                            "message" => json_last_error_msg();,
+                            "data" => []
+                            ]);
     };
 
-    // temp hack, delete when voter_ids can be coded
-    $li_voter_id = select_scalar("SELECT ifnull(max(voter_id),0)+1 FROM vote_cast_ballots WHERE election_id=".$as_election_id);
-    // end temp hack
-
     // delete voter's previous ballot submission
-    $rtn = executesql("delete from vote_cast_ballots 
-                       where election_id = ".$as_election_id."
-                       and voter_id = ".$li_voter_id
+    // maybe I should just prevent them from voting if their voter ID already exists in vote_cast_ballots
+    $rtn = executesql("DELETE FROM vote_cast_ballots 
+                       WHERE election_id = ?
+                       AND voter_id = ?", [$as_election_id,$as_voter_id]
                        );
     // error catch
     if($rtn <> 'OK'){
+        http_response_code(500);
+        return json_encode(["status" => "Error overwriting previous cast vote.",
+                            "message" => $rtn,
+                            "data" => []
+                            ]);
         return $rtn;
     }
 
@@ -50,30 +90,59 @@ function post_ballot($as_election_id, $as_voter_id){
         $rank = intval($key) + 1;
 
         // run the insert based on the data passed
-        $sqls = "insert into vote_cast_ballots 
+        $sqls = "INSERT into vote_cast_ballots 
                     (   cast_ballot_id
-                      , election_id
-                      , voter_id
-                      , option_id
-                      , option_rank)
-                 values 
+                        , election_id
+                        , voter_id
+                        , option_id
+                        , option_rank)
+                  VALUES 
                     (   ifnull((select max(cast_ballot_id) from vote_cast_ballots),0)+1
-                      , ".$as_election_id."
-                      , ".$li_voter_id."
-                      , ".strval($option['option_id'])."
-                      , ".strval($rank).")";
+                        , ?
+                        , ?
+                        , ?
+                        , ?)";
 
-        $output = executesql($sqls);
+        $output = executesql($sqls,[$as_election_id,$as_voter_id,$option['option_id'],$rank]);
 
         // check for errors
         if($output <> "OK"){
-            return htmlspecialchars($sqls."\r\n".$output);
+            // Rollback changes
+            $rtn = executesql("DELETE FROM vote_cast_ballots 
+                                WHERE election_id = ?
+                                AND voter_id = ?", [$as_election_id,$as_voter_id]
+                                );
+            // error catch
+            if($rtn <> 'OK'){
+                http_response_code(500);
+                return json_encode(["status" => "Error rolling back.",
+                                    "message" => $rtn,
+                                    "data" => []
+                                    ]);
+                return $rtn;
+            }
+
+            // Real error
+            http_response_code(500);
+            return json_encode(["status" => "Error recording cast ballot.",
+                                "message" => $output,
+                                "data" => []
+                                ]);
         }
     }
 
+    $submitted_ballot = executeselect('SELECT vcb.option_id, vcb.option_rank, vo.description option_description
+                                        FROM vote_cast_ballots vcb
+                                        JOIN vote_options vo ON vo.option_id = vcb.option_id
+                                        WHERE election_id = ?
+                                        AND voter_id = ?
+                                        ORDER BY vcb.option_rank', false, [$as_election_id,$as_voter_id]);
+
+    // Return a success message and a copy of their submitted ballot
+    http_response_code(200);
     return json_encode(["status" => "Success!",
                         "message" => "Ballot successfully submitted!",
-                        "data" => []
+                        "data" => ["ballot" => $submitted_ballot]
                         ]);
 }
 ?>

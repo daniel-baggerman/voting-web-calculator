@@ -27,6 +27,7 @@ $db_password_data = executeselect('SELECT   election_id,
                                     [$post_body['url_election_name']])[0];
 
 if(is_string($db_password_data)){
+    http_response_code(500);
     echo "Error fetching data from database. Error message: ".$db_password_data;
 }
 
@@ -44,10 +45,11 @@ if (intval($db_password_data['public_private']) === 1 && intval($db_password_dat
                             SELECT ifnull(max(voter_id),0)+1, 'Schulze'||(ifnull(max(voter_id),0)+1) from vote_voters");
 
         if($rtn <> "OK"){
+            http_response_code(500);
             echo "Failure to insert voter_id.";
         }
 
-        $voter_id = select_scalar('SELECT max(voter_id) voter_id FROM vote_voters');
+        $voter_id = select_scalar('SELECT max(voter_id) FROM vote_voters');
 
         // token stuff
         $signer = new Sha256();
@@ -63,6 +65,7 @@ if (intval($db_password_data['public_private']) === 1 && intval($db_password_dat
         echo $token;
     } else {
         // return validation error http response
+        http_response_code(401);
         echo "Incorrect password.";
     }
 } else 
@@ -70,7 +73,7 @@ if (intval($db_password_data['public_private']) === 0) {
     // Private with user ballot code logic
     $voter_id = select_scalar('SELECT vv.voter_id
                                 FROM vote_voters vv
-                                JOIN vote_election_voter_list vevl on vv.voter_id = vevl.voter_id
+                                JOIN vote_election_voter_list vevl ON vv.voter_id = vevl.voter_id
                                 WHERE vv.voter_name = ?', [$post_body['code']]);
 
     if(!is_null($voter_id)){
@@ -82,8 +85,10 @@ if (intval($db_password_data['public_private']) === 0) {
 
         echo $token;
     } else {
+        http_response_code(401);
         echo "No such user.";
     }
 } else {
+    http_response_code(500);
     echo "Epic fail :'(";
 }

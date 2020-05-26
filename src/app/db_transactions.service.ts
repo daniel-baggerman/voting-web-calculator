@@ -16,10 +16,10 @@ export class DBTransactions {
         return this.http.get<http_response>(GlobalConstants.apiURL+"backend/load_ballot_info_v2.php?election_id="+election_id);
     }
 
-    submit_ballot(election_id: number, voter_id: number, selected_options: bpOption[]){
+    submit_ballot(election_id: number, selected_options: bpOption[]){
         let options = JSON.stringify(Object.assign({},selected_options));
         // options is an array of the bpOption objects taken from the selected_options in the bp-ballot service
-        return this.http.post<http_response>(GlobalConstants.apiURL+"backend/submit_ballot.php?election_id="+election_id+"&voter_id="+voter_id,options);
+        return this.http.post<http_response>(GlobalConstants.apiURL+"backend/submit_ballot.php?election_id="+election_id,options);
     }
 
     create_election(election: object){
@@ -28,11 +28,11 @@ export class DBTransactions {
         return this.http.post<http_response>(GlobalConstants.apiURL+"backend/create_election.php",ls_election);
     }
 
-    get_elections_like(election_name: string){
-        return this.http.get(GlobalConstants.apiURL+"backend/get_elections_like.php?string="+election_name);
+    get_elections_like(url_election_name: string){
+        return this.http.get(GlobalConstants.apiURL+"backend/get_elections_like.php?string="+url_election_name);
     }
 
-    get_election_from_url_name(url_election_name:string){
+    get_election_from_url_name(url_election_name: string){
         return this.http.get(GlobalConstants.apiURL+"backend/get_election_from_url_name.php?url_election_name="+url_election_name);
     }
 

@@ -6,6 +6,9 @@
             <div class="input-group">
                 <label for="code">Ballot Code</label>
                 <input type="text" name="code" id="code" ngModel required>
+                <div *ngIf="error_message">
+                    <p style="color: red">{{ error_message }}</p>
+                </div>
             </div>
         </div>
         <div *ngSwitchCase="'public'">
@@ -14,6 +17,9 @@
             <div class="input-group">
                 <label for="code">Poll Password</label>
                 <input type="password" name="code" id="code" ngModel required>
+                <div *ngIf="error_message">
+                    <p style="color: red">{{ error_message }}</p>
+                </div>
             </div>
         </div>
     </div>

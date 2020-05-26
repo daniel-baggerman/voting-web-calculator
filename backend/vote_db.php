@@ -25,7 +25,7 @@ else{
 
 // ----------------------------------------------------------------------------
 function executesql($sqls,$aa_bind_params = NULL)
-// executes dml and ddl. will also execute Select statement but will not error or return any message about it.
+// executes dml and ddl. Will also execute Select statement but will not error or return any message about it.
 {
     /*
         Anything that takes input from the user should use bind params to avoid errors with quotes and possible code injection.
@@ -83,10 +83,10 @@ function executeselect($sqls, $ab_fetch_column = NULL, array $aa_bind_params = N
     // bind variables if provided
     if (!is_null($aa_bind_params)){
         foreach($aa_bind_params as $bind_var => $bind_val){
-            if(is_int($bind_var)){ //check if array is indexed by number or string, allows for '?' parameter binding
-                $rtn = $stmt->bindValue($bind_var+1, $bind_val);
-            } else {
+            if(array_keys($aa_bind_params) !== range(0, count($aa_bind_params) - 1)){ //check if array is indexed by number or string, allows for '?' parameter binding
                 $rtn = $stmt->bindValue($bind_var, $bind_val);
+            } else {
+                $rtn = $stmt->bindValue($bind_var+1, $bind_val);
             }
             if($rtn === false){
                 return "Error: SQL Select script faild on binding parameters to prepared statement.";

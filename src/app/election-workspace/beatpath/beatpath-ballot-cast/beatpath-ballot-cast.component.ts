@@ -12,6 +12,7 @@ export class BeatpathBallotCastComponent implements OnInit, OnDestroy {
   // used to look for when ballot is successfully submitted and then display a message when it is.
   successful_ballot_submittion_sub: Subscription;
   submission_message: string = "";
+  submitted_ballot: Array<{}>;
 
   constructor(private bp_ballot_service: BpBallotService,
               public election_manager: ManageElectionService) {}
@@ -24,8 +25,9 @@ export class BeatpathBallotCastComponent implements OnInit, OnDestroy {
 
     // respond to successful ballot submission and display message for user through bound variable
     this.successful_ballot_submittion_sub = this.bp_ballot_service.ballot_successfully_submitted.subscribe(
-      (data: string) => {
-        this.submission_message = data;
+      (data: { message: string, ballot: [{}] }) => {
+        this.submission_message = data.message;
+        this.submitted_ballot = data.ballot;
       }
     );
   }

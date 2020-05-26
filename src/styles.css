@@ -1124,7 +1124,7 @@ textarea {
   padding-bottom: 2rem;
 }
 
-.cast-vote-top {
+.ballot-top {
   border-bottom: 1px solid var(--color-divider);
   margin-bottom: 2rem;
   padding-bottom: 2rem;
@@ -1163,7 +1163,8 @@ textarea {
 }
 
 .ballot__item-container,
-.choices__item-container {
+.choices__item-container,
+.ballot__item-container--empty {
   background: var(--color-panel-bg);
   -webkit-box-pack: justify;
   -moz-box-pack: justify;
@@ -1191,10 +1192,15 @@ textarea {
   padding-left: 0.5rem;
 }
 
-.choices__item-container:not(.item--disabled):hover, .choices__item-container:focus-within {
+.ballot__item-container:not(.item--disabled):hover, .ballot__item-container:focus-within {
   background: var(--color-ballot-item-hover);
+  box-shadow: 0 0.125rem 0.375rem var(--color-box-shadow);
   color: var(--color-blue);
   cursor: pointer;
+}
+
+.ballot__item-container--empty {
+  background: var(--color-background);
 }
 
 .ballot__item__drag-handle {

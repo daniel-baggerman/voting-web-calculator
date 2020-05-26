@@ -26,7 +26,7 @@ export class SearchElectionsComponent implements OnInit {
         this.elections = http_response.data.elections;
       },
       (error) => {
-        alert(error.message);
+        alert(error.error.text);
         console.error(error);
       }
     );

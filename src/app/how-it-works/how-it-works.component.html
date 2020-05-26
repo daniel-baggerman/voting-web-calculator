@@ -1,0 +1,82 @@
+<section class="grid-container layout-narrow">
+    <div class="panel">
+        <h1>How It Works</h1>
+            <h2>Ranked Choice Ballot</h2>
+                <h3>What?</h3>
+                    <p>
+                        A ranked choice ballot is a ballot that allows voters to rank their options in order of their preference instead of voting for just their #1 preference.
+                    </p>
+                <h3>Why?</h3>
+                    <p>
+                        Ranked choice ballots offer many advantages over the usual kinds of ballots. The top three advantages are:
+                    </p>
+                    <ol>
+                        <li>
+                            Ranked choice ballots more accurately reflect voters' preferences as a whole.
+                        </li>
+                        <li>
+                            Ranked choice ballots remove the spoiler effect where voters must either vote for an option unlikely to win or vote insincerely for an option that is not their most preferred.
+                        </li>
+                        <li>
+                            Ranked choice ballots reward coorperative campaigning by electing options that have the widest base of support and are preferred the most by voters.
+                        </li>
+                    </ol>
+                <h3>How?</h3>
+                    <p>Ranked choice ballots are not complicated. A paper ballot may look like this</p>
+                    <img src="assets/Hand_Marking_Ranked_Ballot.png">
+                    <p>Simply bubble in the ovals of your first, second, third, fourth choices. As far down the line as you want.</p>
+                    <p>Here on this site, our ballots look like this</p>
+                    <img src="assets/site_ballot_example.png">
+                    <p>You can click on the options to add them to your ballot in the order you like. For more info about filling out a ballot on our site, click <a routerLink='#'>here</a>.</p>
+        <h2>Tally Method</h2>
+        <p>With a ranked choice ballot, we need to consider all of the voters' preferences, not just their first pick. On this site we use the Beatpath method. The beatpath method compares each pair of options to see how they stand head to head, tallying up the number of voters who ranked one option over the other. Then it looks for chains of victories to strengthen each option's argument as winner. </p>
+        <p>Consider an election between Alice, Bob, and Charles. There might be a tally of ranked choices like this</p>
+        <table>
+            <tbody>
+                <tr>
+                    <th></th>
+                    <th>Alice</th>
+                    <th>Bob</th>
+                    <th>Charles</th>
+                </tr>
+                <tr>
+                    <td>Alice</td><td></td><td>5</td><td>8</td>
+                </tr>
+                <tr>
+                    <td>Bob</td><td>6</td><td></td><td>6</td>
+                </tr>
+                <tr>
+                    <td>Charles</td><td>6</td><td>7</td><td></td>
+                </tr>
+            </tbody>
+        </table>
+        <p>This table shows the number of voters who ranked the candidate in the row over the candidate in the column. For example, 5 voters ranked Alice over Bob and 6 voters ranked Bob over Alice. Bob might take this and claim to beat Alice. However, Alice protests saying, "Wait! I beat Charles 8 to 6, and Charles beat Bob 7 to 6. The weakest victory in that chain, 7, is <strong>stronger</strong> than Bob's victory over me, 6. Really, voters prefer me, Alice, over Bob." The beatpath method takes Alice's logic into account and declares Alice the winner in the head to head comparison to Bob.</p>
+        <p>This logic is applied to each pair of candidates to find the strongest argument for each candidate over every other candidate. That would give a new table like this</p>
+        <table>
+            <tbody>
+                <tr>
+                    <th></th>
+                    <th>Alice</th>
+                    <th>Bob</th>
+                    <th>Charles</th>
+                </tr>
+                <tr>
+                    <td>Alice</td><td></td><td>7</td><td>8</td>
+                </tr>
+                <tr>
+                    <td>Bob</td><td>6</td><td></td><td>6</td>
+                </tr>
+                <tr>
+                    <td>Charles</td><td>6</td><td>7</td><td></td>
+                </tr>
+            </tbody>
+        </table>
+        <p>It turns out in this example only the comparison between Alice and Bob would change. Now Alice beats Bob 7 to 6 and Charles 8 to 6. With no defeats, Alice is declared the winner.</p>
+        
+        <!-- <p>Next, the beatpath method looks to strengthen each option's argument for winning by finding chains of victories over other options. For example, in the head to head between A and B, B wins 6 to 5 since 6 voters ranked B over A but only 5 ranked A over B. However, A wins over C 7 to 6, and C wins over B 7 to 6. With that, it is argued that A wins over B 7 to 6. This is called the "strongest path" from A to B. The strongest path from B to A is still just 6. Thus A ultimately wins over B.</p>
+        <p>This process is repeated for every pair of candidates. In the end, the winning option will emerge as the one that holds the strongest paths over every other option.</p> -->
+        
+        <h2>How to fill out a ballot</h2>
+            
+    </div>
+</section>

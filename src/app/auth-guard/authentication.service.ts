@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
-import { tap, shareReplay, switchMap } from 'rxjs/operators';
+import { tap, shareReplay, switchMap, catchError } from 'rxjs/operators';
 import { User } from '../shared/user.model';
 import { HttpClient } from '@angular/common/http';
 import { JwtHelperService } from '@auth0/angular-jwt';
@@ -26,7 +26,6 @@ export class AuthenticationService {
                 { responseType: 'text' }
             )
             .pipe(
-                // TODO catch error
                 tap( (token: string) => {
                     localStorage.setItem('token',token);
                 }),

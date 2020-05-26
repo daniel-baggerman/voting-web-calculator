@@ -11,7 +11,7 @@
         </div>
         <ul class="nav__links">
             <li>
-                <button class="color-scheme-toggle">
+                <button class="color-scheme-toggle" (click)="applySetting(toggleSetting())">
                     <span class="color-scheme-icon--light">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="#2E3944" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -38,11 +38,11 @@
                 <a class="btn btn--nav" routerLink='/election_search'>Find an Election</a>
             </li>
             <li>
-                <a class="btn btn--nav" href="#">How It Works</a>
+                <a class="btn btn--nav" routerLink='/how_it_works'>How It Works</a>
             </li>
-            <li>
+            <!-- <li>
                 <a class="btn btn--nav" href="#">Login/Register</a>
-            </li>
+            </li> -->
             <li>
                 <a class="btn btn--nav-create-poll" routerLink='/create_election'>Create a Poll</a>
             </li>

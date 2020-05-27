@@ -9,15 +9,11 @@
         </form>
     </div>
     <div *ngIf="searched" class="panel">
-        <div *ngFor="let election of elections">
-            <!-- <a [routerLink]="['/'+election.url_election_name]" 
-                [state]="{election_id: election.election_id, description: election.description}">
-                {{ election.description }}
-            </a> -->
+        <div *ngFor="let election of elections; let i = index">
             <a [routerLink]="['/'+election.url_election_name]">
                 {{ election.description }}
             </a>
-            <br>
+            <hr *ngIf="i !== elections.length-1">
         </div>
     </div>
 </section>

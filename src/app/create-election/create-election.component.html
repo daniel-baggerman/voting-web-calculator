@@ -3,8 +3,8 @@
         <form class="create-poll-form" (ngSubmit)="create_election()" #f="ngForm">
             <!-- Election Name -->
             <div class="input-group">
-                <label for="name">Name</label>
-                <input type="text" name="name" id="name" [(ngModel)]="form.name" #name="ngModel" required minlength="1" maxlength="60">
+                <label for="name">Poll Name</label>
+                <input type="text" name="name" id="name" [(ngModel)]="form.name" #name="ngModel" required minlength="1" maxlength="60" placeholder="Example: What are your favorite colors?">
             </div>
             <div class="input-group grid-content layout-2-col">
                 <!-- Start Date -->
@@ -22,7 +22,7 @@
             <!-- Description -->
             <div class="input-group">
                 <label for="desc">Description</label>
-                <input type="text" name="desc" id="desc" [(ngModel)]="form.desc" #desc="ngModel" required maxlength="400">
+                <input type="text" name="desc" id="desc" [(ngModel)]="form.desc" #desc="ngModel" required maxlength="400" placeholder="more detail about your poll (400 characters)">
             </div>
             <!-- Options -->
             <div class="input-group">
@@ -30,7 +30,7 @@
                     Ballot Options <br>
                     <span style="font-style: italic;font-size:smaller;">Separate options by semicolon ";"</span> 
                 </label>
-                <input type="text" name="options" id="options" [(ngModel)]="form.options" required>
+                <input type="text" name="options" id="options" [(ngModel)]="form.options" required placeholder="Blue; Red; Green; Yellow">
             </div>
             <!-- Public or Private -->
             <div class="input-group">
@@ -58,9 +58,10 @@
                     <label for="email">Emails</label>
                     <br>
                     <span style="font-style: italic;font-size:smaller;">Separate emails by comma ","</span> 
-                    <input type="email" name="email" id="email" [(ngModel)]="form.email" #email="ngModel" required EmailListValidator>
+                    <input type="email" name="email" id="email" [(ngModel)]="form.email" #email="ngModel" required EmailListValidator placeholder="jdoe@example.com, example@example.com">
                     <div *ngIf="email.errors && (email.dirty || email.touched)"><p style="color: var(--color-red)">Invalid email list.</p></div>
                 </div>
+                <br>
             <button type="submit" [disabled]="!f.valid" [ngClass]="f.valid ? 'btn' : 'btn btn--hollow'">Create Election</button>
             <button type="reset" class="btn btn--warning">Clear</button>
         </form>

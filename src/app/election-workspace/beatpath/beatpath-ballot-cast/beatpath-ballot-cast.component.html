@@ -1,25 +1,32 @@
-<div *ngIf="submission_message.length==0">
-    <div class="ballot-top">
-        <h2 class="ballot-title">{{election_manager.election.description}}</h2>
-        <p>{{election_manager.election.long_description}}</p>
+<div *ngIf="!election_date_passed; else end_date_passed">
+    <div *ngIf="submission_message.length==0">
+        <div class="ballot-top">
+            <h2 class="ballot-title">{{election_manager.election.description}}</h2>
+            <p>{{election_manager.election.long_description}}</p>
+        </div>
+        
+        <div class="grid-content layout-2-col">
+            <app-bp-election-options></app-bp-election-options>
+            <app-bp-ballot></app-bp-ballot>
+        </div>
     </div>
-    
-    <div class="grid-content layout-2-col">
-        <app-bp-election-options></app-bp-election-options>
-        <app-bp-ballot></app-bp-ballot>
+
+    <div *ngIf="submission_message.length>0">
+        <h2 class="ballot-title">{{ submission_message }}</h2>
+        <p *ngFor="let item of submitted_ballot">{{ item.option_rank }} - {{ item.option_description }}</p>
+    </div>
+
+    <div class="grid-bottom">
+        <button class="btn" (click)="submit_ballot()">
+            Submit Ballot
+        </button>
+        <button class="btn btn--warning" (click)="clear_ballot()">
+            Clear Ballot
+        </button>
     </div>
 </div>
-
-<div *ngIf="submission_message.length>0">
-    <h2 class="ballot-title">{{ submission_message }}</h2>
-    <p *ngFor="let item of submitted_ballot">{{ item.option_rank }} - {{ item.option_description }}</p>
-</div>
-
-<div class="grid-bottom">
-    <button class="btn" (click)="submit_ballot()">
-        Submit Ballot
-    </button>
-    <button class="btn btn--warning" (click)="clear_ballot()">
-        Clear Ballot
-    </button>
-</div>
+<ng-template #end_date_passed>
+    <h1>End Date Passed</h1>
+    <p>The end date for this poll has passed and ballots can no longer be submitted.</p>
+    <p>Would you like to <a [routerLink]="['../results']">view the results</a>?</p>
+</ng-template> 

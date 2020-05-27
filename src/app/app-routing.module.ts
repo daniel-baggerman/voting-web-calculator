@@ -22,7 +22,7 @@ const appRoutes: Routes = [
         component: ElectionWorkspaceComponent,
         children: [
             { path: 'vote', component: BeatpathBallotCastComponent, canActivate: [AuthGuard] },
-            { path: 'reporting', component: ReportingComponent },
+            { path: 'results', component: ReportingComponent },
             { path: 'manage', component: ManageElectionComponent },
             { path: 'authenticate', component: VoterAuthenticationComponent },
             { path: ':ballot_code', component: PrivateBallotVoterAuthComponent }

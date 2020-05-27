@@ -15,8 +15,8 @@ export class AuthenticationService {
     constructor(private http: HttpClient){ }
 
     login(url_election_name: string, code: string ){
-        console.log('login');
-        console.log({ url_election_name: url_election_name, code: code });
+        // console.log('login');
+        // console.log({ url_election_name: url_election_name, code: code });
 
         return this.http
             .post(

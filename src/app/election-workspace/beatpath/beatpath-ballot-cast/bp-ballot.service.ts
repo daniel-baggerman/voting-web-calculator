@@ -31,7 +31,7 @@ export class BpBallotService {
     this.trans.get_election_options(election_id)
       .subscribe(
         (http_response: http_response) => {
-          console.log(http_response)
+          // console.log(http_response)
           this.election_options = http_response.data;
           this.election_options_changed.next();
         },

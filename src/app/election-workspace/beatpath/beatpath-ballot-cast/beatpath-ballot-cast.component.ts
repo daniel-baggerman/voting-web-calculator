@@ -14,11 +14,22 @@ export class BeatpathBallotCastComponent implements OnInit, OnDestroy {
   submission_message: string = "";
   submitted_ballot: Array<{}>;
 
+  // Turn off election ballot when election end_date has passed.
+  election_date_passed: boolean = true;
+
   constructor(private bp_ballot_service: BpBallotService,
               public election_manager: ManageElectionService) {}
 
   ngOnInit() {
-    if(this.election_manager.election.election_id){
+    // Take end date from election, in format 'YYYY-MM-DD', split it and pass it to date object
+    const end_date = this.election_manager.election.end_date.split('-');
+    const end_date_utc = new Date(+end_date[0],+end_date[1]-1,+end_date[2]+1); // subtract 1 from month because idk my bff jill, and add 1 to day for comparison later since end_date is the last day that votes may be submitted
+    const now = new Date();
+
+    // election date passed if end date is less than current date
+    this.election_date_passed = end_date_utc < now;
+
+    if(this.election_manager.election.election_id && !this.election_date_passed){
       this.bp_ballot_service.set_election_options(this.election_manager.election.election_id);
       this.bp_ballot_service.election_id = this.election_manager.election.election_id;
     }

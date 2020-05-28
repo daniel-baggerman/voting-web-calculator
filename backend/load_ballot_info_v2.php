@@ -8,6 +8,7 @@ if(!isset($_GET['election_id'])){
                         "message" => "No election_id passed.",
                         "data" => []
                         ],JSON_NUMERIC_CHECK);
+    exit();
 }
 
 // Get token from headers
@@ -25,6 +26,7 @@ if($valid){
                         "message" => "Request not authentic.",
                         "data" => []
                         ],JSON_NUMERIC_CHECK);
+    exit();
 }
 
 function load_ballot_info($an_election_id){

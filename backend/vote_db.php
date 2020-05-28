@@ -248,7 +248,7 @@ function new_vote_db($type = NULL){
                           description       text,
                           long_description  text,
                           start_date        date,
-                          end_date          date,
+                          end_date          date default '2068-12-31',
                           public_private    integer default 0,
                           password_protect  integer default 0,
                           password          text,

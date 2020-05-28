@@ -1,0 +1,45 @@
+<h1>How It Works</h1>
+<h2>Tally Method</h2>
+    <p>With a ranked choice ballot, we need to consider all of the voters' preferences, not just their first pick. On this site we use the Beatpath method. The beatpath method compares each pair of options to see how they stand head to head, tallying up the number of voters who ranked one option over the other. Then it looks for chains of victories to strengthen each option's argument as winner. </p>
+    <p>Consider an election between Alice, Bob, and Charles. There might be a tally of ranked choices like this</p>
+    <table>
+        <tbody>
+            <tr>
+                <th></th>
+                <th>Alice</th>
+                <th>Bob</th>
+                <th>Charles</th>
+            </tr>
+            <tr>
+                <td>Alice</td><td></td><td>5</td><td>8</td>
+            </tr>
+            <tr>
+                <td>Bob</td><td>6</td><td></td><td>6</td>
+            </tr>
+            <tr>
+                <td>Charles</td><td>6</td><td>7</td><td></td>
+            </tr>
+        </tbody>
+    </table>
+    <p>This table shows the number of voters who ranked the candidate in the row over the candidate in the column. For example, 5 voters ranked Alice over Bob and 6 voters ranked Bob over Alice. Bob might take this and claim to beat Alice. However, Alice protests saying, "Wait! I beat Charles 8 to 6, and Charles beat Bob 7 to 6. The weakest victory in that chain, 7, is <strong>stronger</strong> than Bob's victory over me, 6. Really, voters prefer me, Alice, over Bob." The beatpath method takes Alice's logic into account and declares Alice the winner in the head to head comparison to Bob.</p>
+    <p>This logic is applied to each pair of candidates to find the strongest argument for each candidate over every other candidate. That would give a new table like this</p>
+    <table>
+        <tbody>
+            <tr>
+                <th></th>
+                <th>Alice</th>
+                <th>Bob</th>
+                <th>Charles</th>
+            </tr>
+            <tr>
+                <td>Alice</td><td></td><td>7</td><td>8</td>
+            </tr>
+            <tr>
+                <td>Bob</td><td>6</td><td></td><td>6</td>
+            </tr>
+            <tr>
+                <td>Charles</td><td>6</td><td>7</td><td></td>
+            </tr>
+        </tbody>
+    </table>
+    <p>It turns out in this example only the comparison between Alice and Bob would change. Now Alice beats Bob 7 to 6 and Charles 8 to 6. With no defeats, Alice is declared the winner.</p>

@@ -12,14 +12,21 @@ import { AuthGuard } from './auth-guard/auth.guard';
 import { VoterAuthenticationComponent } from './election-workspace/voter_auth/voter-authentication.component';
 import { PrivateBallotVoterAuthComponent } from './election-workspace/private-ballot-voter-auth/private-ballot-voter-auth.component';
 import { HowItWorksComponent } from './how-it-works/how-it-works.component';
+import { RankedChoiceBallotComponent } from './how-it-works/ranked_choice_ballot/ranked-choice-ballot/ranked-choice-ballot.component';
+import { TallyMethodComponent } from './how-it-works/tally_method/tally-method/tally-method.component';
 
 const appRoutes: Routes = [
     { path: '', component: HomePageComponent },
     { path: 'election_search', component: SearchElectionsComponent },
     { path: 'how_it_works', component: HowItWorksComponent },
     { path: 'create_election', component: CreateElectionComponent },
-    { path: ':election_name',
-        component: ElectionWorkspaceComponent,
+    { path: 'how_it_works', component: HowItWorksComponent,
+        children: [
+            { path: 'ranked_choice_ballot', component: RankedChoiceBallotComponent },
+            { path: 'tally_method', component: TallyMethodComponent },
+        ]
+    },
+    { path: ':election_name', component: ElectionWorkspaceComponent,
         children: [
             { path: 'vote', component: BeatpathBallotCastComponent, canActivate: [AuthGuard] },
             { path: 'results', component: ReportingComponent },

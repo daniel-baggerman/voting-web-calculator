@@ -4,11 +4,17 @@ include 'vote_db.php';
 include 'security.php';
 use Lcobucci\JWT\Parser;
 
+//////////////////
+//  Validations
+//////////////////
+
 if(!isset($_GET['election_id'])){
+    http_response_code(500);
     echo json_encode([  "status" => "Failure :(",
                         "message" => "No election_id passed.",
                         "data" => []
-                        ],JSON_NUMERIC_CHECK);
+                        ]);
+    exit();
 }
 
 // Get token from headers
@@ -23,12 +29,29 @@ if(!$valid){
                       "message" => "User is not authenticated. Ballot not submitted.",
                       "data" => []
                      ]);
+    exit();
 }
 
 // Get the voter_id from the token since we validated it
 $token = (new Parser())->parse((string) $token_string);
 
 $voter_id = $token->getClaim('vid');
+
+// Check that the end_date has not passed
+$end_date = executeselect('SELECT end_date FROM vote_elections WHERE election_id = ?',
+                            true,[$_GET['election_id']])[0];
+
+$end_date_utc = date_create_from_format('Y-m-d',$end_date);
+$now = gmdate('Y-m-d');
+
+if($now > $end_date_utc){
+    http_response_code(409);
+    echo json_encode(["status" => "End date passed",
+                        "message" => "The end date for this poll has passed and ballots can no longer be submitted.",
+                        "data" => []
+                    ]);
+    exit();
+}
 
 // Do the stuff
 $ga_postdata = file_get_contents('php://input');

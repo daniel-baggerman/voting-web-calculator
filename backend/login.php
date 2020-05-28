@@ -14,6 +14,7 @@ $post_body = json_decode(file_get_contents('php://input'), true);
 
 if(json_last_error() != 0){
     echo json_last_error_msg();
+    exit();
 };
 
 $db_password_data = executeselect('SELECT   election_id, 
@@ -29,6 +30,7 @@ $db_password_data = executeselect('SELECT   election_id,
 if(is_string($db_password_data)){
     http_response_code(500);
     echo "Error fetching data from database. Error message: ".$db_password_data;
+    exit();
 }
 
 // Two possible treatments requiring a JWT:

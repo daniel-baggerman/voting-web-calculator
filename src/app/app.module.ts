@@ -26,6 +26,8 @@ import { AuthGuard } from './auth-guard/auth.guard';
 import { AuthInterceptorService } from './auth-guard/auth-interceptor.service';
 import { JwtHelperService, JwtModule } from '@auth0/angular-jwt';
 import { HowItWorksComponent } from './how-it-works/how-it-works.component';
+import { TallyMethodComponent } from './how-it-works/tally_method/tally-method/tally-method.component';
+import { RankedChoiceBallotComponent } from './how-it-works/ranked_choice_ballot/ranked-choice-ballot/ranked-choice-ballot.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +49,9 @@ import { HowItWorksComponent } from './how-it-works/how-it-works.component';
     EndPastStartDirective,
     VoterAuthenticationComponent,
     PrivateBallotVoterAuthComponent,
-    HowItWorksComponent
+    HowItWorksComponent,
+    TallyMethodComponent,
+    RankedChoiceBallotComponent
   ],
   imports: [
     BrowserModule,

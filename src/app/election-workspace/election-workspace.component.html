@@ -1,7 +1,7 @@
-<div *ngIf="!valid_election_url" class="grid-main panel">
+<div *ngIf="(valid_election_url | async) === false" class="grid-main panel">
     <p>Not a valid election. Try <a routerLink="/election_search">searching for a different one</a>.</p>
 </div>
-<div *ngIf="valid_election_url">
+<div *ngIf="(valid_election_url | async) === true">
     <section class="grid-container layout-sidebar">
         <div class="grid-sidebar sidebar-nav">
             <a class="sidebar-nav__link" routerLink="vote" routerLinkActive="sidebar-nav__link--active">
@@ -32,7 +32,7 @@
             </a>
         </div>
         <div class="grid-main panel">
-            <router-outlet></router-outlet>
+            <router-outlet *ngIf="election_date_loaded | async"></router-outlet>
         </div>
     </section>
 </div>

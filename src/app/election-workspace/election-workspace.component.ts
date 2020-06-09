@@ -13,9 +13,8 @@ import { HttpErrorResponse } from '@angular/common/http';
   styleUrls: ['./election-workspace.component.css']
 })
 export class ElectionWorkspaceComponent implements OnInit, OnDestroy {
-  valid_election_url: boolean;
-  cast_vote_mode = true;
-
+  valid_election_url: Promise<boolean>;
+  election_date_loaded: Promise<boolean>;
   route_sub: Subscription;
 
   constructor(private route: ActivatedRoute,
@@ -38,7 +37,7 @@ export class ElectionWorkspaceComponent implements OnInit, OnDestroy {
       // Catch any errors from http request
       catchError(
         (error: HttpErrorResponse) => {
-          this.valid_election_url = false;
+          this.valid_election_url = Promise.resolve(false);
           alert( error.error.text )
           console.log(error);
           return EMPTY;
@@ -57,19 +56,20 @@ export class ElectionWorkspaceComponent implements OnInit, OnDestroy {
                                                 password_protect: http_response.data[0].password_protect,
                                                 start_date: http_response.data[0].start_date,
                                                 end_date: http_response.data[0].end_date };
-            this.valid_election_url = true;
+            this.election_date_loaded = Promise.resolve(true);
+            this.valid_election_url = Promise.resolve(true);
+
+            // Check if we are only at the election workspace page without any component loaded. If so, nav to cast vote component.
+            let url = location.pathname.split('/');
+            if (this.election_manager.election.url_election_name == url[url.length-1]){
+              this.router.navigate(['vote'], {relativeTo: this.route});
+            }
+
           } else {
-            this.valid_election_url = false;
+            this.valid_election_url = Promise.resolve(false);
           }
         }
-      ),
-      // Check if we are only at the election workspace page without any component loaded. If so, nav to cast vote component.
-      tap(() => {
-        let url = location.pathname.split('/');
-        if (this.election_manager.election.url_election_name == url[url.length-1]){
-          this.router.navigate(['vote'], {relativeTo: this.route});
-        }
-      })
+      )
     )
     .subscribe();
   }

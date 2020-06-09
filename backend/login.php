@@ -1,6 +1,6 @@
 <?php
 include 'vote_db.php';
-include 'vendor/autoload.php';
+include '../vendor/autoload.php';
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Signer\Rsa\Sha256;

@@ -1,27 +1,37 @@
 <?php
 
+require '../vendor/autoload.php';
+use RCVvote\Connection as Connection;
+
+try {
+    $pdo_handle = Connection::get()->connect();
+    echo 'A connection to the PostgreSQL database sever has been established successfully.';
+} catch (\PDOException $e) {
+    echo $e->getMessage();
+}
+
 // Functions to save and retrieve vote values
 // https://www.php.net/manual/en/book.pdo.php
 
-$pdo_db_file = "/home/daniel/public_html/votedb.sq3";
-$pdo_db_name = "sqlite:".$pdo_db_file;
+// $pdo_db_file = "/home/daniel/public_html/votedb.sq3";
+// $pdo_db_name = "sqlite:".$pdo_db_file;
 
-// If database doesn't exist then create it
-if (file_exists($pdo_db_file) == false){
-    new_vote_db();
-    echo "Created ".$pdo_db_name." database<br>\n";
-}
-// Database file exists so open it
-else{
-    try {
-        $pdo_handle  = new PDO($pdo_db_name);
-        $pdo_handle->exec( 'PRAGMA foreign_keys = ON;' );
-        $pdo_handle->exec( 'PRAGMA case_sensitive_like=ON;' );
-    }
-    catch (PDOException $e){
-        echo 'Caught exception: ',  $e->getMessage(), "\n";
-    }
-}
+// // If database doesn't exist then create it
+// if (file_exists($pdo_db_file) == false){
+//     new_vote_db();
+//     echo "Created ".$pdo_db_name." database<br>\n";
+// }
+// // Database file exists so open it
+// else{
+//     try {
+//         $pdo_handle  = new PDO($pdo_db_name);
+//         $pdo_handle->exec( 'PRAGMA foreign_keys = ON;' );
+//         $pdo_handle->exec( 'PRAGMA case_sensitive_like=ON;' );
+//     }
+//     catch (PDOException $e){
+//         echo 'Caught exception: ',  $e->getMessage(), "\n";
+//     }
+// }
 
 // ----------------------------------------------------------------------------
 function executesql($sqls,$aa_bind_params = NULL)

@@ -28,5 +28,5 @@
 <ng-template #end_date_passed>
     <h1>End Date Passed</h1>
     <p>The end date for this poll has passed and ballots can no longer be submitted.</p>
-    <p>Would you like to <a [routerLink]="['../results']">view the results</a>?</p>
+    <p>Would you like to <a [routerLink]="['/'+this.election_manager.election.url_election_name,'results']">view the results</a>?</p>
 </ng-template> 

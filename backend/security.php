@@ -1,5 +1,5 @@
 <?php
-include 'vendor/autoload.php';
+include '../vendor/autoload.php';
 use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Parser;

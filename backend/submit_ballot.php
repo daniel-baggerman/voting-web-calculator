@@ -1,5 +1,5 @@
 <?php
-include 'vendor/autoload.php';
+include '../vendor/autoload.php';
 include 'vote_db.php';
 include 'security.php';
 use Lcobucci\JWT\Parser;
@@ -86,7 +86,7 @@ function post_ballot($as_election_id, $as_voter_id){
     if(json_last_error() != 0){
         http_response_code(500);
         return json_encode(["status" => "Error decoding request body.",
-                            "message" => json_last_error_msg();,
+                            "message" => json_last_error_msg(),
                             "data" => []
                             ]);
     };

@@ -26,7 +26,7 @@ export class BeatpathBallotCastComponent implements OnInit, OnDestroy {
     const end_date_utc = new Date(+end_date[0],+end_date[1]-1,+end_date[2]+1); // subtract 1 from month because idk my bff jill, and add 1 to day for comparison later since end_date is the last day that votes may be submitted
     const now = new Date();
 
-    // election date passed if end date is less than current date
+    // election date passed if end date is less than current date. If passed, then don't show options.
     this.election_date_passed = end_date_utc < now;
 
     if(this.election_manager.election.election_id && !this.election_date_passed){

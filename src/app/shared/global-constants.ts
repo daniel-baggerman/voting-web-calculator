@@ -1,3 +1,3 @@
 export class GlobalConstants {
-    public static apiURL: string = 'https://baggerman.org/~daniel/';
+    public static apiURL: string = 'http://rcv.vote/';
 }

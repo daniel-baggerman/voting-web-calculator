@@ -1,4 +1,3 @@
-<h1>How It Works</h1>
 <h2>Ranked Choice Ballot</h2>
     <h3>What?</h3>
         <p>
@@ -21,8 +20,8 @@
         </ol>
     <h3>How?</h3>
         <p>Ranked choice ballots are easy to use. Simply rank the choices in order of your preference. Rank as many as you want. Any options not ranked will be tied in last place ranked below every other option on your ballot.</p>
-        <p>Here on this site, our ballots look like this</p>
-        <img src="assets/site_ballot_example2.png">
+        <p>Here on this site, our ballots look like the example below. Feel free to play around with it. Below it, there detailed instructions on how to fill it out.</p>
+        <app-beatpath-ballot-cast *ngIf='election_data_loaded | async'></app-beatpath-ballot-cast>
         <p>Using the ballot is easy.</p>
         <ul>
             <li>
@@ -47,3 +46,5 @@
                 Once you are finished, click SUBMIT to send your ballot off to be tallied.
             </li>
         </ul>
+    <h3>Test Ballot</h3>
+    <p>Try out a test ballot below</p>

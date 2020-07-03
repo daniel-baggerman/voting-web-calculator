@@ -34,10 +34,6 @@ export class BpBallotService {
           // console.log(http_response)
           this.election_options = http_response.data;
           this.election_options_changed.next();
-        },
-        (error) => {
-          alert(error.error.text);
-          console.error(error);
         }
       );
   }
@@ -73,10 +69,6 @@ export class BpBallotService {
         (http_response: http_response)=> {
           // trigger event for beatpath_ballot_cast component to catch the post response message. 
           this.ballot_successfully_submitted.next({message: http_response.message, ballot: http_response.data.ballot});
-        },
-        (error) => {
-          alert(error.error.text);
-          console.error(error);
         }
       );
   }

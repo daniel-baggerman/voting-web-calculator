@@ -10,7 +10,8 @@
                 <!-- Start Date -->
                 <div>
                     <label for="start_date">Start Date</label>
-                    <input type="date" name="start_date" id="start_date" [(ngModel)]="form.start_date" #start_date="ngModel">
+                    <input type="date" name="start_date" id="start_date" [(ngModel)]="form.start_date" #start_date="ngModel" StartBeforeEnd [end_date]="end_date.value">
+                    <div *ngIf="start_date.errors && (start_date.dirty || start_date.touched)"><p style="color: var(--color-red)">End date must come after start date.</p></div>
                 </div>
                 <!-- End Date -->
                 <div>

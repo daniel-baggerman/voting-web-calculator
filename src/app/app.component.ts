@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
-import { MessagingService } from './messaging.service';
 
 @Component({
   selector: 'app-root',

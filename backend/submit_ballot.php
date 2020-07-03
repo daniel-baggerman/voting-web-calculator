@@ -38,7 +38,7 @@ $token = (new Parser())->parse((string) $token_string);
 $voter_id = $token->getClaim('vid');
 
 // Check that the end_date has not passed
-$end_date = executeselect('SELECT end_date FROM vote_elections WHERE election_id = ?',
+$end_date = executeselect('SELECT end_date FROM elections WHERE election_id = ?',
                             true,[$_GET['election_id']])[0];
 
 $end_date_utc = date_create_from_format('Y-m-d',$end_date);
@@ -92,8 +92,8 @@ function post_ballot($as_election_id, $as_voter_id){
     };
 
     // delete voter's previous ballot submission
-    // maybe I should just prevent them from voting if their voter ID already exists in vote_cast_ballots
-    $rtn = executesql("DELETE FROM vote_cast_ballots 
+    // maybe I should just prevent them from voting if their voter ID already exists in cast_ballots
+    $rtn = executesql("DELETE FROM cast_ballots 
                        WHERE election_id = ?
                        AND voter_id = ?", [$as_election_id,$as_voter_id]
                        );
@@ -113,14 +113,14 @@ function post_ballot($as_election_id, $as_voter_id){
         $rank = intval($key) + 1;
 
         // run the insert based on the data passed
-        $sqls = "INSERT into vote_cast_ballots 
+        $sqls = "INSERT into cast_ballots 
                     (   cast_ballot_id
                         , election_id
                         , voter_id
                         , option_id
                         , option_rank)
                   VALUES 
-                    (   ifnull((select max(cast_ballot_id) from vote_cast_ballots),0)+1
+                    (   coalesce((select max(cast_ballot_id) from cast_ballots),0)+1
                         , ?
                         , ?
                         , ?
@@ -131,7 +131,7 @@ function post_ballot($as_election_id, $as_voter_id){
         // check for errors
         if($output <> "OK"){
             // Rollback changes
-            $rtn = executesql("DELETE FROM vote_cast_ballots 
+            $rtn = executesql("DELETE FROM cast_ballots 
                                 WHERE election_id = ?
                                 AND voter_id = ?", [$as_election_id,$as_voter_id]
                                 );
@@ -154,12 +154,12 @@ function post_ballot($as_election_id, $as_voter_id){
         }
     }
 
-    $submitted_ballot = executeselect('SELECT vcb.option_id, vcb.option_rank, vo.description option_description
-                                        FROM vote_cast_ballots vcb
-                                        JOIN vote_options vo ON vo.option_id = vcb.option_id
-                                        WHERE election_id = ?
-                                        AND voter_id = ?
-                                        ORDER BY vcb.option_rank', false, [$as_election_id,$as_voter_id]);
+    $submitted_ballot = executeselect('SELECT cb.option_id, cb.option_rank, o.description option_description
+                                        FROM cast_ballots cb
+                                        JOIN options o ON o.option_id = cb.option_id
+                                        WHERE cb.election_id = ?
+                                        AND cb.voter_id = ?
+                                        ORDER BY cb.option_rank', false, [$as_election_id,$as_voter_id]);
 
     // Return a success message and a copy of their submitted ballot
     http_response_code(200);

@@ -18,11 +18,11 @@ if(json_last_error() != 0){
 };
 
 $db_password_data = executeselect('SELECT   election_id, 
-                                            ifnull(public_private,1) public_private, 
-                                            ifnull(password_protect,0) password_protect, 
+                                            coalesce(public_private,1) public_private, 
+                                            coalesce(password_protect,0) password_protect, 
                                             password, 
                                             url_election_name
-                                    FROM vote_elections 
+                                    FROM elections 
                                     WHERE url_election_name = ?',
                                     false, 
                                     [$post_body['url_election_name']])[0];
@@ -43,23 +43,23 @@ if (intval($db_password_data['public_private']) === 1 && intval($db_password_dat
     $password = $db_password_data['password'];
     if(password_verify($post_body['code'],$db_password_data['password'])){
         // Issue temporary, bogus voter_id
-        $rtn = executesql("INSERT INTO vote_voters (voter_id, voter_name)
-                            SELECT ifnull(max(voter_id),0)+1, 'Schulze'||(ifnull(max(voter_id),0)+1) from vote_voters");
+        $rtn = executesql("INSERT INTO voters (voter_id, voter_name)
+                            SELECT coalesce(max(voter_id),0)+1, 'Schulze'||(coalesce(max(voter_id),0)+1) from voters");
 
         if($rtn <> "OK"){
             http_response_code(500);
             echo "Failure to insert voter_id.";
         }
 
-        $voter_id = select_scalar('SELECT max(voter_id) FROM vote_voters');
+        $voter_id = select_scalar('SELECT max(voter_id) FROM voters');
 
         // token stuff
         $signer = new Sha256();
-        $private_key = new Key('file://../../keys/private_key.key');
+        $private_key = new Key('file://../../../ssl/keys/jwt/private_key.key');
         $token = (new Builder())->expiresAt(time()+3600)
-                                ->withClaim('eid',$db_password_data['election_id'])
-                                ->withClaim('uen',$db_password_data['url_election_name'])
-                                ->withClaim('vid',$voter_id)
+                                ->withClaim('eid', (string) $db_password_data['election_id'])
+                                ->withClaim('uen', (string) $db_password_data['url_election_name'])
+                                ->withClaim('vid', (string) $voter_id)
                                 ->getToken($signer, $private_key);
 
         // return token
@@ -73,10 +73,10 @@ if (intval($db_password_data['public_private']) === 1 && intval($db_password_dat
 } else 
 if (intval($db_password_data['public_private']) === 0) {
     // Private with user ballot code logic
-    $voter_id = select_scalar('SELECT vv.voter_id
-                                FROM vote_voters vv
-                                JOIN vote_election_voter_list vevl ON vv.voter_id = vevl.voter_id
-                                WHERE vv.voter_name = ?', [$post_body['code']]);
+    $voter_id = select_scalar('SELECT v.voter_id
+                                FROM voters v
+                                JOIN election_voter_list evl ON v.voter_id = evl.voter_id
+                                WHERE v.voter_name = ?', [$post_body['code']]);
 
     if(!is_null($voter_id)){
         $token = (new Builder())->expiresAt(time()+3600)

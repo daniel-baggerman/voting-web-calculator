@@ -24,15 +24,7 @@ export class SearchElectionsComponent implements OnInit {
       (http_response: http_response) => {
         this.searched = true;
         this.elections = http_response.data.elections;
-      },
-      (error) => {
-        alert(error.error.text);
-        console.error(error);
       }
     );
   }
-
-  // election_selected(election_id: number){
-  //   this.election_selected_from_search.emit({election_id: election_id});
-  // }
 }

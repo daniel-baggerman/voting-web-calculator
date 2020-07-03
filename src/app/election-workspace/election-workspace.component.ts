@@ -3,9 +3,8 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { http_response } from '../shared/http_response.model';
 import { ManageElectionService } from './manage-election.service';
 import { DBTransactions } from '../db_transactions.service';
-import { switchMap, tap, catchError } from 'rxjs/operators';
-import { EMPTY, Subscription } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
+import { switchMap, tap } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-election-workspace',
@@ -34,15 +33,6 @@ export class ElectionWorkspaceComponent implements OnInit, OnDestroy {
           return this.trans.get_election_from_url_name(url_election_name);
         }
       }),
-      // Catch any errors from http request
-      catchError(
-        (error: HttpErrorResponse) => {
-          this.valid_election_url = Promise.resolve(false);
-          alert( error.error.text )
-          console.log(error);
-          return EMPTY;
-        }
-      ),
       // Update the election details in election_manager based on http response
       tap(
         (http_response: http_response) => {

@@ -39,12 +39,10 @@ export class VoterAuthenticationComponent implements OnInit {
   submit(form: NgForm) {
     this.auth_service.login(this.election_manager.election.url_election_name, form.value.code)
     .subscribe(
-      resp => {
+      () => {
         this.router.navigate([this.election_manager.election.url_election_name,'vote'])
       },
       error => {
-        console.log(error);
-
         this.error_message = error.error;
       }
     );

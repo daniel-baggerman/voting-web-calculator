@@ -11,12 +11,16 @@ function validate_token_to_election($token_string, $election_id){
     *   Returns true if the http request is allowed to proceed. False otherwise.
     */
 
+    if(is_null($token_string)){
+        return false;
+    }
+
     // only verify token if election type is public and password protected or private. 
-    $election_data = executeselect("SELECT ifnull(public_private,1) public_private, ifnull(password_protect,0) password_protect
-                                    FROM vote_elections 
+    $election_data = executeselect("SELECT coalesce(public_private,1) public_private, coalesce(password_protect,0) password_protect
+                                    FROM elections 
                                     WHERE election_id = ?",false,[$election_id])[0];
 
-    if($election_data['public_private'] === "1" && $election_data['password_protect'] === "0"){
+    if( (string) $election_data['public_private'] === "1" && (string) $election_data['password_protect'] === "0"){
         // Election is public and not password protected. Allow request to proceed.
         return true;
     }
@@ -25,19 +29,26 @@ function validate_token_to_election($token_string, $election_id){
 
     // First verify the token signature
     // Set up some vars for Verification
-    $public_key = new Key('file://../../keys/public_key.key');
+    $public_key = new Key('file://../../../ssl/keys/jwt/public_key.key');
     $signer = new Sha256();
 
     // If not verified, send error message.
-    if(!($token->verify($signer, $public_key))){
+    if( !($token->verify($signer, $public_key)) ){
         return false;
     }
     
     // Next validate token data
     $validation_data = new ValidationData();
-    $validation_data->setElectionId($election_id);
+    $validation_data->setElectionId( (int) $election_id);
 
-    if(!($token->validate($validation_data))){
+    if( !($token->validate($validation_data)) ){
+        $nowdate = new DateTime();
+        $now = $nowdate->format('Y-m-d H:i:s');
+        // $eid = $token->getClaim('eid');
+        // $str = ($token->validate($validation_data)) ? 'false' : 'true';
+        // file_put_contents("test.txt","$now - failed validation: $str\n", FILE_APPEND | LOCK_EX);
+        $temp = $token->validate($validation_data) ? 'true' : 'false';
+        file_put_contents("test.txt","$now - valid: $temp\n", FILE_APPEND | LOCK_EX);
         return false;
     }
 

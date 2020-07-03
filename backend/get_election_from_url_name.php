@@ -4,11 +4,11 @@ function get_election_from_url_name($url_election_name){
     $data = executeselect( "SELECT  election_id, 
                                     description, 
                                     long_description, 
-                                    ifnull(public_private,1) public_private, 
-                                    ifnull(password_protect,0) password_protect,
+                                    coalesce(public_private,1) public_private, 
+                                    coalesce(password_protect,0) password_protect,
                                     start_date,
                                     end_date
-                            FROM vote_elections
+                            FROM elections
                             WHERE url_election_name = ?",
                             false,
                             [$url_election_name]);

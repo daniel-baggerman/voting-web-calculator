@@ -54,10 +54,6 @@ export class ReportingServiceService implements OnInit{
               winner: this.beatpath_winner.slice()
               }
             );
-        },
-        (error) => {
-          alert(error.error.text);
-          console.error(error);
         }
       );
   }

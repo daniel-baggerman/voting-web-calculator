@@ -25,10 +25,6 @@ export class ManageElectionComponent implements OnInit {
         .subscribe(
           (http_response: http_response) => {
             this.tally_response = http_response.message;
-          },
-          (error) => {
-            alert(error.error.text);
-            console.error(error);
           }
         );
     }

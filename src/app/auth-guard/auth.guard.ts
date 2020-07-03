@@ -3,8 +3,8 @@ import { AuthenticationService } from './authentication.service';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router, ActivatedRoute, ParamMap} from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { GlobalConstants } from '../shared/global-constants';
-import { of, Observable, iif } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { http_response } from '../shared/http_response.model';
 
 @Injectable({
@@ -38,7 +38,7 @@ export class AuthGuard implements CanActivate {
       return this.router.createUrlTree(['/']);
     }
 
-    return this.http.get<http_response>(GlobalConstants.apiURL+'backend/get_election_type.php?url_election_name='+expected_election)
+    return this.http.get<http_response>(GlobalConstants.apiURL+'get_election_type.php?url_election_name='+expected_election)
     .pipe(
       // Map the data in the response to an object
       map(

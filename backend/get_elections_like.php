@@ -7,7 +7,7 @@ if(isset($_GET['string'])){
 
 function get_elections_like($as_string){
     $data = executeselect("SELECT election_id, description, url_election_name
-                           FROM vote_elections
+                           FROM elections
                            WHERE lower(description) LIKE :election_name ",
                            false,
                            [":election_name" => strtolower("%{$as_string}%")] );

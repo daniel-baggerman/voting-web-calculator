@@ -1,5 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { DBTransactions } from '../db_transactions.service';
 import { http_response } from '../shared/http_response.model';
 
@@ -43,10 +42,6 @@ export class CreateElectionComponent implements OnInit {
       (http_response: http_response) => {
         this.create_election_response_msg = http_response.message;
         this.election_created = true;
-      },
-      (error) => {
-        alert( error.error.text );
-        // console.error(error);
       }
     );
   }

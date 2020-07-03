@@ -20,15 +20,17 @@ import { FooterComponent } from './footer/footer.component';
 import { ElectionWorkspaceComponent } from './election-workspace/election-workspace.component';
 import { EmailListValidatorDirective } from './helpers/email-list-validator.directive';
 import { EndPastStartDirective } from './helpers/end-past-start.directive';
+import { StartBeforeEndDirective } from './helpers/start-before-end.directive';
 import { VoterAuthenticationComponent } from './election-workspace/voter_auth/voter-authentication.component';
 import { PrivateBallotVoterAuthComponent } from './election-workspace/private-ballot-voter-auth/private-ballot-voter-auth.component';
 import { AuthGuard } from './auth-guard/auth.guard';
 import { AuthInterceptorService } from './auth-guard/auth-interceptor.service';
-import { JwtHelperService, JwtModule } from '@auth0/angular-jwt';
+import { JwtHelperService } from '@auth0/angular-jwt';
 import { HowItWorksComponent } from './how-it-works/how-it-works.component';
 import { TallyMethodComponent } from './how-it-works/tally-method/tally-method.component';
 import { RankedChoiceBallotComponent } from './how-it-works/ranked-choice-ballot/ranked-choice-ballot.component';
 import { AboutSecurityComponent } from './how-it-works/about-security/about-security.component';
+import { ErrorIntercept } from './error.interceptor';
 
 @NgModule({
   declarations: [
@@ -48,6 +50,7 @@ import { AboutSecurityComponent } from './how-it-works/about-security/about-secu
     ElectionWorkspaceComponent,
     EmailListValidatorDirective,
     EndPastStartDirective,
+    StartBeforeEndDirective,
     VoterAuthenticationComponent,
     PrivateBallotVoterAuthComponent,
     HowItWorksComponent,
@@ -63,6 +66,7 @@ import { AboutSecurityComponent } from './how-it-works/about-security/about-secu
   ],
   providers: [AuthGuard,
               {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true},
+              {provide: HTTP_INTERCEPTORS, useClass: ErrorIntercept, multi: true},
               JwtHelperService],
   bootstrap: [AppComponent]
 })

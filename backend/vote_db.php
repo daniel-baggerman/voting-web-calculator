@@ -1,11 +1,12 @@
 <?php
 
 require '../vendor/autoload.php';
+require 'connection.php';
 use RCVvote\Connection as Connection;
 
 try {
     $pdo_handle = Connection::get()->connect();
-    echo 'A connection to the PostgreSQL database sever has been established successfully.';
+    // echo 'A connection to the PostgreSQL database sever has been established successfully.';
 } catch (\PDOException $e) {
     echo $e->getMessage();
 }

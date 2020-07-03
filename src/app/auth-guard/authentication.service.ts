@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
-import { tap, shareReplay, switchMap, catchError } from 'rxjs/operators';
+import { tap, shareReplay } from 'rxjs/operators';
 import { User } from '../shared/user.model';
 import { HttpClient } from '@angular/common/http';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { GlobalConstants } from '../shared/global-constants';
-import { http_response } from '../shared/http_response.model';
 
 @Injectable({providedIn: 'root'})
 export class AuthenticationService {
@@ -20,7 +19,7 @@ export class AuthenticationService {
 
         return this.http
             .post(
-                GlobalConstants.apiURL+'backend/login.php',
+                GlobalConstants.apiURL+'login.php',
                 { url_election_name: url_election_name,
                   code: code },
                 { responseType: 'text' }

@@ -23,7 +23,7 @@ class Connection {
     public function connect() {
 
         // read parameters in the ini configuration file
-        $params = parse_ini_file('database.ini');
+        $params = parse_ini_file('../../../ssl/database.ini');
         if ($params === false) {
             throw new \Exception("Error reading database configuration file");
         }

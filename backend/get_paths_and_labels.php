@@ -19,11 +19,11 @@ function get_paths_and_labels($ai_election_id){
     */
 
     // Fetch the options to loop through, fetch_column to get 1D array of values
-    $la_options = executeselect("SELECT option_id 
-                                 FROM vote_ballot_options
+    $la_options = executeselect("SELECT option_id
+                                 FROM ballot_options
                                  WHERE election_id = ".$ai_election_id."
                                  AND option_id IN (SELECT DISTINCT option_id
-                                                    FROM vote_cast_ballots
+                                                    FROM cast_ballots
                                                     WHERE election_id = ".$ai_election_id.")
                                  ORDER BY rank",
                                  $ab_fetch_column=true
@@ -41,7 +41,7 @@ function get_paths_and_labels($ai_election_id){
         for( $j=0; $j < count($la_options); $j++ ){
             // Fetch the value
             $val = select_scalar("SELECT pref_strength 
-                                    FROM vote_winner_calc 
+                                    FROM winner_calc 
                                     WHERE election_id = ".$ai_election_id."
                                     AND first_option_id   = ".$la_options[$i]."
                                     AND second_option_id  = ".$la_options[$j]);
@@ -70,7 +70,7 @@ function get_paths_and_labels($ai_election_id){
         for( $j=0; $j < count($la_options); $j++ ){
             // Fetch the value
             $val = select_scalar("SELECT strongest_path 
-                                    FROM vote_winner_calc 
+                                    FROM winner_calc 
                                     WHERE election_id = ".$ai_election_id."
                                     AND first_option_id   = ".$la_options[$i]."
                                     AND second_option_id  = ".$la_options[$j]);
@@ -88,13 +88,13 @@ function get_paths_and_labels($ai_election_id){
     }
 
     // Fetch the labels
-    $labels = executeselect("SELECT DISTINCT description 
-                             FROM vote_options vo
-                             JOIN vote_ballot_options vbo on vbo.option_id = vo.option_id
-                             JOIN vote_cast_ballots vcb on vcb.option_id = vo.option_id and vcb.election_id = vbo.election_id
-                             WHERE vbo.election_id = ".$ai_election_id."
-                             ORDER BY vbo.rank",
+    $labels = executeselect("SELECT description
+                             FROM options o
+                             JOIN ballot_options bo on bo.option_id = o.option_id
+                             WHERE bo.election_id = ".$ai_election_id."
+                             ORDER BY bo.rank",
                              $ab_fetch_column=true);
+                             // removed: JOIN cast_ballots cb on cb.option_id = o.option_id and cb.election_id = bo.election_id
     if(is_string($val)){ 
         return json_encode(["status" => "Failure :(",
                             "message" => $val,
@@ -103,11 +103,11 @@ function get_paths_and_labels($ai_election_id){
     }
 
     // Fetch the winner
-    $winner = executeselect("SELECT vo.description
-                             FROM vote_options vo 
-                             JOIN vote_ballot_options vbo ON vbo.option_id = vo.option_id
-                             WHERE vbo.rank = 1
-                             AND vbo.election_id = ".$ai_election_id,
+    $winner = executeselect("SELECT o.description
+                             FROM options o 
+                             JOIN ballot_options bo ON bo.option_id = o.option_id
+                             WHERE bo.rank = 1
+                             AND bo.election_id = ".$ai_election_id,
                              $ab_fetch_column=true);
 
     if(is_string($winner)){ 

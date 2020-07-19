@@ -32,22 +32,35 @@ function post_new_election($election_data){
     $election_data = json_decode($election_data, true);
 
     if(json_last_error() != 0){
-        return json_last_error_msg();
+        http_response_code(500);
+        return json_encode(["status" => "Failure :(",
+                            "message" => json_last_error_msg(),
+                            "data" => []
+                            ]);
     };
 
-    // insert election
-    // check that the election name is unique
-    $unique_check = select_scalar("SELECT count(1) FROM elections WHERE description = ?"
-                                    , array($election_data['name']));
+    // Commented out to allow duplicate election names for now.
+    // // insert election
+    // // check that the election name is unique
+    // $unique_check = select_scalar("SELECT count(1) FROM elections WHERE description = ?"
+    //                                 , array($election_data['name']));
 
-    if(is_string($unique_check)){
-        $pdo_handle->rollBack();
-        return "Error selecting election count for unique check. Error Message: \r\n".$unique_check;
-    }
-
-    if($unique_check !== 0){
-        return "Cannot complete operation. Election name must be unique.";
-    };
+    // if(is_string($unique_check)){
+    //     $pdo_handle->rollBack();
+    //     http_response_code(500);
+    //     return json_encode(["status" => "Failure :(",
+    //                         "message" => "Error selecting election count for unique check. Error Message: \r\n".$unique_check,
+    //                         "data" => []
+    //                         ]);
+    // };
+    
+    // if($unique_check !== 0){
+    //     http_response_code(400);
+    //     return json_encode(["status" => "Failure :(",
+    //                         "message" => "Cannot complete operation. Election name must be unique.",
+    //                         "data" => []
+    //                         ]);
+    // };
 
     // define the election description to be used in the URL.
     $url_election_name = $election_data['name'];
@@ -56,24 +69,25 @@ function post_new_election($election_data){
     $url_election_name = strtolower(rawurlencode($url_election_name)); // Encode anything left and lower it
 
     // check that the url encoding is unique. If it's not unique, then try to add numbers to the end of it until it is unique.
-    $unique_check = select_scalar("SELECT count(1) FROM elections WHERE url_election_name = '".$url_election_name."'");
+    $unique_check = select_scalar("SELECT count(1) FROM elections WHERE url_election_name = ?",[$url_election_name]);
 
     if($unique_check !== 0){
         $i=0;
         while($i<100){
             $i++;
-            $unique_check = select_scalar("SELECT count(1) FROM elections WHERE url_election_name = '".$url_election_name.$i."'");
+            $unique_check = select_scalar("SELECT count(1) FROM elections WHERE url_election_name = ?",[$url_election_name.$i]);
             if($unique_check===0){
                 $url_election_name = $url_election_name.$i;
                 break;
             }
             if($i==9){
-                return "Pick a new election name."; // The user is so unoriginal that 99 other elections with the same name have been created.
+                return json_encode(["status" => "Failure :(",
+                                    "message" => "Pick a new election name.",
+                                    "data" => []
+                                    ]); // The user is so unoriginal that 99 other elections with the same name have been created.
             }
         }
     };
-
-    $new_election_id = select_scalar('SELECT election_id FROM elections WHERE url_election_name = ?',[$url_election_name]);
 
     // insert the data into the elections table
     $sqls = "INSERT INTO elections 
@@ -120,10 +134,15 @@ function post_new_election($election_data){
 
     if($rtn <> "OK"){
         $pdo_handle->rollBack();
-        return "Error inserting into elections. Error Message: \r\n".$rtn;
+        return json_encode(["status" => "Failure :(",
+                            "message" => "Error inserting into elections. Error Message: \r\n".$rtn,
+                            "data" => []
+                            ]);
     }
 
     // insert options
+
+    $new_election_id = select_scalar('SELECT election_id FROM elections WHERE url_election_name = ?',[$url_election_name]);
 
     // explode the options from $election_data into an array based on the ';' character, then use the strlen() function
     // to filter out any elements of the array that are empty or null. Then trim the resulting elements.
@@ -140,7 +159,10 @@ function post_new_election($election_data){
                                 VALUES (nextval('option_id_seq'), ?)" , [$option]);
             if($rtn <> 'OK'){
                 $pdo_handle->rollBack();
-                return "Error inserting into options. Error Message: \r\n".$rtn;
+                return json_encode(["status" => "Failure :(",
+                                    "message" => "Error inserting into options. Error Message: \r\n".$rtn,
+                                    "data" => []
+                                    ]);
             }
 
             $option_id = select_scalar("SELECT option_id FROM options WHERE descrition = ?",[$option]);   
@@ -152,7 +174,10 @@ function post_new_election($election_data){
                             WHERE not exists (SELECT 1 FROM ballot_options WHERE election_id = '.$new_election_id.' and option_id = '.$option_id.')' );
         if($rtn <> 'OK'){
             $pdo_handle->rollBack();
-            return "Error inserting new option into ballot_options. Error Message: \r\n".$rtn;
+            return json_encode(["status" => "Failure :(",
+                                "message" => "Error inserting new option into ballot_options. Error Message: \r\n".$rtn,
+                                "data" => []
+                                ]);
         }
     }
 

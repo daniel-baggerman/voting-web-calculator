@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { DBTransactions } from '../db_transactions.service';
-import { http_response } from '../shared/http_response.model';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { DBTransactions } from '../core/db_transactions.service';
+import { election } from '../core/models/election.model';
+import { NgForm } from '@angular/forms';
+import { http_response } from 'src/app/core/models/http_response.model'
 
 @Component({
   selector: 'app-create-election',
@@ -8,15 +10,25 @@ import { http_response } from '../shared/http_response.model';
   styleUrls: ['./create-election.component.css']
 })
 export class CreateElectionComponent implements OnInit {
-  // @ViewChild('f',{static: false}) election_form: NgForm;
+  @ViewChild('f',{static: false}) election_form: NgForm;
   create_election_response_msg: string = "";
   election_created: boolean;
+  election: election;
+  options: string[];
 
   form: any = {};
 
   constructor(private trans: DBTransactions) { }
 
   ngOnInit() {
+  }
+
+  validate_start_date(){
+    this.election_form.controls['start_date'].updateValueAndValidity();
+  }
+
+  validate_end_date(){
+    this.election_form.controls['end_date'].updateValueAndValidity();
   }
 
   create_election(){
@@ -40,8 +52,11 @@ export class CreateElectionComponent implements OnInit {
 
     this.trans.create_election(this.form).subscribe(
       (http_response: http_response) => {
+        console.log(http_response);
         this.create_election_response_msg = http_response.message;
         this.election_created = true;
+        this.election = http_response.data.election;
+        this.options = http_response.data.options;
       }
     );
   }

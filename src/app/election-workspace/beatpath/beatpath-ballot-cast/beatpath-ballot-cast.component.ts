@@ -2,6 +2,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { BpBallotService } from './bp-ballot.service';
 import { Subscription } from 'rxjs';
 import { ManageElectionService } from 'src/app/election-workspace/manage-election.service';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { DialogModalComponent } from 'src/app/dialog-modal/dialog-modal.component';
+
 
 @Component({
   selector: 'app-beatpath-ballot-cast',
@@ -18,7 +21,8 @@ export class BeatpathBallotCastComponent implements OnInit, OnDestroy {
   election_date_passed: boolean = true;
 
   constructor(private bp_ballot_service: BpBallotService,
-              public election_manager: ManageElectionService) {}
+              public election_manager: ManageElectionService,
+              private mat_dialog: MatDialog) {}
 
   ngOnInit() {
     // Take end date from election, in format 'YYYY-MM-DD', split it and pass it to date object
@@ -51,7 +55,28 @@ export class BeatpathBallotCastComponent implements OnInit, OnDestroy {
   }
 
   submit_ballot(){
-    this.bp_ballot_service.submit_ballot();
+
+    // only ask for cookies if the user hasn't accepted already
+
+    // https://medium.com/swlh/how-to-create-a-modal-dialog-component-in-angular-8-88028d909be0
+    // https://www.techiediaries.com/angular-material-login-form-modal-dialog/
+    // https://v5.material.angular.io/components/dialog/overview
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.height = "350px";
+    dialogConfig.width = "500px";
+    dialogConfig.data = { message: 'This site requires cookies to protect against poll fraud. Do you accept cookies?' }; 
+
+    const dialog_ref = this.mat_dialog.open(DialogModalComponent, dialogConfig);
+
+    dialog_ref.afterClosed().subscribe(result => {
+      if(result === 1){
+        // give them a cookie :3 then submit ballot
+
+        this.bp_ballot_service.submit_ballot();
+      }
+    });
+    
   }
 
   clear_ballot(){

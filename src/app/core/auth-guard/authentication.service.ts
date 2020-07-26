@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { tap, shareReplay } from 'rxjs/operators';
-import { User } from '../shared/user.model';
 import { HttpClient } from '@angular/common/http';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { GlobalConstants } from '../shared/global-constants';
+import { GlobalConstants } from 'src/app/core/models/global-constants';
 
 @Injectable({providedIn: 'root'})
 export class AuthenticationService {
-    user = new Subject<User>(); // Stores the user information as they browse.
+    // user = new Subject<User>(); // Stores the user information as they browse.
     private jwtHelper = new JwtHelperService();
 
     constructor(private http: HttpClient){ }

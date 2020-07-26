@@ -1,6 +1,6 @@
-<section *ngIf="!election_created" class="grid-container layout-narrow">
+<section class="grid-container layout-narrow">
     <div class="panel">
-        <form class="create-poll-form" (ngSubmit)="create_election()" #f="ngForm">
+        <form *ngIf="!election_created" class="create-poll-form" (ngSubmit)="create_election()" #f="ngForm">
             <!-- Election Name -->
             <div class="input-group">
                 <label for="name">Poll Name</label>
@@ -10,16 +10,16 @@
                 <!-- Start Date -->
                 <div>
                     <label for="start_date">Start Date</label>
-                    <input type="date" name="start_date" id="start_date" [(ngModel)]="form.start_date" #start_date="ngModel" StartBeforeEnd [end_date]="end_date.value">
-                    <div *ngIf="start_date.errors && (start_date.dirty || start_date.touched)"><p style="color: var(--color-red)">End date must come after start date.</p></div>
+                    <input type="date" name="start_date" id="start_date" [(ngModel)]="form.start_date" #start_date="ngModel" StartBeforeEnd [end_date]="end_date.value" (change)="validate_end_date()">
                 </div>
                 <!-- End Date -->
                 <div>
                     <label for="end_date">End Date</label>
-                    <input type="date" name="end_date" id="end_date" [(ngModel)]="form.end_date" #end_date="ngModel" required EndPastStart [start_date]="start_date.value">
-                    <div *ngIf="end_date.errors && (end_date.dirty || end_date.touched)"><p style="color: var(--color-red)">End date must come after start date.</p></div>
+                    <input type="date" name="end_date" id="end_date" [(ngModel)]="form.end_date" #end_date="ngModel" required EndPastStart [start_date]="start_date.value" (change)="validate_start_date()">
                 </div>
             </div>
+            <!-- <div *ngIf="start_date.errors && (start_date.dirty || start_date.touched)"><p style="color: var(--color-red)">Start date must come before end date.</p></div> -->
+            <div *ngIf="end_date.errors   && (end_date.dirty   || end_date.touched)">  <p style="color: var(--color-red)">End date must come after start date.</p></div>
             <!-- Description -->
             <div class="input-group">
                 <label for="desc">Description</label>
@@ -67,7 +67,18 @@
             <button type="reset" class="btn btn--warning">Clear</button>
         </form>
         <div *ngIf="election_created" class="grid-container layout-narrow">
-            <h2>Election Created!</h2>
+            <h1>Election Created!</h1>
+            <h2>Title: {{ election.description }}</h2>
+            <p>Description: {{ election.long_description }}</p>
+            <p *ngIf="election.start_date">Start Date: {{ election.start_date }}</p>
+            <p>End Date: {{ election.end_date }}</p>
+            <p>Scope: {{ election.public_private === 1 ? 'Public' : 'Private' }}</p>
+            <p>Password Requirement: {{ election.password_protect === 1 ? 'Password Required' : 'No Password' }}</p>
+            <p>Shareable URL: {{ 'www.rcv.vote/'+election.url_election_name }}</p>
+            <h3>Ballot Options: </h3>
+            <ul>
+                <li *ngFor="let option of options">{{ option }}</li>
+            </ul>
         </div>
     </div>
 </section>

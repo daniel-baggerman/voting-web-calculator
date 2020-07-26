@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ManageElectionService } from 'src/app/election-workspace/manage-election.service';
-import { DBTransactions } from 'src/app/db_transactions.service';
-import { http_response } from 'src/app/shared/http_response.model';
+import { DBTransactions } from 'src/app/core/db_transactions.service';
+import { http_response } from 'src/app/core/models/http_response.model';
 import { tap } from 'rxjs/operators';
 
 @Component({

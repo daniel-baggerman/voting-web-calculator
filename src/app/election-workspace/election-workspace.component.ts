@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { http_response } from '../shared/http_response.model';
+import { http_response } from 'src/app/core/models/http_response.model';
 import { ManageElectionService } from './manage-election.service';
-import { DBTransactions } from '../db_transactions.service';
+import { DBTransactions } from '../core/db_transactions.service';
 import { switchMap, tap } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 

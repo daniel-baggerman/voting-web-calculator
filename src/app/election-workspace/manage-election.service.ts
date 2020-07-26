@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { election } from '../shared/election.model';
+import { election } from '../core/models/election.model';
 
 @Injectable({
   providedIn: 'root'

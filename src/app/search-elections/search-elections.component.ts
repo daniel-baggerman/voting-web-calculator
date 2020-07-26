@@ -1,8 +1,8 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { DBTransactions } from '../db_transactions.service';
-import { election } from '../shared/election.model';
-import { http_response } from '../shared/http_response.model';
+import { DBTransactions } from '../core/db_transactions.service';
+import { election } from '../core/models/election.model';
+import { http_response } from 'src/app/core/models/http_response.model';
 
 @Component({
   selector: 'app-search-elections',

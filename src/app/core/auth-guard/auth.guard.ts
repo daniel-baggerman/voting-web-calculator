@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { AuthenticationService } from './authentication.service';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router, ActivatedRoute, ParamMap} from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { GlobalConstants } from '../shared/global-constants';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { http_response } from '../shared/http_response.model';
+import { http_response } from 'src/app/core/models/http_response.model';
+import { GlobalConstants } from 'src/app/core/models/global-constants';
 
 @Injectable({
   providedIn: 'root'

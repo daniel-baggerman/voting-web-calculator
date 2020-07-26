@@ -23,10 +23,16 @@ if( !empty($ga_postdata) ){
     echo post_new_election($ga_postdata);
 }
 else{
-    echo "No election data found.";
+    http_response_code(400);
+    echo json_encode(["status" => "Failure :(",
+                        "message" => "No election data found.",
+                        "data" => []
+                        ]);
 }
 
 function post_new_election($election_data){
+    global $pdo_handle;
+    
     $pdo_handle->beginTransaction();
 
     $election_data = json_decode($election_data, true);
@@ -114,7 +120,7 @@ function post_new_election($election_data){
 
     $rtn = executesql($sqls,
                         [   $election_data['name'],
-                            (array_key_exists('start_date',$election_data) ? $election_data['start_date'] : ''),
+                            (array_key_exists('start_date',$election_data) ? $election_data['start_date'] : '1970-01-01'),
                             $election_data['end_date'],
                             $election_data['desc'],
                             ($election_data['public_private'] == 'public' ? '1' : '0'),
@@ -165,7 +171,7 @@ function post_new_election($election_data){
                                     ]);
             }
 
-            $option_id = select_scalar("SELECT option_id FROM options WHERE descrition = ?",[$option]);   
+            $option_id = select_scalar("SELECT option_id FROM options WHERE description = ?",[$option]);   
         }
 
         // make the option available on the ballot for the new election
@@ -185,9 +191,27 @@ function post_new_election($election_data){
 
     // TODO: do something with email list passed
 
+    $return_election_details = executeselect("  SELECT  description, 
+                                                        long_description, 
+                                                        to_char(start_date,'YYYY-MM-DD') start_date, 
+                                                        to_char(end_date,'YYYY-MM-DD') end_date, 
+                                                        public_private, 
+                                                        password_protect, 
+                                                        url_election_name
+                                                FROM elections
+                                                WHERE election_id = ".$new_election_id );
+
+    $return_options = executeselect("   SELECT o.description option_name
+                                        FROM ballot_options bo
+                                        JOIN elections e on bo.election_id = e.election_id
+                                        JOIN options o on o.option_id = bo.option_id
+                                        WHERE bo.election_id = ".$new_election_id."
+                                        ORDER BY o.description", true );
+
     return json_encode(["status" => "Success!",
                         "message" => "Election successfully created!",
-                        "data" => []
+                        "data" => ["election" => $return_election_details[0],
+                                    "options" => $return_options]
                         ]);
 }
 ?>

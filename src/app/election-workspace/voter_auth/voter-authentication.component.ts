@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ManageElectionService } from '../manage-election.service';
 import { NgForm } from '@angular/forms';
-import { AuthenticationService } from 'src/app/auth-guard/authentication.service';
 import { Router } from '@angular/router';
+import { AuthenticationService } from 'src/app/core/auth-guard/authentication.service';
 
 @Component({
   selector: 'app-voter-authentication',

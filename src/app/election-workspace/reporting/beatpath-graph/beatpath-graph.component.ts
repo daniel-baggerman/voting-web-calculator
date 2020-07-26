@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { ReportingServiceService } from '../reporting-service.service';
 import { Subscription } from 'rxjs';
-import { MessagingService } from 'src/app/messaging.service';
+import { MessagingService } from 'src/app/core/messaging.service';
 
 interface canvas_data {
     pairwise_data: Array<Array<number>>,

@@ -1,8 +1,8 @@
 import { Injectable, OnInit } from '@angular/core';
-import { DBTransactions } from '../../db_transactions.service';
+import { DBTransactions } from '../../core/db_transactions.service';
 import { ManageElectionService } from '../manage-election.service';
-import { http_response } from '../../shared/http_response.model';
 import { Subject } from 'rxjs';
+import { http_response } from 'src/app/core/models/http_response.model';
 
 @Injectable({
   providedIn: 'root'

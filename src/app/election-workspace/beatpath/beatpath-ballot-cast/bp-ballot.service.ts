@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { bpOption } from 'src/app/election-workspace/beatpath/bp_models/bp_option.model';
 import { Subject } from 'rxjs';
-import { DBTransactions } from 'src/app/db_transactions.service';
-import { http_response } from 'src/app/shared/http_response.model';
+import { DBTransactions } from 'src/app/core/db_transactions.service';
+import { http_response } from 'src/app/core/models/http_response.model';
 
 @Injectable({
   providedIn: 'root'

@@ -14,6 +14,8 @@ function f_election_winner_process( $ai_election_id ){
         ls_msg: local string variable for storing messages to return from the function
     */
 
+    global $pdo_handle;
+    
     $pdo_handle->beginTransaction();
     
     // start the calc
@@ -151,14 +153,14 @@ function f_strongest_path( $ai_election_id ){
 
                         $pref_ji = select_scalar(  "SELECT strongest_path
                                                     FROM winner_calc
-                                                    WHERE election_id    = " . $ai_election_id) . "
+                                                    WHERE election_id    = " . $ai_election_id . "
                                                     AND first_option_id  = " . $la_options[$j]['option_id'] . "
                                                     AND second_option_id = " . $la_options[$i]['option_id']
                                                 );
 
                         $pref_ik = select_scalar(  "SELECT strongest_path
                                                     FROM winner_calc
-                                                    WHERE election_id    = " . $ai_election_id) . "
+                                                    WHERE election_id    = " . $ai_election_id . "
                                                     AND first_option_id  = " . $la_options[$i]['option_id'] . "
                                                     AND second_option_id = " . $la_options[$k]['option_id']
                                                 );

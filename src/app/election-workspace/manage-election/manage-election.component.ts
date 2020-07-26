@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ManageElectionService } from '../manage-election.service';
-import { DBTransactions } from '../../db_transactions.service';
-import { http_response } from '../../shared/http_response.model';
-import { UrlSegment, ActivatedRoute } from '@angular/router';
+import { DBTransactions } from '../../core/db_transactions.service';
+import { http_response } from 'src/app/core/models/http_response.model';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-manage-election',

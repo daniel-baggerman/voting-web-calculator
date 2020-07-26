@@ -8,13 +8,13 @@ import { ManageElectionComponent } from './election-workspace/manage-election/ma
 import { ReportingComponent } from './election-workspace/reporting/reporting.component';
 import { ElectionWorkspaceComponent } from './election-workspace/election-workspace.component';
 import { BeatpathBallotCastComponent } from './election-workspace/beatpath/beatpath-ballot-cast/beatpath-ballot-cast.component';
-import { AuthGuard } from './auth-guard/auth.guard';
 import { VoterAuthenticationComponent } from './election-workspace/voter_auth/voter-authentication.component';
 import { PrivateBallotVoterAuthComponent } from './election-workspace/private-ballot-voter-auth/private-ballot-voter-auth.component';
 import { HowItWorksComponent } from './how-it-works/how-it-works.component';
 import { RankedChoiceBallotComponent } from './how-it-works/ranked-choice-ballot/ranked-choice-ballot.component';
 import { TallyMethodComponent } from './how-it-works/tally-method/tally-method.component';
 import { AboutSecurityComponent } from './how-it-works/about-security/about-security.component';
+import { AuthGuard } from './core/auth-guard/auth.guard';
 
 const appRoutes: Routes = [
     { path: '', component: HomePageComponent },
@@ -44,6 +44,4 @@ const appRoutes: Routes = [
     imports: [RouterModule.forRoot(appRoutes, {useHash: false})],
     exports: [RouterModule]
 })
-export class AppRoutingModule { 
-
-} 
+export class AppRoutingModule { } 

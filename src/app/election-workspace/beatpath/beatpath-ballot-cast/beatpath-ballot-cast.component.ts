@@ -3,7 +3,7 @@ import { BpBallotService } from './bp-ballot.service';
 import { Subscription } from 'rxjs';
 import { ManageElectionService } from 'src/app/election-workspace/manage-election.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { DialogModalComponent } from 'src/app/dialog-modal/dialog-modal.component';
+import { DialogModalComponent } from 'src/app/shared/dialog-modal/dialog-modal.component';
 
 
 @Component({
@@ -76,7 +76,6 @@ export class BeatpathBallotCastComponent implements OnInit, OnDestroy {
         this.bp_ballot_service.submit_ballot();
       }
     });
-    
   }
 
   clear_ballot(){

@@ -3,8 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { bpOption } from '../election-workspace/beatpath/bp_models/bp_option.model';
 import { http_response } from 'src/app/core/models/http_response.model';
 import { GlobalConstants } from './models/global-constants';
+import { CoreModule } from './core.module';
 
-@Injectable({providedIn: 'root'})
+@Injectable({providedIn: CoreModule})
 export class DBTransactions {
     constructor(private http: HttpClient){}
 

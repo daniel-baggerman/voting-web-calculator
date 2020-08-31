@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
+import { CoreModule } from './core.module';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({providedIn: CoreModule})
 export class MessagingService {
   private subject = new Subject<any>();
   light_dark_toggle = new Subject<any>();

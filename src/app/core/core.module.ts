@@ -5,6 +5,7 @@ import { AuthGuard } from './auth-guard/auth.guard';
 import { AuthInterceptorService } from './auth-guard/auth-interceptor.service';
 import { ErrorIntercept } from './error.interceptor';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { CookieService } from 'ngx-cookie-service';
 
 @NgModule({
     imports: [ 
@@ -15,7 +16,9 @@ import { JwtHelperService } from '@auth0/angular-jwt';
     providers: [AuthGuard,
         {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true},
         {provide: HTTP_INTERCEPTORS, useClass: ErrorIntercept, multi: true},
-        JwtHelperService]
+        JwtHelperService,
+        CookieService
+    ]
 })
 
 export class CoreModule {

@@ -27,6 +27,7 @@ import { HowItWorksComponent } from './how-it-works/how-it-works.component';
 import { TallyMethodComponent } from './how-it-works/tally-method/tally-method.component';
 import { RankedChoiceBallotComponent } from './how-it-works/ranked-choice-ballot/ranked-choice-ballot.component';
 import { AboutSecurityComponent } from './how-it-works/about-security/about-security.component';
+import { CookieComponent } from './cookie/cookie.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { AboutSecurityComponent } from './how-it-works/about-security/about-secu
     HowItWorksComponent,
     TallyMethodComponent,
     RankedChoiceBallotComponent,
-    AboutSecurityComponent
+    AboutSecurityComponent,
+    CookieComponent
   ],
   imports: [
     BrowserModule,

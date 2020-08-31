@@ -15,12 +15,14 @@ import { RankedChoiceBallotComponent } from './how-it-works/ranked-choice-ballot
 import { TallyMethodComponent } from './how-it-works/tally-method/tally-method.component';
 import { AboutSecurityComponent } from './how-it-works/about-security/about-security.component';
 import { AuthGuard } from './core/auth-guard/auth.guard';
+import { CookieComponent } from './cookie/cookie.component';
 
 const appRoutes: Routes = [
     { path: '', component: HomePageComponent },
     { path: 'election_search', component: SearchElectionsComponent },
     { path: 'how_it_works', component: HowItWorksComponent },
     { path: 'create_election', component: CreateElectionComponent },
+    { path: 'cookie', component: CookieComponent },
     { path: 'how_it_works', component: HowItWorksComponent,
         children: [
             { path: 'ranked_choice_ballot', component: RankedChoiceBallotComponent },

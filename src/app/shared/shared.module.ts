@@ -7,8 +7,9 @@ import { RouterModule } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { MatDialogModule } from '@angular/material/dialog';
-import { DialogModalComponent } from '../dialog-modal/dialog-modal.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DialogModalComponent } from './dialog-modal/dialog-modal.component';
+import { KeyValue2Pipe } from './keyvalue2.pipe';
 
 @NgModule({
     imports: [
@@ -23,7 +24,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     declarations: [
         HeaderComponent, 
         FooterComponent,
-        DialogModalComponent
+        DialogModalComponent,
+        KeyValue2Pipe
     ],
     exports: [
         CommonModule,
@@ -32,7 +34,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
         RouterModule,
         BrowserAnimationsModule,
         HeaderComponent,
-        FooterComponent
+        FooterComponent,
+        KeyValue2Pipe
     ],
     entryComponents: [DialogModalComponent]
 })

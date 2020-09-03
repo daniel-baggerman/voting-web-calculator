@@ -62,31 +62,35 @@ export class CookieComponent implements OnInit {
         this._evercookie(name, function () {}, value, undefined, undefined);
     }
 
-    async _evercookie(name: string, cb: Function, value: string, i: number, dont_reset: number){
+    test(){
+        console.log('test1');
+        setTimeout(()=> console.log('test2'),2000);
+        console.log('test3');
+    }
+
+    _evercookie(name: string, cb: Function, value: string, i: number, dont_reset: number){
         if (i === undefined) {
             i = 0;
         }
         // first run
         if (i === 0) {
             if (this.options.idb) {
-                const idb_prom = this.evercookie_indexdb_storage(name, value);
+                this.evercookie_indexdb_storage(name, value);
             }
             if (this.options.pngCookieName) {
-                const png_prom = this.evercookie_png(name, value);
+                this.evercookie_png(name, value);
             }
             if (this.options.etagCookieName) {
-                const etag_prom = this.evercookie_etag(name, value);
+                this.evercookie_etag(name, value);
             }
             if (this.options.cacheCookieName) {
-                const cache_prom = this.evercookie_cache(name, value);
+                this.evercookie_cache(name, value);
             }
 
-            const cookie_prom = this.evercookie_cookie(name, value);
-            const local_stor_prom = this.evercookie_local_storage(name, value);
-            const session_stor_prom = this.evercookie_session_storage(name, value);
-            const window_prom = this.evercookie_window(name, value);
-
-            const arar = await Promise.all([idb_prom,png_prom,etag_prom,cache_prom,cookie_prom,local_stor_prom,session_stor_prom,window_prom]);
+            this.evercookie_cookie(name, value);
+            this.evercookie_local_storage(name, value);
+            this.evercookie_session_storage(name, value);
+            this.evercookie_window(name, value);
         }
 
         // writing data
@@ -150,18 +154,16 @@ export class CookieComponent implements OnInit {
         }
     }
 
-    async evercookie_window(name: string, value: string) {
+    evercookie_window(name: string, value: string) {
         if (value !== undefined) {
             window.name = this._ec_replace(window.name, name, value);
-            return this.getFromStr(name, window.name);
-            // this.window_subject.next(this.getFromStr(name, window.name));
+            this.window_subject.next(this.getFromStr(name, window.name));
         } else {
-            return this.getFromStr(name, window.name);
-            // this.window_subject.next(this.getFromStr(name, window.name));
+            this.window_subject.next(this.getFromStr(name, window.name));
         }
     }
 
-    async evercookie_cache(name: string, value: string) {
+    evercookie_cache(name: string, value: string) {
         if (value !== undefined) {
             // make sure we have evercookie session defined first
             this.cookie_service.set(this.options.cacheCookieName, value, undefined, "/", this.options.domain);
@@ -183,7 +185,7 @@ export class CookieComponent implements OnInit {
         }
     }
 
-    async evercookie_etag(name: string, value: string) {
+    evercookie_etag(name: string, value: string) {
         if (value !== undefined) {
             // make sure we have evercookie session defined first
             this.cookie_service.set(this.options.etagCookieName, value, undefined, "/", this.options.domain);
@@ -205,7 +207,7 @@ export class CookieComponent implements OnInit {
         }
     }
 
-    async evercookie_png(name: string, value: string) {
+    evercookie_png(name: string, value: string) {
         var canvas: HTMLCanvasElement = document.createElement("canvas"),
             img: CanvasImageSource, ctx: CanvasRenderingContext2D, origvalue: string;
         canvas.style.visibility = "hidden";
@@ -218,9 +220,6 @@ export class CookieComponent implements OnInit {
             img = new Image();
             img.style.visibility = "hidden";
             img.style.position = "absolute";
-
-            const png_promise = new Promise(resolve => resolve(true));
-            png_promise.then
 
             if (value !== undefined) {
                 // make sure we have evercookie session defined first
@@ -269,57 +268,51 @@ export class CookieComponent implements OnInit {
         }
     }
 
-    async evercookie_local_storage(name: string, value: string) {
+    evercookie_local_storage(name: string, value: string) {
         if (localStorage) {
             if (value !== undefined) {
                 localStorage.setItem(name, value);
-                return localStorage.getItem(name);
-                // this.local_storage_subject.next(localStorage.getItem(name));
+                this.local_storage_subject.next(localStorage.getItem(name));
             } else {
-                return localStorage.getItem(name);
-                // this.local_storage_subject.next(localStorage.getItem(name));
+                this.local_storage_subject.next(localStorage.getItem(name));
             }
         }
     }
 
-    async evercookie_indexdb_storage(name: string, value: string) {
+    evercookie_indexdb_storage(name: string, value: string) {
         this.idb_service.connect_to_idb();
         if(value !== undefined){
             this.idb_service.add_cookie(value);
         } else {
             this.idb_service.get_cookie().then((value: string) =>{
                 if(value === undefined) {
-                    this._ec.idbData = undefined;
+                    this.idb_subject.next(undefined);
                 } else {
-                    this._ec.idbData = value;
+                    this.idb_subject.next(value);
                 }
             });
         }
     }
 
-    async evercookie_session_storage(name: string, value: string) {
+    evercookie_session_storage(name: string, value: string) {
         if (sessionStorage) {
             if (value !== undefined) {
                 sessionStorage.setItem(name, value);
-                return sessionStorage.getItem(name);
-                // this.session_subject.next(sessionStorage.getItem(name));
+                this.session_subject.next(sessionStorage.getItem(name));
             } else {
-                return sessionStorage.getItem(name);
-                // this.session_subject.next(sessionStorage.getItem(name));
+                this.session_subject.next(sessionStorage.getItem(name));
             }
         }
     }
 
-    async evercookie_cookie(name: string, value: string) {
+    evercookie_cookie(name: string, value: string) {
         if (value !== undefined) {
             // expire the cookie first
             this.cookie_service.set(name, undefined, new Date(2010,9,20), "/", this.options.domain);
             this.cookie_service.set(name, value, new Date(2040,12,31), "/", this.options.domain);
-            return this.cookie_service.get(name);
-            // this.cookie_subject.next(this.cookie_service.get(name));
+            this.cookie_subject.next(this.cookie_service.get(name));
         } else {
-            return this.cookie_service.get(name);
-            // this.cookie_subject.next(this.cookie_service.get(name));
+            this.cookie_subject.next(this.cookie_service.get(name));
         }
     }
 
